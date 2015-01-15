@@ -1,12 +1,8 @@
 package client;
 
 import client.view.TheWindowCtrl;
-import client.view.panes.trackers.TrackersPaneCtrl;
-import p2p.file.FakeP2PFile;
-import p2p.file.P2PFile;
-import p2p.tracker.FakeRemoteTracker;
-import p2p.tracker.Tracker;
 import client.view.panes.files.LocalFilesPaneCtrl;
+import client.view.panes.trackers.TrackersPaneCtrl;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import p2p.file.FakeP2PFile;
+import p2p.file.P2PFile;
+import p2p.tracker.AbstractRemoteTracker;
+import p2p.tracker.FakeRemoteTracker;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +27,7 @@ public class Main extends Application {
     private BorderPane rootLayout;
 
     /** this is the list of all trackers known to the app */
-    public static ObservableList<Tracker> knownTrackers = FXCollections.observableArrayList();
+    public static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();
     public static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
 
     @Override public void start(Stage primaryStage) throws Exception {

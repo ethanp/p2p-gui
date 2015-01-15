@@ -4,14 +4,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.FakeP2PFile;
 import p2p.file.P2PFile;
-
-import java.util.Random;
+import p2p.peer.FakePeer;
+import p2p.tracker.swarm.RemoteSwarm;
+import p2p.tracker.swarm.Swarm;
+import util.Common;
 
 /**
  * Ethan Petuchowski 1/8/15
  */
-public class FakeRemoteTracker extends RemoteTracker {
-    static Random r = new Random();
+public class FakeRemoteTracker extends AbstractRemoteTracker {
     String ipPortString;
 
     static FakeRemoteTracker defaultFakeRemoteTracker
@@ -26,13 +27,12 @@ public class FakeRemoteTracker extends RemoteTracker {
     }
 
     public static FakeRemoteTracker makeFakeTracker() {
-        String ip = r.nextInt(255)+"."+r.nextInt(255)+"."+
-                    r.nextInt(255)+"."+r.nextInt(255)+":"+r.nextInt(5000);
+        String ip = Common.randomIPPortString();
         FakeRemoteTracker t = new FakeRemoteTracker(ip);
-        ObservableList<Swarm> swarms = FXCollections.observableArrayList();
-        int N = r.nextInt(6);
+        ObservableList<RemoteSwarm> swarms = FXCollections.observableArrayList();
+        int N = Common.randInt(6);
         for (int i = 0; i < N; i++)
-            swarms.add(new Swarm(FakeP2PFile.genFakeFile(), t));
+            swarms.add(new RemoteSwarm(FakeP2PFile.genFakeFile(), t));
         t.setSwarms(swarms);
         return t;
     }
@@ -47,9 +47,20 @@ public class FakeRemoteTracker extends RemoteTracker {
     @Override public void requestInfo() {
         setSwarms(
                 FXCollections.observableArrayList(
-                        new Swarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker),
-                        new Swarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker)));
+                        new RemoteSwarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker),
+                        new RemoteSwarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker)));
+        updateSwarmAddrs(swarms.get(0).getP2pFile());
+        updateSwarmAddrs(swarms.get(1).getP2pFile());
     }
 
-    @Override public void updateSwarmAddrs(P2PFile pFile) {/* nothing to do */}
+    @Override public void updateSwarmAddrs(P2PFile pFile) {
+        Swarm swarm = getSwarmForFile(pFile);
+        int nSeeders = Common.randInt(10);
+        int nLeechers = Common.randInt(10);
+        for (int i = 0; i < nSeeders; i++)
+            swarm.getSeeders().add(FakePeer.create());
+        for (int i = 0; i < nLeechers; i++)
+            swarm.getLeechers().add(FakePeer.create());
+
+    }
 }

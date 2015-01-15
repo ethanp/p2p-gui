@@ -7,7 +7,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import p2p.file.P2PFile;
-import p2p.tracker.Tracker;
+import p2p.tracker.AbstractRemoteTracker;
 
 /**
  * Ethan Petuchowski 1/14/15
@@ -59,7 +59,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
     // TODO not finished
     private ContextMenu getSendToTrackerMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        for (Tracker tracker : Main.knownTrackers) {
+        for (AbstractRemoteTracker tracker : Main.knownTrackers) {
             MenuItem menuItem = new MenuItem(tracker.getIpPortString());
             menuItem.setOnAction(e -> tracker.createSwarmFor(getItem()));
         }

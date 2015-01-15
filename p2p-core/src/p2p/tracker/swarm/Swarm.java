@@ -1,4 +1,4 @@
-package p2p.tracker;
+package p2p.tracker.swarm;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.P2PFile;
 import p2p.peer.Peer;
+import p2p.tracker.Tracker;
 
 /**
  * Ethan Petuchowski 1/10/15
@@ -15,14 +16,14 @@ import p2p.peer.Peer;
  * I'm not sure whether someone is going to need to inherit
  * this or if one implementation of this guy is enough
  */
-public class Swarm {
+public class Swarm<T extends Tracker> {
     /* CODE */
     protected final ListProperty<Peer> leechers;
     protected final ListProperty<Peer> seeders;
     protected final ObjectProperty<P2PFile> p2pFile;
-    protected final ObjectProperty<Tracker> tracker;
+    protected final ObjectProperty<T> tracker;
 
-    public Swarm(P2PFile baseP2PFile, Tracker trkr) {
+    public Swarm(P2PFile baseP2PFile, T trkr) {
         p2pFile = new SimpleObjectProperty<>(baseP2PFile);
         seeders = new SimpleListProperty<>(FXCollections.observableArrayList());
         leechers = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -30,6 +31,9 @@ public class Swarm {
     }
 
     /* GARBAGE */
+    public T getTracker() { return tracker.get(); }
+    public ObjectProperty<T> trackerProperty() { return tracker; }
+    public void setTracker(T tracker) { this.tracker.set(tracker); }
     public ObservableList<Peer> getLeechers() { return leechers.get(); }
     public ListProperty<Peer> leechersProperty() { return leechers; }
     public void setLeechers(ObservableList<Peer> leechers) { this.leechers.set(leechers); }

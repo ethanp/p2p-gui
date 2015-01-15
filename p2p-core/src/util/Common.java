@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Random;
 
 /**
  * Ethan Petuchowski 1/13/15
@@ -23,6 +24,8 @@ public class Common {
     public enum ExitCodes {
         SERVER_FAILURE
     }
+
+    public static Random r = new Random();
 
     /* these are the ports that the router is configured to forward to me */
     public static final int PORT_MIN = 3000;
@@ -113,5 +116,12 @@ public class Common {
 
     public static String ipPortToString(InetSocketAddress addr) {
         return addr.getAddress().toString().substring(1)+":"+addr.getPort();
+    }
+
+    public static int randInt(int bound) { return r.nextInt(bound); }
+
+    public static String randomIPPortString() {
+        return r.nextInt(255)+"."+r.nextInt(255)+"."+
+               r.nextInt(255)+"."+r.nextInt(255)+":"+r.nextInt(5000);
     }
 }

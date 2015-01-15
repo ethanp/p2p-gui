@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.P2PFile;
+import p2p.tracker.swarm.Swarm;
 import util.Common;
 
 import java.net.InetSocketAddress;
@@ -15,9 +16,9 @@ import java.util.List;
 /**
  * Ethan Petuchowski 1/7/15
  */
-public abstract class Tracker {
+public abstract class Tracker<S extends Swarm> {
 
-    protected final ListProperty<Swarm> swarms;
+    protected final ListProperty<S> swarms;
     protected final ObjectProperty<InetSocketAddress> listeningSockAddr;
 
     public Tracker(InetSocketAddress addr) {
@@ -25,19 +26,21 @@ public abstract class Tracker {
         swarms = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
-    public Tracker(InetSocketAddress addr, List<Swarm> swarms) {
+    public Tracker(InetSocketAddress addr, List<S> swarms) {
         this(addr);
         this.swarms.addAll(swarms);
     }
 
-    public void createSwarmFor(P2PFile pFile) {
-        Swarm s = new Swarm(pFile, this);
-        getSwarms().add(s);
+    protected S getSwarmForFile(P2PFile file) {
+        for (S s : getSwarms())
+            if (s.getP2pFile().equals(file))
+                return s;
+        return null;
     }
 
-    public ObservableList<Swarm> getSwarms() { return swarms.get(); }
-    public ListProperty<Swarm> swarmsProperty() { return swarms; }
-    public void setSwarms(ObservableList<Swarm> swarms) { this.swarms.set(swarms); }
+    public ObservableList<S> getSwarms() { return swarms.get(); }
+    public ListProperty<S> swarmsProperty() { return swarms; }
+    public void setSwarms(ObservableList<S> swarms) { this.swarms.set(swarms); }
     public InetSocketAddress getListeningSockAddr() { return listeningSockAddr.get(); }
     public ObjectProperty<InetSocketAddress> listeningSockAddrProperty(){return listeningSockAddr;}
     public void setListeningSockAddr(InetSocketAddress addr) { this.listeningSockAddr.set(addr); }

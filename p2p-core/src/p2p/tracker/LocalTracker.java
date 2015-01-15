@@ -1,5 +1,7 @@
 package p2p.tracker;
 
+import p2p.tracker.swarm.Swarm;
+
 import java.net.InetSocketAddress;
 import java.util.List;
 
@@ -8,7 +10,7 @@ import java.util.List;
  *
  * This contains the info that a Tracker knows about itself.
  */
-public abstract class LocalTracker extends Tracker {
+public class LocalTracker extends Tracker {
 
     public LocalTracker(InetSocketAddress addr) {
         super(addr);

@@ -2,7 +2,7 @@ package tracker.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import p2p.tracker.Swarm;
+import p2p.tracker.swarm.Swarm;
 
 import java.util.ArrayList;
 import java.util.Arrays;

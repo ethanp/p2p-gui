@@ -1,9 +1,9 @@
 package client.view.panes.trackers;
 
 import client.Main;
-import p2p.tracker.Swarm;
-import p2p.tracker.Tracker;
 import client.util.TreeTableRoot;
+import p2p.tracker.AbstractRemoteTracker;
+import p2p.tracker.swarm.RemoteSwarm;
 
 /**
  * Ethan Petuchowski 1/13/15
@@ -12,11 +12,16 @@ import client.util.TreeTableRoot;
  * ProgrammingGit/Educational/Java/JavaFX/MyTreeTrial
  */
 public class Celery {
-    private final Swarm swarm;
-    private final Tracker tracker;
+    private final RemoteSwarm swarm;
+    private final AbstractRemoteTracker tracker;
 
-    public Tracker getTracker() { return tracker; }
-    public Swarm getSwarm() { return swarm; }
+    public AbstractRemoteTracker getTracker() { return tracker; }
+    public RemoteSwarm getSwarm() { return swarm; }
+
+    public void updateThisSwarm() {
+        assert isSwarm() : "can only update a swarm";
+        getSwarm().getTracker().updateSwarmAddrs(getSwarm().getP2pFile());
+    }
 
     /* subtype checkers */
     public boolean isTracker()  { return tracker != null; }
@@ -24,12 +29,12 @@ public class Celery {
     public boolean isRoot()     { return !isTracker() && !isSwarm(); }
 
     /* wrapping constructors */
-    public Celery(Swarm swarm) {
+    public Celery(RemoteSwarm swarm) {
         this.swarm = swarm;
         this.tracker = null;
     }
 
-    public Celery(Tracker tracker) {
+    public Celery(AbstractRemoteTracker tracker) {
         this.swarm = null;
         this.tracker = tracker;
     }
@@ -63,11 +68,11 @@ public class Celery {
         else return "";
     }
 
-    public boolean equalsTracker(Tracker tracker) {
+    public boolean equalsTracker(AbstractRemoteTracker tracker) {
         return isTracker() && this.tracker.equals(tracker);
     }
 
-    public boolean equalsSwarm(Swarm swarm) {
+    public boolean equalsSwarm(RemoteSwarm swarm) {
         return isSwarm() && this.swarm.equals(swarm);
     }
 }

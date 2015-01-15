@@ -50,6 +50,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
         }
         if (getItem().isSwarm()) {
             ViewUtil.addOpt(menu, "Download file", e->{});
+            ViewUtil.addOpt(menu, "Update swarm", e->getItem().updateThisSwarm());
         }
 
         ViewUtil.showOnRightClick(this, menu);
