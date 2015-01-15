@@ -23,8 +23,6 @@ import java.util.concurrent.Executors;
  */
 public class Server extends Thread {
 
-
-
     protected final ObjectProperty<LocalTracker> tracker;
     protected final ObjectProperty<InetAddress> localIPAddr
             = new SimpleObjectProperty<>(Common.findMyIP());

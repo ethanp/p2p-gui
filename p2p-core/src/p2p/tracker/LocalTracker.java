@@ -8,7 +8,7 @@ import java.util.List;
  *
  * This contains the info that a Tracker knows about itself.
  */
-public class LocalTracker extends Tracker {
+public abstract class LocalTracker extends Tracker {
 
     public LocalTracker(InetSocketAddress addr) {
         super(addr);

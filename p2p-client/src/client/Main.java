@@ -4,7 +4,7 @@ import client.view.TheWindowCtrl;
 import client.view.panes.trackers.TrackersPaneCtrl;
 import p2p.file.FakeP2PFile;
 import p2p.file.P2PFile;
-import p2p.tracker.FakeTracker;
+import p2p.tracker.FakeRemoteTracker;
 import p2p.tracker.Tracker;
 import client.view.panes.files.LocalFilesPaneCtrl;
 import javafx.application.Application;
@@ -42,7 +42,7 @@ public class Main extends Application {
         FakeP2PFile pFile2 = FakeP2PFile.genFakeFile();
         FakeP2PFile pFile3 = FakeP2PFile.genFakeFile();
         Main.localFiles.addAll(pFile1, pFile2, pFile3);
-        Main.knownTrackers.add(FakeTracker.getDefaultFakeTracker());
+        Main.knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 
     private void loadTheWindow() {

@@ -1,13 +1,13 @@
 package p2p.tracker;
 
-import p2p.file.P2PFile;
-import p2p.peer.Peer;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import p2p.file.P2PFile;
+import p2p.peer.Peer;
 
 /**
  * Ethan Petuchowski 1/10/15
@@ -16,16 +16,7 @@ import javafx.collections.ObservableList;
  * this or if one implementation of this guy is enough
  */
 public class Swarm {
-    public ObservableList<Peer> getLeechers() { return leechers.get(); }
-    public ListProperty<Peer> leechersProperty() { return leechers; }
-    public void setLeechers(ObservableList<Peer> leechers) { this.leechers.set(leechers); }
-    public ObservableList<Peer> getSeeders() { return seeders.get(); }
-    public ListProperty<Peer> seedersProperty() { return seeders; }
-    public void setSeeders(ObservableList<Peer> seeders) { this.seeders.set(seeders); }
-    public P2PFile getP2pFile() { return p2pFile.get(); }
-    public ObjectProperty<P2PFile> p2pFileProperty() { return p2pFile; }
-    public void setP2pFile(P2PFile p2pFile) { this.p2pFile.set(p2pFile); }
-
+    /* CODE */
     protected final ListProperty<Peer> leechers;
     protected final ListProperty<Peer> seeders;
     protected final ObjectProperty<P2PFile> p2pFile;
@@ -38,6 +29,17 @@ public class Swarm {
         tracker = new SimpleObjectProperty<>(trkr);
     }
 
+    /* GARBAGE */
+    public ObservableList<Peer> getLeechers() { return leechers.get(); }
+    public ListProperty<Peer> leechersProperty() { return leechers; }
+    public void setLeechers(ObservableList<Peer> leechers) { this.leechers.set(leechers); }
+    public ObservableList<Peer> getSeeders() { return seeders.get(); }
+    public ListProperty<Peer> seedersProperty() { return seeders; }
+    public void setSeeders(ObservableList<Peer> seeders) { this.seeders.set(seeders); }
+    public P2PFile getP2pFile() { return p2pFile.get(); }
+    public ObjectProperty<P2PFile> p2pFileProperty() { return p2pFile; }
+    public void setP2pFile(P2PFile p2pFile) { this.p2pFile.set(p2pFile); }
+
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Swarm)) return false;
@@ -48,7 +50,6 @@ public class Swarm {
         if (!tracker.equals(swarm.tracker)) return false;
         return true;
     }
-
     @Override public int hashCode() {
         int result = leechers.hashCode();
         result = 31*result+seeders.hashCode();

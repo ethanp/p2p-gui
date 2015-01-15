@@ -2,7 +2,7 @@ package client.util;
 
 import client.Main;
 import p2p.file.FakeP2PFile;
-import p2p.tracker.FakeTracker;
+import p2p.tracker.FakeRemoteTracker;
 
 /**
  * Ethan Petuchowski 1/15/15
@@ -13,7 +13,7 @@ public class ClientStateUtiil {
     }
 
     public static void addFakeTracker() {
-        Main.knownTrackers.add(FakeTracker.makeFakeTracker());
+        Main.knownTrackers.add(FakeRemoteTracker.makeFakeTracker());
     }
 
 }

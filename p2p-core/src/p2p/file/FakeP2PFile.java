@@ -1,6 +1,6 @@
 package p2p.file;
 
-import p2p.tracker.FakeTracker;
+import p2p.tracker.FakeRemoteTracker;
 import p2p.tracker.Tracker;
 
 import java.io.File;
@@ -26,8 +26,8 @@ public class FakeP2PFile extends P2PFile {
     public static FakeP2PFile genFakeFile() {
         File fakeFile = new File(containerFolder, "fakeFile-"+random.nextInt(500));
         long randomFilesize = random.nextInt(5_000_000);
-        FakeTracker defaultFakeTracker = FakeTracker.getDefaultFakeTracker();
-        return new FakeP2PFile(fakeFile, randomFilesize, defaultFakeTracker);
+        FakeRemoteTracker defaultFakeRemoteTracker = FakeRemoteTracker.getDefaultFakeRemoteTracker();
+        return new FakeP2PFile(fakeFile, randomFilesize, defaultFakeRemoteTracker);
     }
 
     public FakeP2PFile(File file, long filesize, Tracker tracker) {
