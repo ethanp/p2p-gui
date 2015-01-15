@@ -3,6 +3,8 @@ package client.view.panes.trackers;
 import client.Main;
 import client.util.ClientStateUtiil;
 import client.util.ViewUtil;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeTableCell;
 
@@ -12,6 +14,7 @@ import javafx.scene.control.TreeTableCell;
 public class TrackersCell extends TreeTableCell<Celery, Celery> {
     static enum Cols { NAME, SIZE, NUM_SEEDERS, NUM_LEECHERS }
 
+    private boolean REFRESH = true;
     private Cols col;
     private ContextMenu menu = new ContextMenu();
 
@@ -41,18 +44,35 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
         menu = new ContextMenu();
 
         if (getItem().isRoot()) {
-            ViewUtil.addOpt(menu, "Add fake tracker", e -> ClientStateUtiil.addFakeTracker());
+            addOpt("Add fake tracker", e -> ClientStateUtiil.addFakeTracker());
         }
         if (getItem().isTracker()) {
-            ViewUtil.addOpt(menu, "Add fake tracker", e->ClientStateUtiil.addFakeTracker());
-            ViewUtil.addOpt(menu, "Remove tracker", e ->
-                    Main.knownTrackers.remove(getItem().getTracker()));
+            addOpt("Add fake tracker", e -> ClientStateUtiil.addFakeTracker());
+            addOpt("Remove tracker", e -> Main.knownTrackers.remove(getItem().getTracker()));
         }
         if (getItem().isSwarm()) {
-            ViewUtil.addOpt(menu, "Download file", e->{});
-            ViewUtil.addOpt(menu, "Update swarm", e->getItem().updateThisSwarm());
+            addOpt("Download file", e -> {});
+            addOpt("Update swarm", e ->{ getItem().updateThisSwarm(); refresh(); });
         }
 
         ViewUtil.showOnRightClick(this, menu);
+    }
+
+    private void addOpt(String menuItem, EventHandler<ActionEvent> action) {
+        ViewUtil.addOpt(menu, menuItem, action);
+    }
+
+    /**
+     * The goal is to refresh this table. It seems like the only simple way to do it in my situation
+     * is hacks. Something that is being observed needs to be invalidated so that the framework
+     * refreshes * everything properly. Another possible hack is to flip the Celery's `observeMe`
+     * property. * This one was the most-up-voted (by far) among many possibilities listed on
+     * stackoverflow.
+     *
+     *          http://stackoverflow.com/a/11624805/1959155
+     */
+    private void refresh() {
+        getTableColumn().setVisible(false);
+        getTableColumn().setVisible(true);
     }
 }

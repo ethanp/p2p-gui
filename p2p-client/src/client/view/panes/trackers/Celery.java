@@ -2,6 +2,8 @@ package client.view.panes.trackers;
 
 import client.Main;
 import client.util.TreeTableRoot;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.swarm.RemoteSwarm;
 
@@ -14,6 +16,10 @@ import p2p.tracker.swarm.RemoteSwarm;
 public class Celery {
     private final RemoteSwarm swarm;
     private final AbstractRemoteTracker tracker;
+
+    /* this was part of a table-refresh hack that I'm no longer using
+       in case I need it again, it involves going observeMe.set(null); observeMe.set(this); */
+    public ObjectProperty<Celery> observeMe = new SimpleObjectProperty<>(this);
 
     public AbstractRemoteTracker getTracker() { return tracker; }
     public RemoteSwarm getSwarm() { return swarm; }

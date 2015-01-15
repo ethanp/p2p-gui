@@ -1,7 +1,6 @@
 package client.view.panes.trackers;
 
 import client.util.TreeTableRoot;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeTableColumn;
@@ -39,9 +38,8 @@ public class TrackersPaneCtrl {
 
     TrackerTreeItem treeTableRoot = new TrackerTreeItem(new Celery(new TreeTableRoot()));
 
-
     Callback<TreeTableColumn.CellDataFeatures<Celery, Celery>, ObservableValue<Celery>>
-            cellValueFactory = c -> new ReadOnlyObjectWrapper<>(c.getValue().getValue());
+            cellValueFactory = c -> c.getValue().getValue().observeMe;
 
     @FXML private void initialize() {
         treeTable.setRoot(treeTableRoot);
