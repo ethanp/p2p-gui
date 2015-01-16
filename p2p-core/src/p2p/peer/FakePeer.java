@@ -11,5 +11,8 @@ public class FakePeer extends Peer {
     public FakePeer(String fakeAddr) {
         super(new InetSocketAddress(fakeAddr, 2));
     }
-    public static FakePeer create() { return new FakePeer(Common.randomIPPortString()); }
+
+    public static FakePeer createWithUnresolvedIP() {
+        return new FakePeer(Common.randomIPPortString());
+    }
 }

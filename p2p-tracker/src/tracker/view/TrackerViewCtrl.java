@@ -9,7 +9,7 @@ import javafx.scene.control.MenuItem;
 import p2p.peer.Peer;
 import p2p.tracker.swarm.LocalSwarm;
 import tracker.Main;
-import tracker.server.Server;
+import util.SimpleServer;
 
 /**
  * Ethan Petuchowski 1/14/15
@@ -23,6 +23,7 @@ public class TrackerViewCtrl {
     @FXML private Label netLocLabel;
 
     @FXML private MenuItem addFakeSwarm;
+    @FXML private MenuItem realFileAddFromFakePeerServer;
 
     public void setNetLocLabel(String location) {
         netLocLabel.setText("Location: "+location);
@@ -66,7 +67,7 @@ public class TrackerViewCtrl {
 
     @FXML private void initialize() {
         /* update the displayed "received request count" in the lower-left of the screen */
-        Server.rcvReqCtProperty().addListener(
+        SimpleServer.rcvReqCtProperty().addListener(
                 (obsVal, oldVal, newVal) -> setReqCtLabel(newVal.intValue()));
 
         /* make the "Add fake swarm" menu item add fake swarms to the listing */

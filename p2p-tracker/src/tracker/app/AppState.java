@@ -2,7 +2,7 @@ package tracker.app;
 
 import javafx.beans.property.ObjectProperty;
 import p2p.tracker.Tracker;
-import tracker.server.Server;
+import tracker.server.TrackerServer;
 
 /**
  * Ethan Petuchowski 1/15/15
@@ -13,7 +13,7 @@ public abstract class AppState {
     public void setTracker(Tracker tracker) { this.tracker.set(tracker); }
 
     protected final ObjectProperty<Tracker> tracker;
-    protected final ObjectProperty<Server> server;
+    protected final ObjectProperty<TrackerServer> server;
 
     protected AppState() {
         tracker = null;

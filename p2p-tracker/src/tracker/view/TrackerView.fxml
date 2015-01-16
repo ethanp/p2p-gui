@@ -15,6 +15,7 @@
         <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem fx:id="addFakeSwarm" mnemonicParsing="false" text="Add fake swarm" />
+                  <MenuItem fx:id="realFileAddFromFakePeerServer" mnemonicParsing="false" text="True [fake]file request from true [fake]peer" />
                   <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>

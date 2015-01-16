@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import p2p.tracker.LocalTracker;
-import tracker.server.Server;
+import tracker.server.TrackerServer;
 import tracker.view.TrackerViewCtrl;
 
 import java.net.URL;
@@ -20,8 +20,8 @@ public class Main extends Application {
     public static Stage getPrimaryStage() { return primaryStage; }
     private static Stage primaryStage;
     private VBox rootLayout;
-    private static Server server;
-    public static Server getServer() { return server; }
+    private static TrackerServer server;
+    public static TrackerServer getServer() { return server; }
     public static LocalTracker getTracker() { return getServer().getTracker(); }
 
     @Override public void start(Stage primaryStage) throws Exception {
@@ -38,7 +38,7 @@ public class Main extends Application {
         primaryStage.show();
 
         /* initialize Server */
-        server = new Server();
+        server = new TrackerServer();
         server.start();
         ctrl.setNetLocLabel(server.getAddrString());
 

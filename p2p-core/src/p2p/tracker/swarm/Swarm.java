@@ -68,9 +68,9 @@ public class Swarm<T extends Tracker> {
         int nSeeders = Common.randInt(10);
         int nLeechers = Common.randInt(10);
         for (int i = 0; i < nSeeders; i++)
-            getSeeders().add(FakePeer.create());
+            getSeeders().add(FakePeer.createWithUnresolvedIP());
         for (int i = 0; i < nLeechers; i++)
-            getLeechers().add(FakePeer.create());
+            getLeechers().add(FakePeer.createWithUnresolvedIP());
         return this;
     }
 }
