@@ -14,7 +14,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="Add fake swarm" />
+            <MenuItem fx:id="addFakeSwarm" mnemonicParsing="false" text="Add fake swarm" />
                   <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
@@ -56,13 +56,16 @@
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
       <children>
-        <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" minWidth="100.0" text="Requests received:" HBox.hgrow="ALWAYS">
+        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="-1.0" minWidth="104.0" prefHeight="14.0" prefWidth="104.0" text="Requests received:" HBox.hgrow="ALWAYS">
           <font>
             <Font size="11.0" fx:id="x3" />
           </font>
           <textFill>
             <Color blue="0.625" green="0.625" red="0.625" fx:id="x4" />
           </textFill>
+               <padding>
+                  <Insets left="6.0" />
+               </padding>
         </Label>
             <Label fx:id="reqCtLabel" layoutX="13.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="0">
                <font>
@@ -77,6 +80,9 @@
                <HBox.margin>
                   <Insets />
                </HBox.margin>
+               <padding>
+                  <Insets right="6.0" />
+               </padding>
             </Label>
       </children>
       <padding>

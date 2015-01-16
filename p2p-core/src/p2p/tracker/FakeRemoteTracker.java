@@ -4,9 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.FakeP2PFile;
 import p2p.file.P2PFile;
-import p2p.peer.FakePeer;
 import p2p.tracker.swarm.RemoteSwarm;
-import p2p.tracker.swarm.Swarm;
 import util.Common;
 
 /**
@@ -45,22 +43,14 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     @Override public String getIpPortString() { return ipPortString; }
 
     @Override public void requestInfo() {
-        setSwarms(
-                FXCollections.observableArrayList(
-                        new RemoteSwarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker),
-                        new RemoteSwarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker)));
-        updateSwarmAddrs(swarms.get(0).getP2pFile());
-        updateSwarmAddrs(swarms.get(1).getP2pFile());
+        final RemoteSwarm swarm1 = new RemoteSwarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker);
+        final RemoteSwarm swarm2 = new RemoteSwarm(FakeP2PFile.genFakeFile(), defaultFakeRemoteTracker);
+        swarm1.addRandomPeers();
+        swarm2.addRandomPeers();
+        setSwarms(FXCollections.observableArrayList(swarm1,swarm2));
     }
 
     @Override public void updateSwarmAddrs(P2PFile pFile) {
-        Swarm swarm = getSwarmForFile(pFile);
-        int nSeeders = Common.randInt(10);
-        int nLeechers = Common.randInt(10);
-        for (int i = 0; i < nSeeders; i++)
-            swarm.getSeeders().add(FakePeer.create());
-        for (int i = 0; i < nLeechers; i++)
-            swarm.getLeechers().add(FakePeer.create());
-
+        getSwarmForFile(pFile).addRandomPeers();
     }
 }

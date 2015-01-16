@@ -7,8 +7,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.P2PFile;
+import p2p.peer.FakePeer;
 import p2p.peer.Peer;
 import p2p.tracker.Tracker;
+import util.Common;
 
 /**
  * Ethan Petuchowski 1/10/15
@@ -60,5 +62,15 @@ public class Swarm<T extends Tracker> {
         result = 31*result+p2pFile.hashCode();
         result = 31*result+tracker.hashCode();
         return result;
+    }
+
+    public Swarm<T> addRandomPeers() {
+        int nSeeders = Common.randInt(10);
+        int nLeechers = Common.randInt(10);
+        for (int i = 0; i < nSeeders; i++)
+            getSeeders().add(FakePeer.create());
+        for (int i = 0; i < nLeechers; i++)
+            getLeechers().add(FakePeer.create());
+        return this;
     }
 }

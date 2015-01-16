@@ -1,6 +1,8 @@
 package tracker.server;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.tracker.LocalTracker;
 import util.Common;
@@ -28,7 +30,7 @@ public class Server extends Thread {
             = new SimpleObjectProperty<>(Common.findMyIP());
     protected ServerSocket listener;
     protected ExecutorService pool = Executors.newFixedThreadPool(5);
-    static int receivedRequestCount = 0;
+    protected final static IntegerProperty rcvReqCt = new SimpleIntegerProperty(0);
     Socket conn;
     BufferedReader in;
     PrintWriter out;
@@ -52,13 +54,16 @@ public class Server extends Thread {
             System.exit(Common.ExitCodes.SERVER_FAILURE.ordinal());
         }
         tracker = new SimpleObjectProperty<>(new LocalTracker(getAddr()));
+    }
+
+    @Override public void run() {
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
                 conn = listener.accept();
                 in = Common.bufferedReader(conn);
                 out = Common.printWriter(conn);
-                receivedRequestCount++;
+                rcvReqCt.add(1);
                 atYourService();
             }
             catch (IOException e) {
@@ -93,4 +98,14 @@ public class Server extends Thread {
      * INCLUDING specific IP Addresses of Swarm members
      */
     public void listFiles(){}
+
+    public static int getRcvReqCt() { return rcvReqCt.get(); }
+    public static IntegerProperty rcvReqCtProperty() { return rcvReqCt; }
+    public static void setRcvReqCt(int rcvReqCt) {
+        Server.rcvReqCt.set(rcvReqCt);
+    }
+    public LocalTracker getTracker() { return tracker.get(); }
+    public ObjectProperty<LocalTracker> trackerProperty() { return tracker; }
+    public void setTracker(LocalTracker tracker) { this.tracker.set(tracker); }
+
 }

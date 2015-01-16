@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import p2p.tracker.LocalTracker;
 import tracker.server.Server;
 import tracker.view.TrackerViewCtrl;
 
@@ -21,6 +22,7 @@ public class Main extends Application {
     private VBox rootLayout;
     private static Server server;
     public static Server getServer() { return server; }
+    public static LocalTracker getTracker() { return getServer().getTracker(); }
 
     @Override public void start(Stage primaryStage) throws Exception {
 
