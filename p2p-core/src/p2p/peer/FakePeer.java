@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
  */
 public class FakePeer extends Peer {
     public FakePeer(String fakeAddr) {
-        super(new InetSocketAddress("these codes don't run", 2));
+        super(new InetSocketAddress(fakeAddr, 2));
     }
     public static FakePeer create() { return new FakePeer(Common.randomIPPortString()); }
 }

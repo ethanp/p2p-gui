@@ -115,7 +115,11 @@ public class Common {
     }
 
     public static String ipPortToString(InetSocketAddress addr) {
-        return addr.getAddress().toString().substring(1)+":"+addr.getPort();
+        if (addr.isUnresolved()) {
+            return addr.getHostName()+":"+addr.getPort()+" (unresolved)";
+        } else {
+            return addr.getAddress().toString().substring(1)+":"+addr.getPort();
+        }
     }
 
     public static int randInt(int bound) { return r.nextInt(bound); }

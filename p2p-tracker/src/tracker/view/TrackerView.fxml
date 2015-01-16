@@ -8,7 +8,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="600.0" prefWidth="460.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tracker.view.TrackerViewCtrl">
+<VBox prefHeight="607.0" prefWidth="618.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tracker.view.TrackerViewCtrl">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>

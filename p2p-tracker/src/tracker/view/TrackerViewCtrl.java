@@ -6,23 +6,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.util.Callback;
+import p2p.peer.Peer;
 import p2p.tracker.swarm.LocalSwarm;
 import tracker.Main;
 import tracker.server.Server;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Ethan Petuchowski 1/14/15
  */
 public class TrackerViewCtrl {
     @FXML private ListView<LocalSwarm> pFileList;
-    @FXML private ListView<LocalSwarm> seederList;
-    @FXML private ListView<LocalSwarm> leecherList;
-    private List<ListView<LocalSwarm>> lists = new ArrayList<>();
+    @FXML private ListView<Peer> seederList;
+    @FXML private ListView<Peer> leecherList;
 
     @FXML private Label reqCtLabel;
     @FXML private Label netLocLabel;
@@ -69,28 +64,7 @@ public class TrackerViewCtrl {
         }
     };
 
-    private final Callback<ListView<LocalSwarm>, ListCell<LocalSwarm>> swarmFileNameFactory
-    = new Callback<ListView<LocalSwarm>, ListCell<LocalSwarm>>() {
-        @Override public ListCell<LocalSwarm> call(ListView<LocalSwarm> param) {
-            return new ListCell<LocalSwarm>() {
-                @Override public void updateItem(LocalSwarm item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null) {
-                        setText(null);
-                        setGraphic(null);
-                    }
-                    else {
-                        setText(item.getP2pFile().getFilename());
-                    }
-                }
-            };
-        }
-    };
-
-
     @FXML private void initialize() {
-        lists.addAll(Arrays.asList(pFileList, seederList, leecherList));
-
         /* update the displayed "received request count" in the lower-left of the screen */
         Server.rcvReqCtProperty().addListener(
                 (obsVal, oldVal, newVal) -> setReqCtLabel(newVal.intValue()));
@@ -101,6 +75,43 @@ public class TrackerViewCtrl {
                         LocalSwarm.createLoadedSwarm(Main.getTracker())));
 
         /* make file list display the filename of tracked swarms */
-        pFileList.setCellFactory(swarmFileNameFactory);
+        pFileList.setCellFactory(p -> new SwarmNameCell());
+        seederList.setCellFactory(p -> new PeerCell());
+        leecherList.setCellFactory(p -> new PeerCell());
+
+        /* make other columns show information about selected swarm */
+        pFileList.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> fillOtherColumnsBasedOn(newValue));
+    }
+
+    private void fillOtherColumnsBasedOn(LocalSwarm swarm) {
+        seederList.getItems().clear();
+        seederList.getItems().addAll(swarm.getSeeders());
+        leecherList.getItems().clear();
+        leecherList.getItems().addAll(swarm.getLeechers());
+    }
+
+    static class SwarmNameCell extends ListCell<LocalSwarm> {
+        @Override public void updateItem(LocalSwarm item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.getP2pFile().getFilename());
+            }
+        }
+    }
+
+    static class PeerCell extends ListCell<Peer> {
+        @Override public void updateItem(Peer item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.toString());
+            }
+        }
     }
 }
