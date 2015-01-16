@@ -4,7 +4,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import p2p.protocol.TrackerProtocol;
+import p2p.protocol.TrackerSideTrackerProtocol;
 import p2p.tracker.LocalTracker;
 import util.SimpleServer;
 
@@ -13,10 +13,10 @@ import java.io.IOException;
 /**
  * Ethan Petuchowski 1/16/15
  */
-public class TrackerServer extends SimpleServer implements TrackerProtocol {
+public class TrackerServer extends SimpleServer implements TrackerSideTrackerProtocol {
 
     protected final ObjectProperty<LocalTracker> tracker;
-    protected final static IntegerProperty rcvReqCt = new SimpleIntegerProperty(0);
+    protected final IntegerProperty rcvReqCt = new SimpleIntegerProperty(0);
 
     public TrackerServer() {
         super();
@@ -30,11 +30,9 @@ public class TrackerServer extends SimpleServer implements TrackerProtocol {
         System.out.println("tracker received command: "+command);
     }
 
-    public static int getRcvReqCt() { return rcvReqCt.get(); }
-    public static IntegerProperty rcvReqCtProperty() { return rcvReqCt; }
-    public static void setRcvReqCt(int rcvReqCt) {
-        TrackerServer.rcvReqCt.set(rcvReqCt);
-    }
+    public int getRcvReqCt() { return rcvReqCt.get(); }
+    public IntegerProperty rcvReqCtProperty() { return rcvReqCt; }
+    public void setRcvReqCt(int newRcvReqCt) { rcvReqCt.set(newRcvReqCt); }
     public LocalTracker getTracker() { return tracker.get(); }
     public ObjectProperty<LocalTracker> trackerProperty() { return tracker; }
     public void setTracker(LocalTracker tracker) { this.tracker.set(tracker); }

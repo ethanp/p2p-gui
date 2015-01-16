@@ -1,6 +1,6 @@
 package p2p.tracker;
 
-import p2p.tracker.swarm.Swarm;
+import p2p.tracker.swarm.LocalSwarm;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -16,7 +16,11 @@ public class LocalTracker extends Tracker {
         super(addr);
     }
 
-    public LocalTracker(List<Swarm> swarms, InetSocketAddress addr) {
+    public LocalTracker(List<LocalSwarm> swarms, InetSocketAddress addr) {
         super(addr, swarms);
+    }
+
+    public AbstractRemoteTracker asRemote() {
+        return new RealRemoteTracker(getListeningSockAddr());
     }
 }

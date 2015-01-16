@@ -3,7 +3,7 @@ package p2p.protocol;
 /**
  * Ethan Petuchowski 1/16/15
  */
-public interface TrackerProtocol {
+public interface TrackerSideTrackerProtocol {
     /**
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms
      * If it exists, add Peer to Swarm

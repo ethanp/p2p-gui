@@ -61,7 +61,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
         ContextMenu contextMenu = new ContextMenu();
         for (AbstractRemoteTracker tracker : Main.knownTrackers) {
             MenuItem menuItem = new MenuItem(tracker.getIpPortString());
-            menuItem.setOnAction(e -> tracker.createSwarmFor(getItem()));
+            menuItem.setOnAction(e -> tracker.createSwarmForFile(getItem()));
         }
         return contextMenu;
     }

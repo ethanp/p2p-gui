@@ -6,10 +6,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import p2p.peer.ClientPeer;
 import p2p.peer.Peer;
 import p2p.tracker.swarm.LocalSwarm;
 import tracker.Main;
-import util.SimpleServer;
 
 /**
  * Ethan Petuchowski 1/14/15
@@ -23,7 +23,7 @@ public class TrackerViewCtrl {
     @FXML private Label netLocLabel;
 
     @FXML private MenuItem addFakeSwarm;
-    @FXML private MenuItem realFileAddFromFakePeerServer;
+    @FXML private MenuItem realFileAddFromEphemeralPeer;
 
     public void setNetLocLabel(String location) {
         netLocLabel.setText("Location: "+location);
@@ -33,8 +33,17 @@ public class TrackerViewCtrl {
         reqCtLabel.setText(String.valueOf(n));
     }
 
-    public void listenToSwarmChanges() {
+    public void initializeBasedOnServer() {
         Main.getTracker().getSwarms().addListener(swarmChgListener);
+        /* update the displayed "received request count"
+         * in the lower-left of the screen */
+        Main.getServer().rcvReqCtProperty().addListener(
+                (obsVal, oldCt, newCt) -> setReqCtLabel(newCt.intValue()));
+
+        /* make the "Add fake swarm" menu item add fake swarms to the listing */
+        addFakeSwarm.setOnAction(
+                e -> Main.getTracker().getSwarms().add(
+                        LocalSwarm.createLoadedSwarm(Main.getTracker())));
     }
 
     private final ListChangeListener<LocalSwarm> swarmChgListener
@@ -65,15 +74,15 @@ public class TrackerViewCtrl {
         }
     };
 
+    /**
+     * Don't initialize anything relying on the server in here
+     * because at the time this is called the server hasn't started yet.
+     * Use initializeBasedOnServer() instead.
+     */
     @FXML private void initialize() {
-        /* update the displayed "received request count" in the lower-left of the screen */
-        SimpleServer.rcvReqCtProperty().addListener(
-                (obsVal, oldVal, newVal) -> setReqCtLabel(newVal.intValue()));
-
-        /* make the "Add fake swarm" menu item add fake swarms to the listing */
-        addFakeSwarm.setOnAction(
-                e -> Main.getTracker().getSwarms().add(
-                        LocalSwarm.createLoadedSwarm(Main.getTracker())));
+        realFileAddFromEphemeralPeer.setOnAction(
+                e -> ClientPeer.sendEphemeralRequest(
+                        Main.getTracker().asRemote()));
 
         /* make file list display the filename of tracked swarms */
         pFileList.setCellFactory(p -> new SwarmNameCell());
@@ -82,7 +91,8 @@ public class TrackerViewCtrl {
 
         /* make other columns show information about selected swarm */
         pFileList.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> fillOtherColumnsBasedOn(newValue));
+                (obs, oldFile, selectedFile) ->
+                        fillOtherColumnsBasedOn(selectedFile));
     }
 
     private void fillOtherColumnsBasedOn(LocalSwarm swarm) {

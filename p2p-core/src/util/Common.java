@@ -128,4 +128,12 @@ public class Common {
         return r.nextInt(255)+"."+r.nextInt(255)+"."+
                r.nextInt(255)+"."+r.nextInt(255)+":"+r.nextInt(5000);
     }
+
+    public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr)
+            throws IOException
+    {
+        InetAddress ipAddr = inetSocketAddr.getAddress();
+        int port = inetSocketAddr.getPort();
+        return new Socket(ipAddr, port);
+    }
 }
