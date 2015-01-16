@@ -14,7 +14,8 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" text="Add fake swarm" />
+                  <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -55,7 +56,7 @@
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
       <children>
-        <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
+        <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" minWidth="100.0" text="Requests received:" HBox.hgrow="ALWAYS">
           <font>
             <Font size="11.0" fx:id="x3" />
           </font>
@@ -63,8 +64,20 @@
             <Color blue="0.625" green="0.625" red="0.625" fx:id="x4" />
           </textFill>
         </Label>
-        <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-        <Label font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
+            <Label fx:id="reqCtLabel" layoutX="13.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="0">
+               <font>
+                  <Font size="11.0" fx:id="x31" />
+               </font>
+               <textFill>
+                  <Color blue="0.625" green="0.625" red="0.625" fx:id="x41" />
+               </textFill>
+            </Label>
+        <Pane prefHeight="14.0" prefWidth="196.0" HBox.hgrow="ALWAYS" />
+            <Label fx:id="netLocLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" font="$x3" layoutX="407.0" layoutY="13.0" maxWidth="-1.0" minWidth="170.0" text="Location: Offline" textAlignment="RIGHT" textFill="$x4">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
       </children>
       <padding>
         <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />

@@ -14,7 +14,6 @@ import javafx.scene.control.TreeTableCell;
 public class TrackersCell extends TreeTableCell<Celery, Celery> {
     static enum Cols { NAME, SIZE, NUM_SEEDERS, NUM_LEECHERS }
 
-    private boolean REFRESH = true;
     private Cols col;
     private ContextMenu menu = new ContextMenu();
 

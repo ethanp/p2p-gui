@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import tracker.server.Server;
 import tracker.view.TrackerViewCtrl;
 
 import java.net.URL;
@@ -18,8 +19,12 @@ public class Main extends Application {
     public static Stage getPrimaryStage() { return primaryStage; }
     private static Stage primaryStage;
     private VBox rootLayout;
+    private static Server server;
+    public static Server getServer() { return server; }
 
     @Override public void start(Stage primaryStage) throws Exception {
+
+        /* load GUI */
         URL fxmlLoc = Main.class.getResource("view/TrackerView.fxml");
         FXMLLoader rootLoader = new FXMLLoader();
         rootLoader.setLocation(fxmlLoc);
@@ -29,5 +34,10 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Tracker Host");
         primaryStage.show();
+
+        /* initialize Server */
+        server = new Server();
+        server.start();
+        ctrl.setNetLocLabel(server.getAddrString());
     }
 }

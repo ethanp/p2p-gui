@@ -28,10 +28,18 @@ public class Server extends Thread {
             = new SimpleObjectProperty<>(Common.findMyIP());
     protected ServerSocket listener;
     protected ExecutorService pool = Executors.newFixedThreadPool(5);
+    static int receivedRequestCount = 0;
+    Socket conn;
+    BufferedReader in;
+    PrintWriter out;
 
     /* not to be confused with getattr */
     public InetSocketAddress getAddr() {
         return new InetSocketAddress(localIPAddr.get(), listener.getLocalPort());
+    }
+
+    public String getAddrString() {
+        return Common.ipPortToString(getAddr());
     }
 
     public Server() {
@@ -44,13 +52,14 @@ public class Server extends Thread {
             System.exit(Common.ExitCodes.SERVER_FAILURE.ordinal());
         }
         tracker = new SimpleObjectProperty<>(new LocalTracker(getAddr()));
-    }
-
-    @Override public void run() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             try {
-                Socket conn = listener.accept();
-                pool.submit(new TrackTask(conn));
+                conn = listener.accept();
+                in = Common.bufferedReader(conn);
+                out = Common.printWriter(conn);
+                receivedRequestCount++;
+                atYourService();
             }
             catch (IOException e) {
                 System.err.println("Exception in tracker server main listen-loop");
@@ -59,45 +68,29 @@ public class Server extends Thread {
         }
     }
 
-    class TrackTask extends Thread {
-
-        protected Socket socket;
-        BufferedReader in;
-        PrintWriter out;
-
-        TrackTask(Socket socket) { this.socket = socket; }
-
-        @Override public void run() {
-            try {
-                in = Common.bufferedReader(socket);
-                out = Common.printWriter(socket);
-                String command = in.readLine();
-                if (command == null) throw new RuntimeException("null command");
-                System.out.println("received command: "+command);
-            }
-            catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
-        }
-
-        /**
-         * receive file from peer look for it among swarms
-         * if it exists, add peer to swarm
-         * otherwise create a new swarm for it
-         */
-        public void addFileRequest(){}
-
-        /**
-         * we tell a Peer who wants to download a File
-         * about the specific IP Addresses of Peers in an existing Swarm
-         * so it can update its internal view of the Swarm
-         */
-        public void sendSwarmInfo(){}
-
-        /**
-         * send full list of Swarms
-         * INCLUDING specific IP Addresses of Swarm members
-         */
-        public void listFiles(){}
+    private void atYourService() throws IOException {
+        String command = in.readLine();
+        if (command == null) throw new RuntimeException("null command");
+        System.out.println("received command: "+command);
     }
+
+    /**
+     * receive file from peer look for it among swarms
+     * if it exists, add peer to swarm
+     * otherwise create a new swarm for it
+     */
+    public void addFileRequest(){}
+
+    /**
+     * we tell a Peer who wants to download a File
+     * about the specific IP Addresses of Peers in an existing Swarm
+     * so it can update its internal view of the Swarm
+     */
+    public void sendSwarmInfo(){}
+
+    /**
+     * send full list of Swarms
+     * INCLUDING specific IP Addresses of Swarm members
+     */
+    public void listFiles(){}
 }
