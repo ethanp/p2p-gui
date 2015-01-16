@@ -14,8 +14,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Ethan Petuchowski 1/14/15
@@ -29,7 +27,6 @@ public class Server extends Thread {
     protected final ObjectProperty<InetAddress> localIPAddr
             = new SimpleObjectProperty<>(Common.findMyIP());
     protected ServerSocket listener;
-    protected ExecutorService pool = Executors.newFixedThreadPool(5);
     protected final static IntegerProperty rcvReqCt = new SimpleIntegerProperty(0);
     Socket conn;
     BufferedReader in;

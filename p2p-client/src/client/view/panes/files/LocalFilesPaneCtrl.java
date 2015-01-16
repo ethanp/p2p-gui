@@ -31,22 +31,22 @@ public class LocalFilesPaneCtrl {
     private final ListChangeListener<P2PFile> localFilesListener = c -> {
         while (c.next()) {
             if (c.wasRemoved()) {
-                for (P2PFile f : c.getRemoved()) {
-                    P2PFile r = null;
-                    for (P2PFile m : localFileTable.getItems()) {
-                        if (f.equals(m)) {
-                            r = m;
+                for (P2PFile removedFile : c.getRemoved()) {
+                    P2PFile toRemove = null;
+                    for (P2PFile localItem : localFileTable.getItems()) {
+                        if (removedFile.equals(localItem)) {
+                            toRemove = localItem;
                             break;
                         }
                     }
-                    if (r != null) {
-                        localFileTable.getItems().remove(r);
+                    if (toRemove != null) {
+                        localFileTable.getItems().remove(toRemove);
                     }
                 }
             }
             if (c.wasAdded()) {
-                for (P2PFile f : c.getAddedSubList()) {
-                    localFileTable.getItems().add(f);
+                for (P2PFile addedFile : c.getAddedSubList()) {
+                    localFileTable.getItems().add(addedFile);
                 }
             }
         }
@@ -58,6 +58,8 @@ public class LocalFilesPaneCtrl {
         Main.localFiles.addListener(localFilesListener);
         tableColumns = Arrays.asList(nameCol, sizeCol, percentCol);
         tableColumns.stream().forEach(c -> c.setCellValueFactory(valueFactory));
+
+
 
         nameCol.setCellFactory(e -> new LocalFileCell(LocalFileCell.Col.NAME));
         sizeCol.setCellFactory(e -> new LocalFileCell(LocalFileCell.Col.SIZE));

@@ -41,5 +41,7 @@ public class Main extends Application {
         server = new Server();
         server.start();
         ctrl.setNetLocLabel(server.getAddrString());
+
+        ctrl.listenToSwarmChanges();
     }
 }

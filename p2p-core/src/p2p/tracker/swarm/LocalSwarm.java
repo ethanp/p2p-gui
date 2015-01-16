@@ -11,7 +11,7 @@ public class LocalSwarm extends Swarm<LocalTracker> {
     public LocalSwarm(P2PFile baseP2PFile, LocalTracker trkr) {
         super(baseP2PFile, trkr);
     }
-    public static LocalSwarm loadedSwarm(LocalTracker trkr) {
+    public static LocalSwarm createLoadedSwarm(LocalTracker trkr) {
         LocalSwarm swarm = new LocalSwarm(FakeP2PFile.genFakeFile(), trkr);
         swarm.addRandomPeers();
         return swarm;
