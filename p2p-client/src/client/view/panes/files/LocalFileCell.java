@@ -49,7 +49,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
         }
         else {
             setText(getTxt());
-            ViewUtil.addOpt(menu, "Remove file from list", e->Main.localFiles.remove(getItem()));
+            ViewUtil.addOpt(menu, "Remove file from list", e->Main.getLocalFiles().remove(getItem()));
             ViewUtil.addOpt(menu, "Add file to tracker", e->{});
         }
         ViewUtil.addOpt(menu, "Add new fake file", e-> ClientStateUtiil.addFakeLocalFile());
@@ -59,7 +59,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
     // TODO not finished
     private ContextMenu getSendToTrackerMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        for (AbstractRemoteTracker tracker : Main.knownTrackers) {
+        for (AbstractRemoteTracker tracker : Main.getKnownTrackers()) {
             MenuItem menuItem = new MenuItem(tracker.getIpPortString());
             menuItem.setOnAction(e -> tracker.createSwarmForFile(getItem()));
         }

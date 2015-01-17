@@ -45,6 +45,7 @@ public class TheWindowCtrl {
     }
     @FXML private void aboutDialog() {
         // TODO put a real link to the source in the dialog
+        // I saw a class somewhere called Hyperlink which may be useful
         Dialogs.create()
                .title("p2p-gui")
                .masthead("About") // this must be that '(i)' icon thing

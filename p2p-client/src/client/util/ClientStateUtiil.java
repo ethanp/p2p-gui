@@ -9,11 +9,11 @@ import p2p.tracker.FakeRemoteTracker;
  */
 public class ClientStateUtiil {
     public static void addFakeLocalFile() {
-        Main.localFiles.add(FakeP2PFile.genFakeFile());
+        Main.getLocalFiles().add(FakeP2PFile.genFakeFile());
     }
 
     public static void addFakeTracker() {
-        Main.knownTrackers.add(FakeRemoteTracker.makeFakeTracker());
+        Main.getKnownTrackers().add(FakeRemoteTracker.makeFakeTracker());
     }
 
 }

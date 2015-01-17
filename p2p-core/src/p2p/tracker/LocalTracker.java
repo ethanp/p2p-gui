@@ -2,6 +2,7 @@ package p2p.tracker;
 
 import p2p.tracker.swarm.LocalSwarm;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 
@@ -21,6 +22,14 @@ public class LocalTracker extends Tracker {
     }
 
     public AbstractRemoteTracker asRemote() {
-        return new RealRemoteTracker(getListeningSockAddr());
+        try {
+            return new RealRemoteTracker(getListeningSockAddr());
+        }
+        catch (IOException e) {
+            // this should never happen.
+            // a tracker should have no issue connecting to itself...
+            e.printStackTrace();
+        }
+        return null;
     }
 }

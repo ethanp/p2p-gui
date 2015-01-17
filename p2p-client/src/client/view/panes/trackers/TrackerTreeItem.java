@@ -77,8 +77,8 @@ public class TrackerTreeItem extends TreeItem<Celery> {
                     super.getChildren().add(new TrackerTreeItem(new Celery(swarm)));
             }
             else if (getValue().isRoot()) {
-                Main.knownTrackers.addListener(trackersListener);
-                for (AbstractRemoteTracker tracker : Main.knownTrackers)
+                Main.getKnownTrackers().addListener(trackersListener);
+                for (AbstractRemoteTracker tracker : Main.getKnownTrackers())
                     super.getChildren().add(new TrackerTreeItem(new Celery(tracker)));
             }
         }

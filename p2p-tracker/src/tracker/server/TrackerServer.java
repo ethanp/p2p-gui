@@ -4,7 +4,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import p2p.protocol.TrackerSideTrackerProtocol;
+import p2p.protocol.tracker.TrackerSideTrackerProtocol;
 import p2p.tracker.LocalTracker;
 import util.SimpleServer;
 

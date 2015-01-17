@@ -35,8 +35,10 @@ public class TrackerViewCtrl {
 
     public void initializeBasedOnServer() {
         Main.getTracker().getSwarms().addListener(swarmChgListener);
+
         /* update the displayed "received request count"
-         * in the lower-left of the screen */
+         * in the lower-left of the screen
+         * TODO this is not working */
         Main.getServer().rcvReqCtProperty().addListener(
                 (obsVal, oldCt, newCt) -> setReqCtLabel(newCt.intValue()));
 

@@ -25,6 +25,7 @@ import java.nio.file.Path;
 public abstract class P2PFile {
 
     // TODO maybe the filename & File object should be listening to each other
+    // maybe bindBidirectional() would be useful for that
     protected final ObjectProperty<File> localFile;
     public File getLocalFile() { return localFile.get(); }
     public ObjectProperty<File> localFileProperty() { return localFile; }

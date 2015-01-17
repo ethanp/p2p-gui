@@ -54,12 +54,10 @@ public class LocalFilesPaneCtrl {
 
     @FXML private void initialize() {
         localFileTable.setEditable(false);
-        localFileTable.getItems().addAll(Main.localFiles);
-        Main.localFiles.addListener(localFilesListener);
+        localFileTable.getItems().addAll(Main.getLocalFiles());
+        Main.getLocalFiles().addListener(localFilesListener);
         tableColumns = Arrays.asList(nameCol, sizeCol, percentCol);
         tableColumns.stream().forEach(c -> c.setCellValueFactory(valueFactory));
-
-
 
         nameCol.setCellFactory(e -> new LocalFileCell(LocalFileCell.Col.NAME));
         sizeCol.setCellFactory(e -> new LocalFileCell(LocalFileCell.Col.SIZE));
@@ -70,8 +68,5 @@ public class LocalFilesPaneCtrl {
                 (observable, oldValue, newValue) -> fileWasSelected(newValue));
 
     }
-    private void fileWasSelected(P2PFile p2pFile) {
-        // TODO show THIS file's 'Piece Progress' and 'Download Viz'
-        if (p2pFile != null) {} else {}
-    }
+    private void fileWasSelected(P2PFile p2pFile) {}
 }

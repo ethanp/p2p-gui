@@ -122,6 +122,13 @@ public class Common {
         }
     }
 
+    public static InetSocketAddress stringToIPPort(String str) {
+        String[] strs = str.split(":");
+        String ipAddr = strs[0];
+        int port = Integer.parseInt(strs[1]);
+        return new InetSocketAddress(ipAddr, port);
+    }
+
     public static int randInt(int bound) { return r.nextInt(bound); }
 
     public static String randomIPPortString() {

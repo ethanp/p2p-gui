@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.swarm.RemoteSwarm;
 
+import java.io.IOException;
+
 /**
  * Ethan Petuchowski 1/13/15
  *
@@ -24,9 +26,9 @@ public class Celery {
     public AbstractRemoteTracker getTracker() { return tracker; }
     public RemoteSwarm getSwarm() { return swarm; }
 
-    public void updateThisSwarm() {
+    public void updateThisSwarm() throws IOException {
         assert isSwarm() : "can only update a swarm";
-        getSwarm().getTracker().updateSwarmAddrs(getSwarm().getP2pFile());
+        getSwarm().getTracker().updateSwarmInfo(getSwarm());
     }
 
     /* subtype checkers */
@@ -53,7 +55,7 @@ public class Celery {
     }
 
     public String getName() {
-        if (isRoot()) return Main.knownTrackers.size() + " trackers";
+        if (isRoot()) return Main.getKnownTrackers().size() + " trackers";
         if (isTracker()) return tracker.getIpPortString();
         else return swarm.getP2pFile().getFilename();
     }

@@ -13,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import p2p.file.FakeP2PFile;
 import p2p.file.P2PFile;
+import p2p.peer.ClientPeer;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
 
@@ -22,13 +23,19 @@ import java.net.URL;
 public class Main extends Application {
     public Main() { /* I could put stuff in here, but at this point there is no need */ }
     public static void main(String[] args) { launch(args); }
+
     public static Stage getPrimaryStage() { return primaryStage; }
+    public static ClientPeer getClientPeer() { return clientPeer; }
+    public static ObservableList<AbstractRemoteTracker> getKnownTrackers() { return knownTrackers; }
+    public static ObservableList<P2PFile> getLocalFiles() { return localFiles; }
+
     private static Stage primaryStage;
     private BorderPane rootLayout;
+    private static ClientPeer clientPeer = new ClientPeer();
 
-    /** this is the list of all trackers known to the app */
-    public static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();
-    public static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
+
+    private static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();
+    private static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
 
     @Override public void start(Stage primaryStage) throws Exception {
         Main.primaryStage = primaryStage;

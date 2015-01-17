@@ -1,6 +1,7 @@
 package p2p.tracker;
 
 import p2p.file.P2PFile;
+import p2p.protocol.tracker.ClientSideTrackerProtocol;
 import p2p.tracker.swarm.RemoteSwarm;
 import util.Common;
 
@@ -13,17 +14,11 @@ import java.net.Socket;
  *
  * This contains the info that a Peer knows about a Tracker.
  */
-public abstract class AbstractRemoteTracker extends Tracker<RemoteSwarm> {
+public abstract class AbstractRemoteTracker extends Tracker<RemoteSwarm> implements ClientSideTrackerProtocol {
 
-    /* TODO what is this and should I keep it? */
-    public abstract void requestInfo();
-
-    /* TODO what is this and should I keep it? */
-    public abstract void updateSwarmAddrs(P2PFile pFile);
-
-    public AbstractRemoteTracker(InetSocketAddress addr) {
+    public AbstractRemoteTracker(InetSocketAddress addr) throws IOException {
         super(addr);
-        requestInfo();
+        listFiles();
     }
 
     public void createSwarmForFile(P2PFile pFile) {
