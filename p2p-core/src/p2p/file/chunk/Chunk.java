@@ -1,4 +1,4 @@
-package p2p.file;
+package p2p.file.chunk;
 
 /**
  * Ethan Petuchowski 1/8/15

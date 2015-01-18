@@ -6,13 +6,13 @@ import client.util.ViewUtil;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
-import p2p.file.P2PFile;
+import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.AbstractRemoteTracker;
 
 /**
  * Ethan Petuchowski 1/14/15
  */
-public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
+public class LocalFileCell extends TableCell<MetaP2PFile, MetaP2PFile> {
     enum Col { NAME, SIZE, PERCENT}
     private Col c;
     private ContextMenu menu = new ContextMenu();
@@ -25,7 +25,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
     private String getTxt() {
         switch (c) {
             case NAME:    return getItem().getFilename();
-            case SIZE:    return getItem().getFilesizeString();
+            case SIZE:    return getItem().formattedFilesizeString();
             case PERCENT: return getItem().getCompletenessString();
         }
         throw new RuntimeException("unreachable");
@@ -41,7 +41,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
      * If it is empty, then it does not represent any domain data, but is a
      * cell being used to render an "empty" row.
      */
-    @Override protected void updateItem(P2PFile item, boolean empty) {
+    @Override protected void updateItem(MetaP2PFile item, boolean empty) {
         super.updateItem(item, empty);
         menu = new ContextMenu();
         if (empty || item == null) {

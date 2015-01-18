@@ -61,7 +61,7 @@ public class Celery {
     }
 
     public String getSize() {
-        if (isSwarm()) return swarm.getP2pFile().getFilesizeString();
+        if (isSwarm()) return swarm.getP2pFile().formattedFilesizeString();
         if (isTracker()) return tracker.getSwarms().size() + " files";
         else return "";
     }

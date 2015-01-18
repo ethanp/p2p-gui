@@ -123,9 +123,9 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
 
     /**
      * The goal is to refresh this table. It seems like the only simple way to do it in my situation
-     * is hacks. Something that is being observed needs to be invalidated so that the framework
-     * refreshes * everything properly. Another possible hack is to flip the Celery's `observeMe`
-     * property. * This one was the most-up-voted (by far) among many possibilities listed on
+     * is via hacks. Something that is being observed needs to be invalidated so that the framework
+     * refreshes everything properly. Another possible hack is to flip the Celery's `observeMe`
+     * property. This one was the most-up-voted (by far) among many possibilities listed on
      * stackoverflow.
      *
      *          http://stackoverflow.com/a/11624805/1959155

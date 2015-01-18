@@ -1,7 +1,7 @@
 package client.util;
 
 import client.Main;
-import p2p.file.FakeP2PFile;
+import p2p.file.meta.LocalFakeFile;
 import p2p.tracker.FakeRemoteTracker;
 
 /**
@@ -9,7 +9,7 @@ import p2p.tracker.FakeRemoteTracker;
  */
 public class ClientStateUtiil {
     public static void addFakeLocalFile() {
-        Main.getLocalFiles().add(FakeP2PFile.genFakeFile());
+        Main.getLocalFiles().add(LocalFakeFile.genFakeFile());
     }
 
     public static void addFakeTracker() {

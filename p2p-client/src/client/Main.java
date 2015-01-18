@@ -11,8 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import p2p.file.FakeP2PFile;
-import p2p.file.P2PFile;
+import p2p.file.meta.LocalFakeFile;
+import p2p.file.meta.MetaP2PFile;
 import p2p.peer.ClientPeer;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
@@ -27,7 +27,7 @@ public class Main extends Application {
     public static Stage getPrimaryStage() { return primaryStage; }
     public static ClientPeer getClientPeer() { return clientPeer; }
     public static ObservableList<AbstractRemoteTracker> getKnownTrackers() { return knownTrackers; }
-    public static ObservableList<P2PFile> getLocalFiles() { return localFiles; }
+    public static ObservableList<MetaP2PFile> getLocalFiles() { return localFiles; }
 
     private static Stage primaryStage;
     private BorderPane rootLayout;
@@ -35,7 +35,7 @@ public class Main extends Application {
 
 
     private static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();
-    private static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
+    private static ObservableList<MetaP2PFile> localFiles = FXCollections.observableArrayList();
 
     @Override public void start(Stage primaryStage) throws Exception {
         Main.primaryStage = primaryStage;
@@ -45,9 +45,9 @@ public class Main extends Application {
     }
 
     private void addFakeContent() {
-        FakeP2PFile pFile1 = FakeP2PFile.genFakeFile();
-        FakeP2PFile pFile2 = FakeP2PFile.genFakeFile();
-        FakeP2PFile pFile3 = FakeP2PFile.genFakeFile();
+        LocalFakeFile pFile1 = LocalFakeFile.genFakeFile();
+        LocalFakeFile pFile2 = LocalFakeFile.genFakeFile();
+        LocalFakeFile pFile3 = LocalFakeFile.genFakeFile();
         Main.localFiles.addAll(pFile1, pFile2, pFile3);
         Main.knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }

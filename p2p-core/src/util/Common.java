@@ -31,6 +31,8 @@ public class Common {
     public static final int PORT_MIN = 3000;
     public static final int PORT_MAX = 3500;
 
+    public static final int DEFAULT_BYTES_PER_CHUNK = 1 << 12; // 4KB
+
     public static String formatByteCountToString(long numBytes) {
         assert numBytes >= 0 : "can't have negative number of bytes: "+numBytes;
         if (numBytes < 1E3) return String.format("%d B", numBytes);

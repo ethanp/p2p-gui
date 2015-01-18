@@ -1,22 +1,22 @@
 package p2p.tracker;
 
+import p2p.protocol.tracker.TrackerTalk;
 import p2p.tracker.swarm.RemoteSwarm;
 import util.Common;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 
 /**
  * Ethan Petuchowski 1/15/15
  */
 public class RealRemoteTracker extends AbstractRemoteTracker {
-    public RealRemoteTracker(InetSocketAddress addr) throws IOException {
-        super(addr);
-    }
 
-    private Socket connectToRemote() throws IOException {
-        return Common.connectToInetSocketAddr(getListeningSockAddr());
+    public RealRemoteTracker(InetSocketAddress addr) throws IOException { super(addr); }
+
+    private void openSocket() throws IOException {
+        connToTracker = Common.connectToInetSocketAddr(getListeningSockAddr());
+
     }
 
     /**
@@ -25,7 +25,9 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * Otherwise create a new Swarm for it
      */
     @Override public void addFileRequest() throws IOException {
-        Socket socket = connectToRemote();
+        connect();
+        out.println(TrackerTalk.ADD_FILE);
+        disconnect();
     }
 
     /**
@@ -34,7 +36,9 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * so that the Peer can update its internal view of the Swarm
      */
     @Override public void updateSwarmInfo(RemoteSwarm remoteSwarm) throws IOException {
-        Socket socket = connectToRemote();
+        connect();
+        out.println(TrackerTalk.SWARM_UPDATE);
+        disconnect();
     }
 
     /**
@@ -42,6 +46,11 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * INCLUDING specific IP Addresses of Swarm members
      */
     @Override public void listFiles() throws IOException {
-        Socket socket = connectToRemote();
+        connect();
+        out.println(TrackerTalk.LIST_FILES);
+        int numFiles = Integer.parseInt(in.readLine());
+        for (int i = 0; i < numFiles; i++) {
+        }
+        disconnect();
     }
 }

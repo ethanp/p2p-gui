@@ -1,5 +1,7 @@
-package p2p.file;
+package p2p.file.meta;
 
+import p2p.file.chunk.FakeChunk;
+import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
 import p2p.tracker.Tracker;
 
@@ -11,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Ethan Petuchowski 1/8/15
  */
-public class FakeP2PFile extends P2PFile {
+public class LocalFakeFile extends P2PFile {
     static Random random = new Random();
     static File containerFolder = new File("/Users/Ethan/Desktop/FakeP2PFiles");
 
@@ -23,26 +25,15 @@ public class FakeP2PFile extends P2PFile {
         }
     }
 
-    public static FakeP2PFile genFakeFile() {
+    public static LocalFakeFile genFakeFile() {
         File fakeFile = new File(containerFolder, "fakeFile-"+random.nextInt(500));
         long randomFilesize = random.nextInt(5_000_000);
-        FakeRemoteTracker defaultFakeRemoteTracker = FakeRemoteTracker.getDefaultFakeRemoteTracker();
-        return new FakeP2PFile(fakeFile, randomFilesize, defaultFakeRemoteTracker);
+        FakeRemoteTracker fakeTracker = FakeRemoteTracker.getDefaultFakeRemoteTracker();
+        return new LocalFakeFile(fakeFile, randomFilesize, fakeTracker);
     }
 
-    public FakeP2PFile(File file, long filesize, Tracker tracker) {
-        super(file, filesize);
+    public LocalFakeFile(String filename, long filesize, AbstractRemoteTracker tracker) {
+        super(containerFolder, new MetaP2PFile(filename, filesize, "FAKE_DIGEST_DEADBEEF"));
         addTracker(tracker);
-        addAtMostNumFakeChunks(25);
-        setPercentComplete(random.nextInt(100));
-    }
-
-
-    private P2PFile addAtMostNumFakeChunks(int maxChunkCount) {
-        int numChunks = random.nextInt(maxChunkCount);
-        for (int chunkNum = 0; chunkNum < numChunks; chunkNum++) {
-            addChunk(new FakeChunk());
-        }
-        return this;
     }
 }

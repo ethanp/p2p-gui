@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import p2p.file.P2PFile;
+import p2p.file.meta.MetaP2PFile;
 import p2p.peer.FakePeer;
 import p2p.peer.Peer;
 import p2p.tracker.Tracker;
@@ -22,11 +22,11 @@ public class Swarm<T extends Tracker> {
     /* CODE */
     protected final ListProperty<Peer> leechers;
     protected final ListProperty<Peer> seeders;
-    protected final ObjectProperty<P2PFile> p2pFile;
+    protected final ObjectProperty<MetaP2PFile> p2pFile;
     protected final ObjectProperty<T> tracker;
 
-    public Swarm(P2PFile baseP2PFile, T trkr) {
-        p2pFile = new SimpleObjectProperty<>(baseP2PFile);
+    public Swarm(MetaP2PFile baseMetaP2PFile, T trkr) {
+        p2pFile = new SimpleObjectProperty<>(baseMetaP2PFile);
         seeders = new SimpleListProperty<>(FXCollections.observableArrayList());
         leechers = new SimpleListProperty<>(FXCollections.observableArrayList());
         tracker = new SimpleObjectProperty<>(trkr);
@@ -42,9 +42,9 @@ public class Swarm<T extends Tracker> {
     public ObservableList<Peer> getSeeders() { return seeders.get(); }
     public ListProperty<Peer> seedersProperty() { return seeders; }
     public void setSeeders(ObservableList<Peer> seeders) { this.seeders.set(seeders); }
-    public P2PFile getP2pFile() { return p2pFile.get(); }
-    public ObjectProperty<P2PFile> p2pFileProperty() { return p2pFile; }
-    public void setP2pFile(P2PFile p2pFile) { this.p2pFile.set(p2pFile); }
+    public MetaP2PFile getP2pFile() { return p2pFile.get(); }
+    public ObjectProperty<MetaP2PFile> p2pFileProperty() { return p2pFile; }
+    public void setP2pFile(MetaP2PFile metaP2PFile) { this.p2pFile.set(metaP2PFile); }
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;

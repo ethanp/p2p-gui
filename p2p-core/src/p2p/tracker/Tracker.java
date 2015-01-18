@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import p2p.file.P2PFile;
+import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.swarm.Swarm;
 import util.Common;
 
@@ -31,7 +31,7 @@ public abstract class Tracker<S extends Swarm> {
         this.swarms.addAll(swarms);
     }
 
-    protected S getSwarmForFile(P2PFile file) {
+    protected S getSwarmForFile(MetaP2PFile file) {
         for (S s : getSwarms())
             if (s.getP2pFile().equals(file))
                 return s;
