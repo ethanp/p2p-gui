@@ -1,9 +1,13 @@
 package p2p.file.meta;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import p2p.exceptions.CreateP2PFileException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 
 /**
@@ -12,16 +16,25 @@ import util.Common;
 public class MetaP2PFile {
 
     protected final StringProperty filename;
-    protected final LongProperty   filesizeBytes;
+    protected final IntegerProperty filesizeBytes;
     protected final StringProperty digest; /* only req'd bc we use 'tracker' as 'index' */
 
     public String formattedFilesizeString() {
         return Common.formatByteCountToString(getFilesizeBytes());
     }
 
-    public MetaP2PFile(String filename, long filesize, String sha2digest) {
+    public MetaP2PFile(String filename, int filesize, String sha2digest)
+            throws CreateP2PFileException
+    {
+        if (filesize < 0)
+            throw new CreateP2PFileException("filesize can't be negative");
+        if (filename == null || filename.length() < 1)
+            throw new CreateP2PFileException("file must have a name");
+        if (sha2digest == null || sha2digest.length() < 1)
+            throw new CreateP2PFileException("file must have a digest for verification");
+
         this.filename = new SimpleStringProperty(filename);
-        filesizeBytes = new SimpleLongProperty(filesize);
+        filesizeBytes = new SimpleIntegerProperty(filesize);
         digest = new SimpleStringProperty(sha2digest);
     }
 
@@ -30,4 +43,9 @@ public class MetaP2PFile {
     public long getFilesizeBytes() { return filesizeBytes.get(); }
     public LongProperty filesizeBytesProperty() { return filesizeBytes; }
     public String getDigest() { return digest.get(); }
+
+    // TODO MetaP2PFile genFakeMeta
+    public static MetaP2PFile genFakeMeta() {
+        throw new NotImplementedException();
+    }
 }

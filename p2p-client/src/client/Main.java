@@ -13,7 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import p2p.file.meta.LocalFakeFile;
 import p2p.file.meta.MetaP2PFile;
-import p2p.peer.ClientPeer;
+import p2p.peer.PeerServer;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
 
@@ -25,13 +25,13 @@ public class Main extends Application {
     public static void main(String[] args) { launch(args); }
 
     public static Stage getPrimaryStage() { return primaryStage; }
-    public static ClientPeer getClientPeer() { return clientPeer; }
+    public static PeerServer getPeerServer() { return peerServer; }
     public static ObservableList<AbstractRemoteTracker> getKnownTrackers() { return knownTrackers; }
     public static ObservableList<MetaP2PFile> getLocalFiles() { return localFiles; }
 
     private static Stage primaryStage;
     private BorderPane rootLayout;
-    private static ClientPeer clientPeer = new ClientPeer();
+    private static PeerServer peerServer = new PeerServer();
 
 
     private static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();

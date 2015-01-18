@@ -1,7 +1,7 @@
 package p2p.tracker;
 
 import p2p.protocol.tracker.TrackerTalk;
-import p2p.tracker.swarm.RemoteSwarm;
+import p2p.tracker.swarm.ClientSwarm;
 import util.Common;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
      */
-    @Override public void updateSwarmInfo(RemoteSwarm remoteSwarm) throws IOException {
+    @Override public void updateSwarmInfo(ClientSwarm clientSwarm) throws IOException {
         connect();
         out.println(TrackerTalk.SWARM_UPDATE);
         disconnect();

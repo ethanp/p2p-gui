@@ -6,16 +6,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import p2p.peer.ClientPeer;
+import p2p.peer.PeerServer;
 import p2p.peer.Peer;
-import p2p.tracker.swarm.LocalSwarm;
+import p2p.tracker.swarm.TrackerSwarm;
 import tracker.Main;
 
 /**
  * Ethan Petuchowski 1/14/15
  */
 public class TrackerViewCtrl {
-    @FXML private ListView<LocalSwarm> pFileList;
+    @FXML private ListView<TrackerSwarm> pFileList;
     @FXML private ListView<Peer> seederList;
     @FXML private ListView<Peer> leecherList;
 
@@ -45,23 +45,23 @@ public class TrackerViewCtrl {
         /* make the "Add fake swarm" menu item add fake swarms to the listing */
         addFakeSwarm.setOnAction(
                 e -> Main.getTracker().getSwarms().add(
-                        LocalSwarm.createLoadedSwarm(Main.getTracker())));
+                        TrackerSwarm.createLoadedSwarm(Main.getTracker())));
     }
 
-    private final ListChangeListener<LocalSwarm> swarmChgListener
-    = new ListChangeListener<LocalSwarm>() {
-        @Override public void onChanged(Change<? extends LocalSwarm> c) {
+    private final ListChangeListener<TrackerSwarm> swarmChgListener
+    = new ListChangeListener<TrackerSwarm>() {
+        @Override public void onChanged(Change<? extends TrackerSwarm> c) {
             while (c.next()) {
                 if (c.wasAdded()) {
-                    for (LocalSwarm addedSwarm : c.getAddedSubList()) {
+                    for (TrackerSwarm addedSwarm : c.getAddedSubList()) {
                         pFileList.getItems().add(addedSwarm);
                     }
                 }
                 if (c.wasRemoved()) {
                     /* this is a terrible algorithm but it just doesn't matter */
-                    for (LocalSwarm removedSwarm : c.getRemoved()) {
-                        LocalSwarm toRemove = null;
-                        for (LocalSwarm localItem : pFileList.getItems()) {
+                    for (TrackerSwarm removedSwarm : c.getRemoved()) {
+                        TrackerSwarm toRemove = null;
+                        for (TrackerSwarm localItem : pFileList.getItems()) {
                             if (localItem.equals(removedSwarm)) {
                                 toRemove = localItem;
                                 break;
@@ -83,7 +83,7 @@ public class TrackerViewCtrl {
      */
     @FXML private void initialize() {
         realFileAddFromEphemeralPeer.setOnAction(
-                e -> ClientPeer.sendEphemeralRequest(
+                e -> PeerServer.sendEphemeralRequest(
                         Main.getTracker().asRemote()));
 
         /* make file list display the filename of tracked swarms */
@@ -97,15 +97,15 @@ public class TrackerViewCtrl {
                         fillOtherColumnsBasedOn(selectedFile));
     }
 
-    private void fillOtherColumnsBasedOn(LocalSwarm swarm) {
+    private void fillOtherColumnsBasedOn(TrackerSwarm swarm) {
         seederList.getItems().clear();
         seederList.getItems().addAll(swarm.getSeeders());
         leecherList.getItems().clear();
         leecherList.getItems().addAll(swarm.getLeechers());
     }
 
-    static class SwarmNameCell extends ListCell<LocalSwarm> {
-        @Override public void updateItem(LocalSwarm item, boolean empty) {
+    static class SwarmNameCell extends ListCell<TrackerSwarm> {
+        @Override public void updateItem(TrackerSwarm item, boolean empty) {
             super.updateItem(item, empty);
             if (item == null) {
                 setText(null);

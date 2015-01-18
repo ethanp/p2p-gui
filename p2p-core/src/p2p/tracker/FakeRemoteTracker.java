@@ -3,7 +3,7 @@ package p2p.tracker;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.meta.LocalFakeFile;
-import p2p.tracker.swarm.RemoteSwarm;
+import p2p.tracker.swarm.ClientSwarm;
 import util.Common;
 
 import java.io.IOException;
@@ -31,10 +31,10 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
         FakeRemoteTracker t = null;
         try { t = new FakeRemoteTracker(ip); }
         catch (IOException e) { e.printStackTrace(); }
-        ObservableList<RemoteSwarm> swarms = FXCollections.observableArrayList();
+        ObservableList<ClientSwarm> swarms = FXCollections.observableArrayList();
         int N = Common.randInt(6);
         for (int i = 0; i < N; i++)
-            swarms.add(new RemoteSwarm(LocalFakeFile.genFakeFile(), t));
+            swarms.add(new ClientSwarm(LocalFakeFile.genFakeFile(), t));
         assert t != null;
         t.setSwarms(swarms);
         return t;
@@ -58,18 +58,18 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     /**
      * Tracker tells a Peer who wants to download a P2PFile about the specific IP Addresses of Peers
      * in an existing Swarm so that the Peer can update its internal view of the Swarm
-     * @param remoteSwarm
+     * @param clientSwarm
      */
-    @Override public void updateSwarmInfo(RemoteSwarm remoteSwarm) {
-        getSwarmForFile(remoteSwarm.getP2pFile()).addRandomPeers();
+    @Override public void updateSwarmInfo(ClientSwarm clientSwarm) {
+        getSwarmForFile(clientSwarm.getP2pFile()).addRandomPeers();
     }
 
     /**
      * Tracker sends Peer its full list of Swarms INCLUDING specific IP Addresses of Swarm members
      */
     @Override public void listFiles() {
-        final RemoteSwarm swarm1 = new RemoteSwarm(LocalFakeFile.genFakeFile(), defaultFakeRemoteTracker);
-        final RemoteSwarm swarm2 = new RemoteSwarm(LocalFakeFile.genFakeFile(), defaultFakeRemoteTracker);
+        final ClientSwarm swarm1 = new ClientSwarm(LocalFakeFile.genFakeFile(), defaultFakeRemoteTracker);
+        final ClientSwarm swarm2 = new ClientSwarm(LocalFakeFile.genFakeFile(), defaultFakeRemoteTracker);
         swarm1.addRandomPeers();
         swarm2.addRandomPeers();
         setSwarms(FXCollections.observableArrayList(swarm1,swarm2));

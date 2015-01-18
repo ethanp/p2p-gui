@@ -12,16 +12,16 @@ import java.io.IOException;
 /**
  * Ethan Petuchowski 1/16/15
  *
- * The plan is that this will be the "server" code running in the "p2p-client" to service upload
+ * This is the "server" code running in the "p2p-client" to service upload
  * requests from external Peers.
  */
-public class ClientPeer extends Peer {
+public class PeerServer extends Peer {
 
     protected final ObjectProperty<ClientPeerServer> server
             = new SimpleObjectProperty<>(new ClientPeerServer());
     protected final BooleanProperty isServing = new SimpleBooleanProperty(false);
 
-    public ClientPeer() {
+    public PeerServer() {
         super(null);
         server.getValue().start();
     }

@@ -1,5 +1,7 @@
 package util;
 
+import p2p.exceptions.ConnectToTrackerException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -32,6 +34,8 @@ public class Common {
     public static final int PORT_MAX = 3500;
 
     public static final int DEFAULT_BYTES_PER_CHUNK = 1 << 12; // 4KB
+
+    public static final int MAX_FILESIZE = Integer.MAX_VALUE;
 
     public static String formatByteCountToString(long numBytes) {
         assert numBytes >= 0 : "can't have negative number of bytes: "+numBytes;
@@ -139,10 +143,14 @@ public class Common {
     }
 
     public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr)
-            throws IOException
+            throws ConnectToTrackerException
     {
         InetAddress ipAddr = inetSocketAddr.getAddress();
         int port = inetSocketAddr.getPort();
-        return new Socket(ipAddr, port);
+        try (Socket trackerSocket = new Socket(ipAddr, port)) {
+            return trackerSocket;
+        } catch (IOException e) {
+            throw new ConnectToTrackerException("Couldn't create socket");
+        }
     }
 }

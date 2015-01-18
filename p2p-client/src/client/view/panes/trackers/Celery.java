@@ -5,7 +5,7 @@ import client.util.TreeTableRoot;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.tracker.AbstractRemoteTracker;
-import p2p.tracker.swarm.RemoteSwarm;
+import p2p.tracker.swarm.ClientSwarm;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ import java.io.IOException;
  * ProgrammingGit/Educational/Java/JavaFX/MyTreeTrial
  */
 public class Celery {
-    private final RemoteSwarm swarm;
+    private final ClientSwarm swarm;
     private final AbstractRemoteTracker tracker;
 
     /* this was part of a table-refresh hack that I'm no longer using
@@ -24,7 +24,7 @@ public class Celery {
     public ObjectProperty<Celery> observeMe = new SimpleObjectProperty<>(this);
 
     public AbstractRemoteTracker getTracker() { return tracker; }
-    public RemoteSwarm getSwarm() { return swarm; }
+    public ClientSwarm getSwarm() { return swarm; }
 
     public void updateThisSwarm() throws IOException {
         assert isSwarm() : "can only update a swarm";
@@ -37,7 +37,7 @@ public class Celery {
     public boolean isRoot()     { return !isTracker() && !isSwarm(); }
 
     /* wrapping constructors */
-    public Celery(RemoteSwarm swarm) {
+    public Celery(ClientSwarm swarm) {
         this.swarm = swarm;
         this.tracker = null;
     }
@@ -80,7 +80,7 @@ public class Celery {
         return isTracker() && this.tracker.equals(tracker);
     }
 
-    public boolean equalsSwarm(RemoteSwarm swarm) {
+    public boolean equalsSwarm(ClientSwarm swarm) {
         return isSwarm() && this.swarm.equals(swarm);
     }
 }

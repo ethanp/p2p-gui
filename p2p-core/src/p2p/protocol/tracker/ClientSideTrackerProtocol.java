@@ -1,6 +1,6 @@
 package p2p.protocol.tracker;
 
-import p2p.tracker.swarm.RemoteSwarm;
+import p2p.tracker.swarm.ClientSwarm;
 
 import java.io.IOException;
 
@@ -19,9 +19,9 @@ public interface ClientSideTrackerProtocol {
      * Tracker tells a Peer who wants to download a P2PFile
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
-     * @param remoteSwarm
+     * @param clientSwarm
      */
-    public void updateSwarmInfo(RemoteSwarm remoteSwarm) throws IOException;
+    public void updateSwarmInfo(ClientSwarm clientSwarm) throws IOException;
 
     /**
      * Tracker sends Peer its full list of Swarms

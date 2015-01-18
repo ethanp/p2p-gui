@@ -1,8 +1,9 @@
 package p2p.tracker;
 
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.protocol.tracker.ClientSideTrackerProtocol;
-import p2p.tracker.swarm.RemoteSwarm;
+import p2p.tracker.swarm.ClientSwarm;
 import util.Common;
 
 import java.io.BufferedReader;
@@ -16,7 +17,7 @@ import java.net.Socket;
  *
  * This contains the info that a Peer knows about a Tracker.
  */
-public abstract class AbstractRemoteTracker extends Tracker<RemoteSwarm> implements ClientSideTrackerProtocol {
+public abstract class AbstractRemoteTracker extends Tracker<ClientSwarm> implements ClientSideTrackerProtocol {
 
     protected Socket connToTracker;
     protected PrintWriter out;
@@ -28,11 +29,11 @@ public abstract class AbstractRemoteTracker extends Tracker<RemoteSwarm> impleme
     }
 
     public void createSwarmForFile(MetaP2PFile pFile) {
-        RemoteSwarm s = new RemoteSwarm(pFile, this);
+        ClientSwarm s = new ClientSwarm(pFile, this);
         getSwarms().add(s);
     }
 
-    public void connect() throws IOException {
+    public void connect() throws ConnectToTrackerException {
         connToTracker = Common.connectToInetSocketAddr(getListeningSockAddr());
         out = Common.printWriter(connToTracker);
         in = Common.bufferedReader(connToTracker);

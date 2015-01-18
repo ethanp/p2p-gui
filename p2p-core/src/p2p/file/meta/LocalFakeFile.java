@@ -1,9 +1,7 @@
 package p2p.file.meta;
 
-import p2p.file.chunk.FakeChunk;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
-import p2p.tracker.Tracker;
 
 import java.io.File;
 import java.util.Random;
