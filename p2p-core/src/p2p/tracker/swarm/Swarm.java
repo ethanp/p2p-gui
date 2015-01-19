@@ -10,6 +10,9 @@ import p2p.file.meta.MetaP2PFile;
 import p2p.peer.Peer;
 import p2p.tracker.Tracker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Ethan Petuchowski 1/10/15
  *
@@ -39,6 +42,12 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
     }
 
     public abstract Swarm<T, P> addRandomPeers();
+
+    public List<P> getAllPeers() {
+        List<P> peers = new ArrayList<>(getLeechers());
+        peers.addAll(getSeeders());
+        return peers;
+    }
 
     /* GARBAGE */
     public ObservableList<P> getSeeders() { return seeders.get(); }
