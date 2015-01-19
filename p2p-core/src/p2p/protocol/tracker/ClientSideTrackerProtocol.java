@@ -1,5 +1,6 @@
 package p2p.protocol.tracker;
 
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.swarm.ClientSwarm;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ public interface ClientSideTrackerProtocol {
      * If it exists, add Peer to Swarm
      * Otherwise create a new Swarm for it
      */
-    public void addFileRequest() throws IOException;
+    public void addFileRequest() throws IOException, ConnectToTrackerException;
 
     /**
      * Tracker tells a Peer who wants to download a P2PFile
@@ -21,11 +22,11 @@ public interface ClientSideTrackerProtocol {
      * so that the Peer can update its internal view of the Swarm
      * @param clientSwarm
      */
-    public void updateSwarmInfo(ClientSwarm clientSwarm) throws IOException;
+    public void updateSwarmInfo(ClientSwarm clientSwarm) throws IOException, ConnectToTrackerException;
 
     /**
      * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    public void listFiles() throws IOException;
+    public void listFiles() throws IOException, ConnectToTrackerException;
 }

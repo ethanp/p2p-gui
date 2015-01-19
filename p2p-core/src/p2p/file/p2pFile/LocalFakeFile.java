@@ -1,7 +1,10 @@
-package p2p.file.meta;
+package p2p.file.p2pFile;
 
+import p2p.exceptions.CreateP2PFileException;
+import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
+import util.Common;
 
 import java.io.File;
 import java.util.Random;
@@ -23,15 +26,22 @@ public class LocalFakeFile extends P2PFile {
         }
     }
 
-    public static LocalFakeFile genFakeFile() {
+    public static LocalFakeFile genFakeFile() throws CreateP2PFileException {
         File fakeFile = new File(containerFolder, "fakeFile-"+random.nextInt(500));
-        long randomFilesize = random.nextInt(5_000_000);
+        int randomFilesize = random.nextInt(5_000_000);
         FakeRemoteTracker fakeTracker = FakeRemoteTracker.getDefaultFakeRemoteTracker();
-        return new LocalFakeFile(fakeFile, randomFilesize, fakeTracker);
+        return new LocalFakeFile(fakeFile.getName(), randomFilesize, fakeTracker);
     }
 
-    public LocalFakeFile(String filename, long filesize, AbstractRemoteTracker tracker) {
+    public LocalFakeFile(String filename, int filesize, AbstractRemoteTracker tracker)
+            throws CreateP2PFileException
+    {
         super(containerFolder, new MetaP2PFile(filename, filesize, "FAKE_DIGEST_DEADBEEF"));
         addTracker(tracker);
+    }
+
+    @Override public String getCompletenessString() {
+        /* %% prints % in String.format() */
+        return String.format("%d%%", Common.randInt(100));
     }
 }

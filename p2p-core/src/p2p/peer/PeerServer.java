@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.AbstractRemoteTracker;
 import util.SimpleServer;
 
@@ -30,7 +31,7 @@ public class PeerServer extends Peer {
         try {
             tracker.addFileRequest();
         }
-        catch (IOException e) {
+        catch (ConnectToTrackerException | IOException e) {
             System.out.println("Couldn't send message from ephemeral client to given tracker");
             System.out.println(e.getMessage());
             e.printStackTrace();

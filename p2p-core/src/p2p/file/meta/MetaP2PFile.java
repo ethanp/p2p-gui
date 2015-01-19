@@ -1,13 +1,10 @@
 package p2p.file.meta;
 
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import p2p.exceptions.CreateP2PFileException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 
 /**
@@ -41,11 +38,20 @@ public class MetaP2PFile {
     public String getFilename() { return filename.get(); }
     public StringProperty filenameProperty() { return filename; }
     public long getFilesizeBytes() { return filesizeBytes.get(); }
-    public LongProperty filesizeBytesProperty() { return filesizeBytes; }
+    public IntegerProperty filesizeBytesProperty() { return filesizeBytes; }
     public String getDigest() { return digest.get(); }
 
-    // TODO MetaP2PFile genFakeMeta
-    public static MetaP2PFile genFakeMeta() {
-        throw new NotImplementedException();
+    public static MetaP2PFile genFake() {
+        final String name = "file-"+Common.randInt(1000);
+        final int size = Common.randInt(Common.MAX_FILESIZE);
+        final String digest = "DEADBEEF";
+        try {
+            return new MetaP2PFile(name, size, digest);
+        }
+        catch (CreateP2PFileException e) {
+            /* this should never occur (bc the file is FAKE) */
+            e.printStackTrace();
+        }
+        return null;
     }
 }

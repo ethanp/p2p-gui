@@ -1,7 +1,5 @@
 package util;
 
-import p2p.exceptions.ConnectToTrackerException;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -114,7 +112,7 @@ public class Common {
                 return new ServerSocket(port);
             }
             catch (IOException ex) {
-                continue; /* try next port */
+                /* try next port */
             }
         }
         throw new IOException("no free port found");
@@ -143,14 +141,10 @@ public class Common {
     }
 
     public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr)
-            throws ConnectToTrackerException
+            throws IOException
     {
         InetAddress ipAddr = inetSocketAddr.getAddress();
         int port = inetSocketAddr.getPort();
-        try (Socket trackerSocket = new Socket(ipAddr, port)) {
-            return trackerSocket;
-        } catch (IOException e) {
-            throw new ConnectToTrackerException("Couldn't create socket");
-        }
+        return new Socket(ipAddr, port);
     }
 }

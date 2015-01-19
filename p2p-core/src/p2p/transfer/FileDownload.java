@@ -1,6 +1,6 @@
 package p2p.transfer;
 
-import p2p.file.meta.P2PFile;
+import p2p.file.p2pFile.P2PFile;
 import p2p.tracker.swarm.ClientSwarm;
 
 import java.io.File;
@@ -11,8 +11,6 @@ import java.io.File;
 public class FileDownload extends Thread {
     protected final P2PFile pFile;
     protected final File localFile;
-
-    /* TODO seeders and leechers in here should be `RemotePeer`s, not just `Peer`s */
     protected final ClientSwarm clientSwarm;
 
     public FileDownload(P2PFile pFile, File localFile, ClientSwarm swarm) {

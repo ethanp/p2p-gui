@@ -1,5 +1,6 @@
 package p2p.tracker;
 
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.swarm.TrackerSwarm;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class LocalTracker extends Tracker {
         try {
             return new RealRemoteTracker(getListeningSockAddr());
         }
-        catch (IOException e) {
+        catch (ConnectToTrackerException | IOException e) {
             // this should never happen.
             // a tracker should have no issue connecting to itself...
             e.printStackTrace();

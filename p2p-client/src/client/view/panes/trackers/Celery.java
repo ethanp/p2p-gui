@@ -1,9 +1,9 @@
 package client.view.panes.trackers;
 
 import client.Main;
-import client.util.TreeTableRoot;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.swarm.ClientSwarm;
 
@@ -26,7 +26,7 @@ public class Celery {
     public AbstractRemoteTracker getTracker() { return tracker; }
     public ClientSwarm getSwarm() { return swarm; }
 
-    public void updateThisSwarm() throws IOException {
+    public void updateThisSwarm() throws IOException, ConnectToTrackerException {
         assert isSwarm() : "can only update a swarm";
         getSwarm().getTracker().updateSwarmInfo(getSwarm());
     }

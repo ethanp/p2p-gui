@@ -1,8 +1,9 @@
 package p2p.tracker;
 
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.protocol.tracker.TrackerTalk;
 import p2p.tracker.swarm.ClientSwarm;
-import util.Common;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,11 +13,10 @@ import java.net.InetSocketAddress;
  */
 public class RealRemoteTracker extends AbstractRemoteTracker {
 
-    public RealRemoteTracker(InetSocketAddress addr) throws IOException { super(addr); }
-
-    private void openSocket() throws IOException {
-        connToTracker = Common.connectToInetSocketAddr(getListeningSockAddr());
-
+    public RealRemoteTracker(InetSocketAddress addr)
+            throws IOException, ConnectToTrackerException
+    {
+        super(addr);
     }
 
     /**
@@ -24,7 +24,7 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * If it exists, add Peer to Swarm
      * Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest() throws IOException {
+    @Override public void addFileRequest() throws IOException, ConnectToTrackerException {
         connect();
         out.println(TrackerTalk.ADD_FILE);
         disconnect();
@@ -35,7 +35,8 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
      */
-    @Override public void updateSwarmInfo(ClientSwarm clientSwarm) throws IOException {
+    @Override public void updateSwarmInfo(ClientSwarm clientSwarm)
+            throws IOException, ConnectToTrackerException {
         connect();
         out.println(TrackerTalk.SWARM_UPDATE);
         disconnect();
@@ -45,11 +46,13 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
      * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    @Override public void listFiles() throws IOException {
+    @Override public void listFiles() throws IOException, ConnectToTrackerException {
         connect();
         out.println(TrackerTalk.LIST_FILES);
         int numFiles = Integer.parseInt(in.readLine());
         for (int i = 0; i < numFiles; i++) {
+            // TODO implement listFiles
+            throw new NotImplementedException();
         }
         disconnect();
     }

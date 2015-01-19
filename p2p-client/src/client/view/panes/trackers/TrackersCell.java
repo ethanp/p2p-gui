@@ -1,13 +1,14 @@
 package client.view.panes.trackers;
 
 import client.Main;
-import client.util.ClientStateUtiil;
+import client.util.ClientStateUtil;
 import client.util.ViewUtil;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeTableCell;
 import org.controlsfx.dialog.Dialogs;
+import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.RealRemoteTracker;
 import util.Common;
 
@@ -50,17 +51,17 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
         menu = new ContextMenu();
 
         if (getItem().isRoot()) {
-            addOpt("Add fake tracker", e -> ClientStateUtiil.addFakeTracker());
+            addOpt("Add fake tracker", e -> ClientStateUtil.addFakeTracker());
             addOpt("Add real tracker", e -> addRealTrackerDialog());
         }
         if (getItem().isTracker()) {
-            addOpt("Add fake tracker", e -> ClientStateUtiil.addFakeTracker());
+            addOpt("Add fake tracker", e -> ClientStateUtil.addFakeTracker());
             addOpt("Remove tracker", e -> Main.getKnownTrackers().remove(getItem().getTracker()));
             addOpt("Refresh swarms", e -> {
                 try {
                     getItem().getTracker().listFiles();
                 }
-                catch (IOException ex) {
+                catch (IOException | ConnectToTrackerException ex) {
                     catchTrackerConnectionIssue(ex);
                 }
             });
@@ -71,7 +72,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 try {
                     getItem().updateThisSwarm();
                 }
-                catch (IOException ex) {
+                catch (IOException | ConnectToTrackerException ex) {
                     catchTrackerConnectionIssue(ex);
                 }
                 refresh();
@@ -96,13 +97,13 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 final RealRemoteTracker newTracker = new RealRemoteTracker(isa);
                 Main.getKnownTrackers().add(newTracker);
                 newTracker.listFiles();
-            } catch (IOException e) {
+            } catch (IOException | ConnectToTrackerException e) {
                 catchTrackerConnectionIssue(e);
             }
         });
     }
 
-    private void catchTrackerConnectionIssue(IOException e) {
+    private void catchTrackerConnectionIssue(Exception e) {
         System.err.println(e.getMessage());
         e.printStackTrace();
         showTrackerNotFoundDialog();

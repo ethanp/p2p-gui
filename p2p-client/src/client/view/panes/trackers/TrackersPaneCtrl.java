@@ -1,6 +1,5 @@
 package client.view.panes.trackers;
 
-import client.util.TreeTableRoot;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeTableColumn;

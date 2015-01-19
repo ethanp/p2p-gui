@@ -9,5 +9,23 @@ import java.util.BitSet;
  * available for upload to interested peers
  */
 public class ChunksForService {
-    protected BitSet bitSet;
+    protected final BitSet bitSet;
+
+    public ChunksForService(int numChunks) {
+        bitSet = new BitSet(numChunks);
+    }
+
+    public boolean hasIdx(int chunkIdx) {
+        return bitSet.get(chunkIdx); // Returns value of bit with specified index
+    }
+
+    public int numChunks() {
+        return bitSet.size();
+    }
+    public void setAllAsAvailable() {
+        bitSet.set(0, numChunks(), true);
+    }
+    public double getProportionAvailable() {
+        return ((double) bitSet.cardinality()) / numChunks();
+    }
 }

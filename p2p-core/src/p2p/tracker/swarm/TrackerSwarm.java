@@ -23,7 +23,7 @@ public class TrackerSwarm extends Swarm<LocalTracker, TrackerPeer> {
     }
 
     public static TrackerSwarm createLoadedSwarm(LocalTracker trkr) {
-        TrackerSwarm swarm = new TrackerSwarm(MetaP2PFile.genFakeMeta(), trkr);
+        TrackerSwarm swarm = new TrackerSwarm(MetaP2PFile.genFake(), trkr);
         swarm.addRandomPeers();
         return swarm;
     }

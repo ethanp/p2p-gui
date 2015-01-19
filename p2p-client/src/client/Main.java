@@ -11,8 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import p2p.file.meta.LocalFakeFile;
-import p2p.file.meta.MetaP2PFile;
+import p2p.exceptions.CreateP2PFileException;
+import p2p.file.p2pFile.LocalFakeFile;
+import p2p.file.p2pFile.P2PFile;
 import p2p.peer.PeerServer;
 import p2p.tracker.AbstractRemoteTracker;
 import p2p.tracker.FakeRemoteTracker;
@@ -27,15 +28,14 @@ public class Main extends Application {
     public static Stage getPrimaryStage() { return primaryStage; }
     public static PeerServer getPeerServer() { return peerServer; }
     public static ObservableList<AbstractRemoteTracker> getKnownTrackers() { return knownTrackers; }
-    public static ObservableList<MetaP2PFile> getLocalFiles() { return localFiles; }
+    public static ObservableList<P2PFile> getLocalFiles() { return localFiles; }
 
     private static Stage primaryStage;
     private BorderPane rootLayout;
     private static PeerServer peerServer = new PeerServer();
 
-
     private static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();
-    private static ObservableList<MetaP2PFile> localFiles = FXCollections.observableArrayList();
+    private static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
 
     @Override public void start(Stage primaryStage) throws Exception {
         Main.primaryStage = primaryStage;
@@ -45,10 +45,15 @@ public class Main extends Application {
     }
 
     private void addFakeContent() {
-        LocalFakeFile pFile1 = LocalFakeFile.genFakeFile();
-        LocalFakeFile pFile2 = LocalFakeFile.genFakeFile();
-        LocalFakeFile pFile3 = LocalFakeFile.genFakeFile();
-        Main.localFiles.addAll(pFile1, pFile2, pFile3);
+        try {
+            LocalFakeFile pFile1 = LocalFakeFile.genFakeFile();
+            LocalFakeFile pFile2 = LocalFakeFile.genFakeFile();
+            LocalFakeFile pFile3 = LocalFakeFile.genFakeFile();
+            Main.localFiles.addAll(pFile1, pFile2, pFile3);
+        }
+        catch (CreateP2PFileException e) {
+            e.printStackTrace();
+        }
         Main.knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 

@@ -1,18 +1,18 @@
 package client.view.panes.files;
 
 import client.Main;
-import client.util.ClientStateUtiil;
+import client.util.ClientStateUtil;
 import client.util.ViewUtil;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.p2pFile.P2PFile;
 import p2p.tracker.AbstractRemoteTracker;
 
 /**
  * Ethan Petuchowski 1/14/15
  */
-public class LocalFileCell extends TableCell<MetaP2PFile, MetaP2PFile> {
+public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
     enum Col { NAME, SIZE, PERCENT}
     private Col c;
     private ContextMenu menu = new ContextMenu();
@@ -41,7 +41,7 @@ public class LocalFileCell extends TableCell<MetaP2PFile, MetaP2PFile> {
      * If it is empty, then it does not represent any domain data, but is a
      * cell being used to render an "empty" row.
      */
-    @Override protected void updateItem(MetaP2PFile item, boolean empty) {
+    @Override protected void updateItem(P2PFile item, boolean empty) {
         super.updateItem(item, empty);
         menu = new ContextMenu();
         if (empty || item == null) {
@@ -52,7 +52,7 @@ public class LocalFileCell extends TableCell<MetaP2PFile, MetaP2PFile> {
             ViewUtil.addOpt(menu, "Remove file from list", e->Main.getLocalFiles().remove(getItem()));
             ViewUtil.addOpt(menu, "Add file to tracker", e->{});
         }
-        ViewUtil.addOpt(menu, "Add new fake file", e-> ClientStateUtiil.addFakeLocalFile());
+        ViewUtil.addOpt(menu, "Add new fake file", e-> ClientStateUtil.addFakeLocalFile());
         ViewUtil.showOnRightClick(this, menu);
     }
 

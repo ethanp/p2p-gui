@@ -1,7 +1,6 @@
 package client.view.panes.files;
 
 import client.Main;
-import p2p.file.meta.MetaP2PFile;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -9,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
+import p2p.file.p2pFile.P2PFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,22 +18,22 @@ import java.util.List;
  */
 public class LocalFilesPaneCtrl {
 
-    @FXML private TableView<MetaP2PFile> localFileTable;
-    @FXML private TableColumn<MetaP2PFile,MetaP2PFile> nameCol;
-    @FXML private TableColumn<MetaP2PFile,MetaP2PFile> sizeCol;
-    @FXML private TableColumn<MetaP2PFile,MetaP2PFile> percentCol;
+    @FXML private TableView<P2PFile> localFileTable;
+    @FXML private TableColumn<P2PFile,P2PFile> nameCol;
+    @FXML private TableColumn<P2PFile,P2PFile> sizeCol;
+    @FXML private TableColumn<P2PFile,P2PFile> percentCol;
 
-    Callback<TableColumn.CellDataFeatures<MetaP2PFile, MetaP2PFile>,ObservableValue<MetaP2PFile>>
+    Callback<TableColumn.CellDataFeatures<P2PFile, P2PFile>,ObservableValue<P2PFile>>
                 valueFactory = cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue());
 
-    private List<TableColumn<MetaP2PFile,MetaP2PFile>> tableColumns;
+    private List<TableColumn<P2PFile,P2PFile>> tableColumns;
 
-    private final ListChangeListener<MetaP2PFile> localFilesListener = c -> {
+    private final ListChangeListener<P2PFile> localFilesListener = c -> {
         while (c.next()) {
             if (c.wasRemoved()) {
-                for (MetaP2PFile removedFile : c.getRemoved()) {
-                    MetaP2PFile toRemove = null;
-                    for (MetaP2PFile localItem : localFileTable.getItems()) {
+                for (P2PFile removedFile : c.getRemoved()) {
+                    P2PFile toRemove = null;
+                    for (P2PFile localItem : localFileTable.getItems()) {
                         if (removedFile.equals(localItem)) {
                             toRemove = localItem;
                             break;
@@ -45,7 +45,7 @@ public class LocalFilesPaneCtrl {
                 }
             }
             if (c.wasAdded()) {
-                for (MetaP2PFile addedFile : c.getAddedSubList()) {
+                for (P2PFile addedFile : c.getAddedSubList()) {
                     localFileTable.getItems().add(addedFile);
                 }
             }
@@ -68,5 +68,5 @@ public class LocalFilesPaneCtrl {
                 (observable, oldValue, newValue) -> fileWasSelected(newValue));
 
     }
-    private void fileWasSelected(MetaP2PFile metaP2PFile) {}
+    private void fileWasSelected(P2PFile metaP2PFile) {}
 }
