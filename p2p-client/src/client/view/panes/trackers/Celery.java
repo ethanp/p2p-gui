@@ -57,11 +57,11 @@ public class Celery {
     public String getName() {
         if (isRoot()) return Main.getKnownTrackers().size() + " trackers";
         if (isTracker()) return tracker.getIpPortString();
-        else return swarm.getP2pFile().getFilename();
+        else return swarm.getMetaP2P().getFilename();
     }
 
     public String getSize() {
-        if (isSwarm()) return swarm.getP2pFile().formattedFilesizeString();
+        if (isSwarm()) return swarm.getMetaP2P().formattedFilesizeString();
         if (isTracker()) return tracker.getSwarms().size() + " files";
         else return "";
     }

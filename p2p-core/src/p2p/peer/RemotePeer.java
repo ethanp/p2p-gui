@@ -29,6 +29,11 @@ public class RemotePeer extends Peer {
         chunksOfFiles = new SimpleMapProperty<>();
     }
 
+    public boolean hasChunk(int chunkIdx, MetaP2PFile mFile) {
+        return chunksOfFiles.containsKey(mFile)
+            && chunksOfFiles.get(mFile).hasIdx(chunkIdx);
+    }
+
     public class ChunkAvailabilityUpdater extends Thread {
         MetaP2PFile metaFile;
 
@@ -42,10 +47,10 @@ public class RemotePeer extends Peer {
             catch (ConnectToPeerException e) {
                 e.printStackTrace();
             }
-            try {
-                ObjectOutputStream objOut = Common.objectOStream(peerConn);
-                ObjectInputStream objIn = Common.objectIStream(peerConn);
-                objOut.writeObject(PeerTalk.GET_AVAILABILITIES);
+            try (ObjectOutputStream objOut = Common.objectOStream(peerConn);
+                 ObjectInputStream  objIn  = Common.objectIStream(peerConn))
+            {
+                objOut.writeBytes(PeerTalk.GET_AVAILABILITIES.toString());
                 objOut.writeObject(metaFile);
                 try {
                     ChunksForService cfs = (ChunksForService) objIn.readObject();

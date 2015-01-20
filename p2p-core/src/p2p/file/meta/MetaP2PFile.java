@@ -54,4 +54,23 @@ public class MetaP2PFile {
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MetaP2PFile)) return false;
+        MetaP2PFile file = (MetaP2PFile) o;
+        if (!digest.equals(file.digest)) return false;
+        if (!filename.equals(file.filename)) return false;
+        if (!filesizeBytes.equals(file.filesizeBytes)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = filename.hashCode();
+        result = 31*result+filesizeBytes.hashCode();
+        result = 31*result+digest.hashCode();
+        return result;
+    }
 }

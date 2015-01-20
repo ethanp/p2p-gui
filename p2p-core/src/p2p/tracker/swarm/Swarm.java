@@ -31,17 +31,17 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
     /* CODE */
     protected final ListProperty<P> leechers;
     protected final ListProperty<P> seeders;
-    protected final ObjectProperty<MetaP2PFile> p2pFile;
+    protected final ObjectProperty<MetaP2PFile> metaP2P;
     protected final ObjectProperty<T> tracker;
 
     public Swarm(MetaP2PFile baseMetaP2PFile, T trkr) {
-        p2pFile = new SimpleObjectProperty<>(baseMetaP2PFile);
+        metaP2P = new SimpleObjectProperty<>(baseMetaP2PFile);
         seeders = new SimpleListProperty<>(FXCollections.observableArrayList());
         leechers = new SimpleListProperty<>(FXCollections.observableArrayList());
         tracker = new SimpleObjectProperty<>(trkr);
     }
 
-    public abstract Swarm<T, P> addRandomPeers();
+    public abstract Swarm<T, P> addFakePeers();
 
     public List<P> getAllPeers() {
         List<P> peers = new ArrayList<>(getLeechers());
@@ -58,9 +58,9 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
     public ListProperty<P> leechersProperty() { return leechers; }
     public void setLeechers(ObservableList<P> leechers) { this.leechers.set(leechers); }
 
-    public MetaP2PFile getP2pFile() { return p2pFile.get(); }
-    public ObjectProperty<MetaP2PFile> p2pFileProperty() { return p2pFile; }
-    public void setP2pFile(MetaP2PFile metaP2PFile) { this.p2pFile.set(metaP2PFile); }
+    public MetaP2PFile getMetaP2P() { return metaP2P.get(); }
+    public ObjectProperty<MetaP2PFile> metaP2PProperty() { return metaP2P; }
+    public void setMetaP2P(MetaP2PFile metaP2PFile) { this.metaP2P.set(metaP2PFile); }
 
     public T getTracker() { return tracker.get(); }
     public ObjectProperty<T> trackerProperty() { return tracker; }
@@ -71,7 +71,7 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
         if (!(o instanceof Swarm)) return false;
         Swarm swarm = (Swarm) o;
         if (!leechers.equals(swarm.leechers)) return false;
-        if (!p2pFile.equals(swarm.p2pFile)) return false;
+        if (!metaP2P.equals(swarm.metaP2P)) return false;
         if (!seeders.equals(swarm.seeders)) return false;
         if (!tracker.equals(swarm.tracker)) return false;
         return true;
@@ -80,7 +80,7 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
     @Override public int hashCode() {
         int result = leechers.hashCode();
         result = 31*result+seeders.hashCode();
-        result = 31*result+p2pFile.hashCode();
+        result = 31*result+metaP2P.hashCode();
         result = 31*result+tracker.hashCode();
         return result;
     }

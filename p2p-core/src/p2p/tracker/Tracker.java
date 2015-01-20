@@ -33,7 +33,7 @@ public abstract class Tracker<S extends Swarm> {
 
     protected S getSwarmForFile(MetaP2PFile file) {
         for (S s : getSwarms())
-            if (s.getP2pFile().equals(file))
+            if (s.getMetaP2P().equals(file))
                 return s;
         return null;
     }

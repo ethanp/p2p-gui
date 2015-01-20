@@ -17,7 +17,7 @@ public class ClientSwarm extends Swarm<AbstractRemoteTracker, RemotePeer> {
         super(baseMetaP2PFile, trkr);
     }
 
-    @Override public ClientSwarm addRandomPeers() {
+    @Override public ClientSwarm addFakePeers() {
         int nSeeders = Common.randInt(10);
         int nLeechers = Common.randInt(10);
         for (int i = 0; i < nSeeders; i++)

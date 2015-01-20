@@ -31,9 +31,13 @@ public class Common {
     public static final int PORT_MIN = 3000;
     public static final int PORT_MAX = 3500;
 
-    public static final int DEFAULT_BYTES_PER_CHUNK = 1 << 12; // 4KB
+    public static final int DEFAULT_CHUNK_SIZE = 1 << 12; // 4KB
 
     public static final int MAX_FILESIZE = Integer.MAX_VALUE;
+
+    public static final int CHUNK_AVAILABILITY_POOL_SIZE = 10;
+    public static final int CHUNK_REQUEST_POOL_SIZE = 20;
+    public static final int FILE_DOWNLOADS_POOL_SIZE = 4; // uTorrent's is user-configurable
 
     public static String formatByteCountToString(long numBytes) {
         assert numBytes >= 0 : "can't have negative number of bytes: "+numBytes;

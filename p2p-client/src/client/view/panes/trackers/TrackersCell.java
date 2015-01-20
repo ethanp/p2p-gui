@@ -10,6 +10,7 @@ import javafx.scene.control.TreeTableCell;
 import org.controlsfx.dialog.Dialogs;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.RealRemoteTracker;
+import p2p.transfer.FileDownload;
 import util.Common;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
             });
         }
         if (getItem().isSwarm()) {
-            addOpt("Download file", e -> {});
+            addOpt("Download file", e -> downloadFile());
             addOpt("Update (real or fake) swarm", e -> {
                 try {
                     getItem().updateThisSwarm();
@@ -80,6 +81,16 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
         }
 
         ViewUtil.showOnRightClick(this, menu);
+    }
+
+    private void downloadFile() {
+        Main.startFileDownload(
+                new FileDownload(
+                        Main.getUserDownloadDirectory(),
+                        getItem().getSwarm(),
+                        Main.getLocalFiles()
+                )
+        );
     }
 
     private void addRealTrackerDialog() {

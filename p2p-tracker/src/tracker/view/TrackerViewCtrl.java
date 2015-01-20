@@ -111,7 +111,7 @@ public class TrackerViewCtrl {
                 setText(null);
                 setGraphic(null);
             } else {
-                setText(item.getP2pFile().getFilename());
+                setText(item.getMetaP2P().getFilename());
             }
         }
     }

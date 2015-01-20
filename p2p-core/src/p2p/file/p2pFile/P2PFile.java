@@ -35,21 +35,31 @@ public class P2PFile {
     protected final IntegerProperty                     bytesPerChunk;
     protected final IntegerProperty                     numChunks;
     protected final ListProperty<Chunk>                 dataChunks;
-    protected final ObjectProperty<ChunksForService> availableChunks;
+    protected final ObjectProperty<ChunksForService>    availableChunks;
 
     protected final MetaP2PFile metaP2PFile;
 
-    public P2PFile(File containingDirectory, MetaP2PFile metaP2PFile) {
+    public P2PFile(File localFile, MetaP2PFile metaP2PFile) {
         this.metaP2PFile = metaP2PFile;
-        localFile = new SimpleObjectProperty<>(
-                new File(containingDirectory, metaP2PFile.getFilename()));
-        knownTrackers = new SimpleListProperty<>(FXCollections.observableArrayList());
-        swarms = new SimpleListProperty<>(FXCollections.observableArrayList());
-        bytesPerChunk = new SimpleIntegerProperty(Common.DEFAULT_BYTES_PER_CHUNK);
-        final int iChunks = (int) (metaP2PFile.getFilesizeBytes()/Common.DEFAULT_BYTES_PER_CHUNK);
-        numChunks = new SimpleIntegerProperty(iChunks);
-        dataChunks = new SimpleListProperty<>(FXCollections.observableArrayList());
-        availableChunks = new SimpleObjectProperty<>(new ChunksForService(iChunks));
+        this.localFile   = new SimpleObjectProperty<>(localFile);
+        knownTrackers    = new SimpleListProperty<>(FXCollections.observableArrayList());
+        swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
+        bytesPerChunk    = new SimpleIntegerProperty(Common.DEFAULT_CHUNK_SIZE);
+        int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.DEFAULT_CHUNK_SIZE);
+        numChunks        = new SimpleIntegerProperty(iChunks);
+        dataChunks       = new SimpleListProperty<>(FXCollections.observableArrayList());
+        availableChunks  = new SimpleObjectProperty<>(new ChunksForService(iChunks));
+    }
+
+    /**
+     * Create a path on the filesystem for the file that will be downloaded
+     * DOES NOT add the file to the User's known Files
+     *      because we don't have access to User stuff here
+     *      that has to be done in the TrackersCell
+     * return a new P2PFile representation of the file
+     */
+    public static P2PFile newP2PFileInDir(File parentDir, MetaP2PFile metaP2PFile) {
+        return new P2PFile(new File(parentDir, metaP2PFile.getFilename()), metaP2PFile);
     }
 
     // TODO not finished yet
@@ -86,12 +96,13 @@ public class P2PFile {
         String digest = null; // TODO get digest
 
         MetaP2PFile meta = new MetaP2PFile(filename, filesize, digest);
-        P2PFile toRet = new P2PFile(containingDirectory, meta);
+        P2PFile toRet = P2PFile.newP2PFileInDir(containingDirectory, meta);
 
         /* since the file is local, of course ALL chunks are available for service */
         toRet.getAvailableChunks().setAllAsAvailable();
 
         throw new NotImplementedException();
+        // TODO I suppose this will have to be added to the Main.localFiles AFTER this finishes
     }
 
     public P2PFile addTracker(AbstractRemoteTracker tracker) {
@@ -106,14 +117,9 @@ public class P2PFile {
         return String.format("%.2f%%",getAvailableChunks().getProportionAvailable());
     }
 
-    public File getLocalFile() { return localFile.get(); }
-    public ObjectProperty<File> localFileProperty() { return localFile; }
-
-    public MetaP2PFile getMetaP2PFile() { return metaP2PFile; }
-
-    public int getBytesPerChunk() { return bytesPerChunk.get(); }
-    public IntegerProperty bytesPerChunkProperty() { return bytesPerChunk; }
-
-    public ChunksForService getAvailableChunks() { return availableChunks.get(); }
-    public ObjectProperty<ChunksForService> availableChunksProperty() { return availableChunks; }
+    public int              getBytesPerChunk()      { return bytesPerChunk.get();   }
+    public int              getNumChunks()          { return numChunks.get();       }
+    public File             getLocalFile()          { return localFile.get();       }
+    public MetaP2PFile      getMetaP2PFile()        { return metaP2PFile;           }
+    public ChunksForService getAvailableChunks()    { return availableChunks.get(); }
 }

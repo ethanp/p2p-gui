@@ -18,13 +18,13 @@ public class TrackerSwarm extends Swarm<LocalTracker, TrackerPeer> {
         super(baseMetaP2PFile, trkr);
     }
 
-    @Override public Swarm<LocalTracker, TrackerPeer> addRandomPeers() {
+    @Override public Swarm<LocalTracker, TrackerPeer> addFakePeers() {
         throw new NotImplementedException();
     }
 
     public static TrackerSwarm createLoadedSwarm(LocalTracker trkr) {
         TrackerSwarm swarm = new TrackerSwarm(MetaP2PFile.genFake(), trkr);
-        swarm.addRandomPeers();
+        swarm.addFakePeers();
         return swarm;
     }
 }

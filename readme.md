@@ -53,12 +53,16 @@ public class MetaP2PFile {
 
 ### Mechanism
 
-#### Already implemented
-1. The Client creates an `AbstractRemoteTracker` by Socket Address and uses the
-   `listFiles()` RPC to obtain `ClientSwarm`s to fill its `swarms` field.
-2. Initially, the `chunksOfFiles` property of each `RemotePeer` in a
+1. (done) The Client creates an `AbstractRemoteTracker` by Socket Address and
+   uses the `listFiles()` RPC to obtain `ClientSwarm`s to fill its `swarms`
+   field.
+2. (done) Initially, the `chunksOfFiles` property of each `RemotePeer` in a
    `ClientSwarm` is empty, because the Tracker does not maintain that info, it
    only maintains the `servingAddr`s
-
-#### Not yet implemented
-1. When a Client right-clicks on a Tracker's file and selects 
+3. User right-clicks on a Tracker's file and selects `Download File`
+    * This triggers `TrackersCell.updateItem().isSwarm()->downloadFile()`
+4. Create a `FileDownload` object sends a each `RemotePeer` asks both `seeders`
+   and `leechers` which Chunks they have available for download and stores that
+   info
+5. Find the "availability" (replication count) of each file Chunk
+6. 

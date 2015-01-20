@@ -64,7 +64,7 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
      * @param clientSwarm
      */
     @Override public void updateSwarmInfo(ClientSwarm clientSwarm) {
-        getSwarmForFile(clientSwarm.getP2pFile()).addRandomPeers();
+        getSwarmForFile(clientSwarm.getMetaP2P()).addFakePeers();
     }
 
     /**
@@ -75,8 +75,8 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     @Override public void listFiles() {
         final ClientSwarm swarm1 = new ClientSwarm(MetaP2PFile.genFake(), defaultFakeRemoteTracker);
         final ClientSwarm swarm2 = new ClientSwarm(MetaP2PFile.genFake(), defaultFakeRemoteTracker);
-        swarm1.addRandomPeers();
-        swarm2.addRandomPeers();
+        swarm1.addFakePeers();
+        swarm2.addFakePeers();
         setSwarms(FXCollections.observableArrayList(swarm1,swarm2));
     }
 }
