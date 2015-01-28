@@ -37,6 +37,7 @@ public class Common {
 
     public static final int CHUNK_AVAILABILITY_POOL_SIZE = 10;
     public static final int CHUNK_REQUEST_POOL_SIZE = 20;
+    public static final int CHUNK_SERVE_POOL_SIZE = 20;
     public static final int FILE_DOWNLOADS_POOL_SIZE = 4; // uTorrent's is user-configurable
 
     public static String formatByteCountToString(long numBytes) {

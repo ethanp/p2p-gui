@@ -9,7 +9,10 @@ public abstract class Chunk {
 
     protected final int chunkSize;
 
-    /* Should this be a "property"?  Would that add a ton of space overhead? */
+    /* Should this be a "property"?  Would that add a ton of space overhead?
+        Probably not because this thing is getting read->written->garbage collected
+         so I don't think the space per chunk is really a concern
+    */
     protected final byte[] data;
 
     public Chunk(byte[] data) {

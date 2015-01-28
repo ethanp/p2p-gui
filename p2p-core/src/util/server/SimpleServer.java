@@ -1,11 +1,10 @@
-package util;
+package util.server;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import util.Common;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -26,9 +25,7 @@ public abstract class SimpleServer extends Thread {
     protected final ObjectProperty<InetAddress> localIPAddr
             = new SimpleObjectProperty<>(Common.findMyIP());
     protected ServerSocket listener;
-    protected Socket conn;
-    protected BufferedReader bufferedReader;
-    protected PrintWriter printWriter;
+    Socket conn;
 
     /* not to be confused with getattr */
     public InetSocketAddress getAddr() {
@@ -57,9 +54,7 @@ public abstract class SimpleServer extends Thread {
         while (true) {
             try {
                 conn = listener.accept();
-                bufferedReader = Common.bufferedReader(conn);
-                printWriter = Common.printWriter(conn);
-                runLoopCode();
+
             }
             catch (IOException e) {
                 System.err.println("Exception in tracker server main listen-loop");
@@ -68,6 +63,7 @@ public abstract class SimpleServer extends Thread {
         }
     }
 
-    protected abstract void runLoopCode() throws IOException;
-    protected void beforeRunLoop(){}
+
+    protected void beforeRunLoop() { /* doing anything here is optional */ }
+    protected abstract void useConnection(Socket connection) throws IOException;
 }

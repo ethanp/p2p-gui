@@ -13,7 +13,7 @@ import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import p2p.tracker.AbstractRemoteTracker;
 import util.Common;
-import util.SimpleServer;
+import util.server.SimpleServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

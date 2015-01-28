@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
 import p2p.tracker.LocalTracker;
-import util.SimpleServer;
+import util.server.SimpleServer;
 
 import java.io.IOException;
 

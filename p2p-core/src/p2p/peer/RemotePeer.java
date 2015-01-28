@@ -12,6 +12,7 @@ import util.Common;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -40,41 +41,26 @@ public class RemotePeer extends Peer {
         public ChunkAvailabilityUpdater(MetaP2PFile mFile) { metaFile = mFile; }
 
         @Override public void run() {
-            Socket peerConn = null;
-            try {
-                peerConn = connectToPeer();
-            }
-            catch (ConnectToPeerException e) {
-                e.printStackTrace();
-            }
-            try (ObjectOutputStream objOut = Common.objectOStream(peerConn);
-                 ObjectInputStream  objIn  = Common.objectIStream(peerConn))
+            try (Socket             peerConn = connectToPeer();
+                 ObjectOutputStream objOut   = Common.objectOStream(peerConn);
+                 ObjectInputStream  objIn    = Common.objectIStream(peerConn);
+                 PrintWriter        cmdPrt   = Common.printWriter(peerConn))
             {
-                objOut.writeBytes(PeerTalk.GET_AVAILABILITIES.toString());
+                cmdPrt.println(PeerTalk.GET_AVAILABILITIES);
+                cmdPrt.flush();
                 objOut.writeObject(metaFile);
                 try {
                     ChunksForService cfs = (ChunksForService) objIn.readObject();
-
-                    synchronized (chunksOfFiles) {
-                        chunksOfFiles.put(metaFile, cfs);
-                    }
+                    synchronized (chunksOfFiles) { chunksOfFiles.put(metaFile, cfs); }
                 }
                 catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                    System.err.println("I didn't think this would ever happen");
                 }
-                finally {
-                    /* not sure I did this right... */
-                    objIn.close();
-                    objOut.close();
-                    peerConn.close();
-                }
-            } catch (IOException e) {
+            }
+            catch (IOException | ConnectToPeerException e) {
                 e.printStackTrace();
-                System.err.println("Not sure what to do about this: "+e.getMessage());
             }
         }
-
     }
 
     public ChunkAvailabilityUpdater createAvailabilityUpdater(MetaP2PFile mFile) {
