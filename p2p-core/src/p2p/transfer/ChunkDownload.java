@@ -16,7 +16,7 @@ import java.net.Socket;
 /**
  * Ethan Petuchowski 1/7/15
  */
-public class ChunkDownload extends Thread implements ClientSideChunkProtocol {
+public class ChunkDownload implements Runnable, ClientSideChunkProtocol {
     protected final int chunkIdx;
     protected final Socket peerConn; // connected to a @ClientPeerServer
     protected final P2PFile pFile;

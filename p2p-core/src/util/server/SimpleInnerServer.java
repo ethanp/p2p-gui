@@ -5,7 +5,7 @@ import java.net.Socket;
 /**
  * Ethan Petuchowski 1/28/15
  */
-public abstract class SimpleInnerServer extends Thread {
+public abstract class SimpleInnerServer implements Runnable {
 
     protected final Socket innerSocket;
 

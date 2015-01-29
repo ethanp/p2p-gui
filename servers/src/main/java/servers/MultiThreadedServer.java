@@ -1,6 +1,7 @@
 package servers;
 
 import Exceptions.ListenerCouldntConnectException;
+import Exceptions.NotConnectedException;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,17 +15,17 @@ public abstract class MultiThreadedServer<ThreadType extends ServerThread> exten
 
     protected ExecutorService threadPool;
 
-    public MultiThreadedServer(int poolSize) throws ListenerCouldntConnectException {
+    public MultiThreadedServer(int poolSize) throws ListenerCouldntConnectException, NotConnectedException {
         super();
         threadPool = Executors.newFixedThreadPool(poolSize);
     }
 
-    public MultiThreadedServer(ServerSocket listener, int poolSize) throws ListenerCouldntConnectException {
+    public MultiThreadedServer(ServerSocket listener, int poolSize) throws ListenerCouldntConnectException, NotConnectedException {
         super(listener);
         threadPool = Executors.newFixedThreadPool(poolSize);
     }
 
-    public MultiThreadedServer(int fromPortNo, int toPortNo, int poolSize) throws ListenerCouldntConnectException {
+    public MultiThreadedServer(int fromPortNo, int toPortNo, int poolSize) throws ListenerCouldntConnectException, NotConnectedException {
         super(fromPortNo, toPortNo);
         threadPool = Executors.newFixedThreadPool(poolSize);
     }

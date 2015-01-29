@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Ethan Petuchowski 1/18/15
  */
-public class FileDownload extends Thread {
+public class FileDownload implements Runnable {
 
     protected final ClientSwarm clientSwarm;
     protected final P2PFile     pFile;

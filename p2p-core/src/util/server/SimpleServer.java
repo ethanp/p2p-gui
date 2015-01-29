@@ -20,7 +20,7 @@ import java.net.Socket;
  *      ```
  *    to make the thing do something when someone connects to it
  */
-public abstract class SimpleServer extends Thread {
+public abstract class SimpleServer implements Runnable {
 
     protected final ObjectProperty<InetAddress> localIPAddr
             = new SimpleObjectProperty<>(Common.findMyIP());

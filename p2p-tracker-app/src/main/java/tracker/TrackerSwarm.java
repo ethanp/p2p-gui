@@ -1,8 +1,8 @@
-package p2p.tracker.swarm;
+package tracker;
 
 import p2p.file.meta.MetaP2PFile;
 import p2p.peer.TrackerPeer;
-import p2p.tracker.LocalTracker;
+import p2p.tracker.swarm.Swarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

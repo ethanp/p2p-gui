@@ -1,5 +1,6 @@
 package util;
 
+import Exceptions.FailedToFindServerException;
 import Exceptions.NotConnectedException;
 
 import java.io.BufferedReader;
@@ -102,5 +103,33 @@ public class ServersCommon {
             }
         }
         throw new IOException("no free port found");
+    }
+
+    public static String ipPortToString(InetSocketAddress addr) {
+        if (addr.isUnresolved()) {
+            return addr.getHostName()+":"+addr.getPort()+" (unresolved)";
+        } else {
+            return addr.getAddress().toString().substring(1)+":"+addr.getPort();
+        }
+    }
+
+    public static InetSocketAddress stringToIPPort(String str) {
+        String[] strs = str.split(":");
+        String ipAddr = strs[0];
+        int port = Integer.parseInt(strs[1]);
+        return new InetSocketAddress(ipAddr, port);
+    }
+
+    public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr)
+            throws FailedToFindServerException
+    {
+        InetAddress ipAddr = inetSocketAddr.getAddress();
+        int port = inetSocketAddr.getPort();
+        try {
+            return new Socket(ipAddr, port);
+        }
+        catch (IOException e) {
+            throw new FailedToFindServerException();
+        }
     }
 }

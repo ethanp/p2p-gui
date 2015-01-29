@@ -35,7 +35,7 @@ public class RemotePeer extends Peer {
             && chunksOfFiles.get(mFile).hasIdx(chunkIdx);
     }
 
-    public class ChunkAvailabilityUpdater extends Thread {
+    public class ChunkAvailabilityUpdater implements Runnable {
         MetaP2PFile metaFile;
 
         public ChunkAvailabilityUpdater(MetaP2PFile mFile) { metaFile = mFile; }
@@ -95,6 +95,6 @@ public class RemotePeer extends Peer {
          * to a field somewhere on the Client (i.e. Current User) containing a
          * "ThreadPool<ChunkDownloads>
          */
-        chunkDownloadObject.start();
+        new Thread(chunkDownloadObject).start();
     }
 }

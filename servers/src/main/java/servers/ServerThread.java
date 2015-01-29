@@ -7,7 +7,7 @@ import java.net.Socket;
 /**
  * Ethan Petuchowski 1/28/15
  */
-public abstract class ServerThread extends Thread {
+public abstract class ServerThread implements Runnable {
     protected Socket socket;
 
     public ServerThread(Socket socket) {

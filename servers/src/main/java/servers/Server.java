@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * Ethan Petuchowski 1/28/15
  */
-public abstract class Server extends Thread {
+public abstract class Server implements Runnable {
     protected ServerSocket listener;
 
     protected InetAddress localIPAddr;
@@ -48,11 +48,10 @@ public abstract class Server extends Thread {
     }
 
     @Override public void run() {
-        beforeListenLoops();
+        beforeAllListenLoops();
         listenLoop();
     }
 
-    protected abstract void beforeListenLoops();
 
     protected void listenLoop() {
         while (true) {
@@ -67,21 +66,21 @@ public abstract class Server extends Thread {
         }
     }
 
-    protected abstract void endOfListenLoop();
 
-    protected abstract void beginningOfListenLoop();
-
+    /* Implementation required */
     protected abstract void dealWithSocket(Socket socket);
 
+
+    /* Implementation optional */
+    protected void beforeAllListenLoops(){/*nothing*/}
+    protected void endOfListenLoop(){/*nothing*/}
+    protected void beginningOfListenLoop(){/*nothing*/}
+
+
+    /* Getters and Setters */
     public InetSocketAddress getExternalSocketAddr() {
         return new InetSocketAddress(localIPAddr, listener.getLocalPort());
     }
-
-    public InetAddress getLocalIPAddr() {
-        return localIPAddr;
-    }
-
-    public void setLocalIPAddr(InetAddress localIPAddr) {
-        this.localIPAddr = localIPAddr;
-    }
+    public InetAddress getLocalIPAddr() { return localIPAddr; }
+    public void setLocalIPAddr(InetAddress localIPAddr) { this.localIPAddr = localIPAddr; }
 }
