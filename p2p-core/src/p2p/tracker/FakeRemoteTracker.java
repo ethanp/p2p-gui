@@ -6,9 +6,11 @@ import javafx.collections.ObservableList;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.swarm.ClientSwarm;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Ethan Petuchowski 1/8/15
@@ -52,6 +54,11 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     }
 
     @Override public String getIpPortString() { return ipPortString; }
+
+    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta) {
+        // TODO
+        throw new NotImplementedException();
+    }
 
     /**
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer

@@ -2,6 +2,7 @@ package tracker;
 
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NotConnectedException;
+import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.Tracker;
 
 import java.net.InetSocketAddress;
@@ -21,6 +22,14 @@ public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
             throws ListenerCouldntConnectException, NotConnectedException
     {
         super(addr);
+    }
+
+    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta) {
+        TrackerSwarm swarm = getSwarmForFile(meta);
+        if (swarm == null) {
+            swarm = new TrackerSwarm(meta, this);
+        }
+        swarm.getSeeders().add(new TrackerPeer(addr));
     }
 
     public static LocalTracker create()

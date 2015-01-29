@@ -53,4 +53,6 @@ public abstract class Tracker<S extends Swarm> {
         result = 31*result+listeningSockAddr.hashCode();
         return result;
     }
+
+    public abstract void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta);
 }

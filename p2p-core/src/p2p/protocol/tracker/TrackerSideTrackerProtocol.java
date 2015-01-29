@@ -1,15 +1,17 @@
 package p2p.protocol.tracker;
 
+import Exceptions.ServersIOException;
+
 /**
  * Ethan Petuchowski 1/16/15
  */
 public interface TrackerSideTrackerProtocol {
     /**
-     * Tracker receives P2PFile from Peer looks for it among its LocalSwarms
-     * If it exists, add Peer to Swarm
-     * Otherwise create a new Swarm for it
+     * TrackerServer receives MetaP2PFile from Peer.
+     * If no corresponding TrackerSwarm exists, create one.
+     * Add TrackerPeer to the TrackerSwarm.
      */
-    public void addFileRequest();
+    public void addFileRequest() throws ServersIOException;
 
     /**
      * Tracker tells a Peer who wants to download a P2PFile

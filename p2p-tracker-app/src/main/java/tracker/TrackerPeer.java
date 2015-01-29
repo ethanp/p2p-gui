@@ -1,4 +1,6 @@
-package p2p.peer;
+package tracker;
+
+import p2p.peer.Peer;
 
 import java.net.InetSocketAddress;
 

@@ -7,13 +7,18 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import p2p.file.meta.MetaP2PFile;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
 import servers.SingleThreadedServer;
 import util.ServersCommon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -31,11 +36,18 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
     }
 
     /**
-     * TODO  Tracker receives P2PFile from Peer looks for it among its LocalSwarms
-     * If it exists, add Peer to Swarm
-     * Otherwise create a new Swarm for it
+     * TrackerServer receives MetaP2PFile from Peer.
+     * If no corresponding TrackerSwarm exists, create one.
+     * Add TrackerPeer to the TrackerSwarm.
      */
-    @Override public void addFileRequest() {}
+    @Override public void addFileRequest() throws ServersIOException {
+        InetAddress otherEndAddress = socket.getInetAddress();
+        InetSocketAddress addr = new InetSocketAddress(otherEndAddress, socket.getPort());
+        ObjectInputStream ois = ServersCommon.objectIStream(socket);
+        ObjectOutputStream oos = ServersCommon.objectOStream(socket);
+        MetaP2PFile meta = null; // TODO receive from OOS
+        getTracker().addAddrToSwarmFor(addr, meta);
+    }
 
     /**
      * TODO  Tracker tells a Peer who wants to download a P2PFile about the
@@ -50,7 +62,7 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
      */
     @Override public void listFiles() {}
 
-    @Override protected void dealWithSocket(Socket socket) {
+    @Override protected void dealWithSocket(Socket socket) throws ServersIOException {
         this.socket = socket;
         rcvReqCt.add(1);
         try {
@@ -64,8 +76,9 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
         if (command == null) throw new RuntimeException("null command");
         System.out.println("tracker received command: "+command);
         switch (command) {
-            case "ECHO": echo(); return;
-            default: System.out.println("There is no case to handle that command.");
+            case "ECHO": echo();           return;
+            case "ADD":  addFileRequest(); return;
+            default: System.err.println("ERROR: There is no case to handle that command.");
         }
     }
 

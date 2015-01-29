@@ -2,6 +2,7 @@ package servers;
 
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NotConnectedException;
+import Exceptions.ServersIOException;
 import util.ServersCommon;
 
 import java.io.IOException;
@@ -49,11 +50,16 @@ public abstract class Server implements Runnable {
 
     @Override public void run() {
         beforeAllListenLoops();
-        listenLoop();
+        try {
+            listenLoop();
+        }
+        catch (ServersIOException e) {
+            e.printStackTrace();
+        }
     }
 
 
-    protected void listenLoop() {
+    protected void listenLoop() throws ServersIOException {
         while (true) {
             beginningOfListenLoop();
             try (Socket socket = listener.accept()) {
@@ -68,7 +74,7 @@ public abstract class Server implements Runnable {
 
 
     /* Implementation required */
-    protected abstract void dealWithSocket(Socket socket);
+    protected abstract void dealWithSocket(Socket socket) throws ServersIOException;
 
 
     /* Implementation optional */

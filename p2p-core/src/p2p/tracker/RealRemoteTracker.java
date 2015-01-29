@@ -2,6 +2,7 @@ package p2p.tracker;
 
 import Exceptions.ServersIOException;
 import p2p.exceptions.ConnectToTrackerException;
+import p2p.file.meta.MetaP2PFile;
 import p2p.protocol.tracker.TrackerTalk;
 import p2p.tracker.swarm.ClientSwarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -17,6 +18,11 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
     public RealRemoteTracker(InetSocketAddress addr)
             throws IOException, ConnectToTrackerException, ServersIOException {
         super(addr);
+    }
+
+    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta) {
+        // TODO
+        throw new NotImplementedException();
     }
 
     /**

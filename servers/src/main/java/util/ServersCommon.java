@@ -53,8 +53,13 @@ public class ServersCommon {
         return oos;
     }
 
-    public static ObjectInputStream objectIStream(Socket s) throws IOException {
-        return new ObjectInputStream(s.getInputStream());
+    public static ObjectInputStream objectIStream(Socket s) throws ServersIOException {
+        try {
+            return new ObjectInputStream(s.getInputStream());
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
     }
 
     public static InetAddress findMyIP() throws NotConnectedException {
