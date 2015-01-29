@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import p2p.tracker.LocalTracker;
-import tracker.server.TrackerServer;
+import p2p.tracker.TrackerServer;
 import tracker.view.TrackerViewCtrl;
 
 import java.net.URL;

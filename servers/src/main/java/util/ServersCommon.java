@@ -1,5 +1,7 @@
 package util;
 
+import Exceptions.NotConnectedException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,7 +44,7 @@ public class ServersCommon {
         return new ObjectInputStream(s.getInputStream());
     }
 
-    public static InetAddress findMyIP() {
+    public static InetAddress findMyIP() throws NotConnectedException {
         URL aws = null;
         InetAddress toRet = null;
         try { aws = new URL("http://checkip.amazonaws.com"); }
@@ -56,7 +58,7 @@ public class ServersCommon {
             }
         }
         catch (IOException e) {
-            System.err.println("Not connected to Internet: can't find my IP");
+            throw new NotConnectedException(e);
         }
         finally {
             if (in != null) {

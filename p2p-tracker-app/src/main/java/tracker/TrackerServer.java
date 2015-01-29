@@ -1,14 +1,14 @@
-package tracker.server;
+package tracker;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
-import p2p.tracker.LocalTracker;
 import util.server.SimpleServer;
 
 import java.io.IOException;
+import java.net.Socket;
 
 /**
  * Ethan Petuchowski 1/16/15
@@ -23,12 +23,18 @@ public class TrackerServer extends SimpleServer implements TrackerSideTrackerPro
         tracker = new SimpleObjectProperty<>(new LocalTracker(getAddr()));
     }
 
-    @Override protected void runLoopCode() throws IOException {
-        rcvReqCt.add(1);
-        String command = bufferedReader.readLine();
-        if (command == null) throw new RuntimeException("null command");
-        System.out.println("tracker received command: "+command);
+    // TODO use this?
+    @Override protected void useConnection(Socket connection) throws IOException {
     }
+
+    // TODO FIX THIS
+//    @Override protected void runLoopCode() throws IOException {
+//        rcvReqCt.add(1);
+//        String command = bufferedReader.readLine();
+//        if (command == null) throw new RuntimeException("null command");
+//        System.out.println("tracker received command: "+command);
+//        System.out.println("dunno");
+//    }
 
     public int getRcvReqCt() { return rcvReqCt.get(); }
     public IntegerProperty rcvReqCtProperty() { return rcvReqCt; }

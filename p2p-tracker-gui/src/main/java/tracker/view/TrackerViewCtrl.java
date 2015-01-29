@@ -6,7 +6,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import p2p.peer.PeerServer;
 import p2p.peer.Peer;
 import p2p.tracker.swarm.TrackerSwarm;
 import tracker.Main;
@@ -82,9 +81,10 @@ public class TrackerViewCtrl {
      * Use initializeBasedOnServer() instead.
      */
     @FXML private void initialize() {
-        realFileAddFromEphemeralPeer.setOnAction(
-                e -> PeerServer.sendEphemeralRequest(
-                        Main.getTracker().asRemote()));
+        // TODO FIX THIS
+//        realFileAddFromEphemeralPeer.setOnAction(
+//                e -> PeerServer.sendEphemeralRequest(
+//                        Main.getTracker().asRemote()));
 
         /* make file list display the filename of tracked swarms */
         pFileList.setCellFactory(p -> new SwarmNameCell());

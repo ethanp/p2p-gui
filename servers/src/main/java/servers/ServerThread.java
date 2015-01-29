@@ -18,9 +18,4 @@ public abstract class ServerThread extends Thread {
         throw new NotImplementedException();
     }
 
-    @Override public void run() {
-        dealWithSocket(socket);
-    }
-
-    protected abstract void dealWithSocket(Socket socket);
 }

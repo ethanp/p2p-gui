@@ -1,4 +1,4 @@
-package p2p.tracker;
+package tracker;
 
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.tracker.swarm.TrackerSwarm;
