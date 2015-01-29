@@ -1,5 +1,6 @@
 package p2p.tracker;
 
+import Exceptions.ServersIOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.exceptions.ConnectToTrackerException;
@@ -20,6 +21,9 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     static {
         try { defaultFakeRemoteTracker = new FakeRemoteTracker("123.123.123.123:3300"); }
         catch (ConnectToTrackerException | IOException e) { e.printStackTrace(); }
+        catch (ServersIOException e) {
+            e.printStackTrace();
+        }
         defaultFakeRemoteTracker.listFiles();
     }
 
@@ -31,7 +35,7 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
         String ip = Common.randomIPPortString();
         FakeRemoteTracker t = null;
         try { t = new FakeRemoteTracker(ip); }
-        catch (ConnectToTrackerException | IOException e) { e.printStackTrace(); }
+        catch (ConnectToTrackerException | IOException | ServersIOException e) { e.printStackTrace(); }
         ObservableList<ClientSwarm> swarms = FXCollections.observableArrayList();
         int N = Common.randInt(6);
         for (int i = 0; i < N; i++)
@@ -42,8 +46,7 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     }
 
     public FakeRemoteTracker(String fakeIPAddrAndPort)
-            throws IOException, ConnectToTrackerException
-    {
+            throws IOException, ConnectToTrackerException, ServersIOException {
         super(null);
         ipPortString = fakeIPAddrAndPort;
     }

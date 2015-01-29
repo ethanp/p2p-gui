@@ -2,6 +2,7 @@ package util;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.NotConnectedException;
+import Exceptions.ServersIOException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,13 +32,24 @@ public class ServersCommon {
         return new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
     }
 
-    public static PrintWriter printWriter(Socket s) throws IOException {
-        return new PrintWriter(s.getOutputStream(), true);
+    public static PrintWriter printWriter(Socket s) throws ServersIOException {
+        try {
+            return new PrintWriter(s.getOutputStream(), true);
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
     }
 
-    public static ObjectOutputStream objectOStream(Socket s) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-        oos.flush();
+    public static ObjectOutputStream objectOStream(Socket s) throws ServersIOException {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(s.getOutputStream());
+            oos.flush();
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
         return oos;
     }
 
@@ -129,7 +141,18 @@ public class ServersCommon {
             return new Socket(ipAddr, port);
         }
         catch (IOException e) {
-            throw new FailedToFindServerException();
+            throw new FailedToFindServerException(e);
+        }
+    }
+
+    public static Socket connectLocallyToInetAddr(InetSocketAddress inetSocketAddr)
+            throws FailedToFindServerException
+    {
+        try {
+            return new Socket("0.0.0.0", inetSocketAddr.getPort());
+        }
+        catch (IOException e) {
+            throw new FailedToFindServerException(e);
         }
     }
 }

@@ -11,7 +11,6 @@ import p2p.tracker.swarm.Swarm;
 import util.Common;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
 /**
  * Ethan Petuchowski 1/7/15
@@ -24,11 +23,6 @@ public abstract class Tracker<S extends Swarm> {
     public Tracker(InetSocketAddress addr) {
         listeningSockAddr = new SimpleObjectProperty<>(addr);
         swarms = new SimpleListProperty<>(FXCollections.observableArrayList());
-    }
-
-    public Tracker(InetSocketAddress addr, List<S> swarms) {
-        this(addr);
-        this.swarms.addAll(swarms);
     }
 
     protected S getSwarmForFile(MetaP2PFile file) {

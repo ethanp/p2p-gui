@@ -2,6 +2,7 @@ package tracker;
 
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NotConnectedException;
+import Exceptions.ServersIOException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -12,6 +13,7 @@ import util.ServersCommon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
@@ -19,13 +21,13 @@ import java.net.Socket;
  */
 public class TrackerServer extends SingleThreadedServer implements TrackerSideTrackerProtocol {
 
-    protected final ObjectProperty<LocalTracker> tracker;
+    protected final ObjectProperty<LocalTracker> tracker = new SimpleObjectProperty<>(null);
     protected final IntegerProperty rcvReqCt = new SimpleIntegerProperty(0);
     protected BufferedReader bufferedReader;
+    protected String command;
 
     public TrackerServer() throws ListenerCouldntConnectException, NotConnectedException {
         super();
-        tracker = new SimpleObjectProperty<>(new LocalTracker(getExternalSocketAddr()));
     }
 
     /**
@@ -49,22 +51,36 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
     @Override public void listFiles() {}
 
     @Override protected void dealWithSocket(Socket socket) {
+        this.socket = socket;
         rcvReqCt.add(1);
-        String command = null;
         try {
             bufferedReader = ServersCommon.bufferedReader(socket);
             command = bufferedReader.readLine();
         }
         catch (IOException e) {
-            /* If this happens and I figure out why,
-               I will do something specific with this exception */
+            /* If this ever actually happens I will deal with it then */
             e.printStackTrace();
         }
         if (command == null) throw new RuntimeException("null command");
         System.out.println("tracker received command: "+command);
-        System.out.println("that's as far as I got though (nothing happens now.)");
+        switch (command) {
+            case "ECHO": echo(); return;
+            default: System.out.println("There is no case to handle that command.");
+        }
     }
 
+    protected void echo() {
+        try (PrintWriter printWriter = ServersCommon.printWriter(socket)) {
+            while (true) {
+                String inLine = bufferedReader.readLine();
+                if (inLine == null || inLine.length() == 0)
+                    break;
+                printWriter.println(inLine);
+            }
+            printWriter.flush();
+        }
+        catch (ServersIOException | IOException e) { e.printStackTrace(); }
+    }
 
     /* Getters and Setters */
     public int getRcvReqCt() { return rcvReqCt.get(); }

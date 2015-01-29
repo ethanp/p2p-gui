@@ -1,23 +1,20 @@
 package client.server;
 
-import client.Main;
+import Exceptions.ListenerCouldntConnectException;
+import Exceptions.NotConnectedException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2PFile;
-import p2p.file.p2pFile.P2PFile;
 import p2p.peer.Peer;
-import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import p2p.tracker.AbstractRemoteTracker;
+import servers.MultiThreadedServer;
+import servers.ServerThread;
 import util.Common;
-import util.server.SimpleServer;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 /**
  * Ethan Petuchowski 1/16/15
@@ -27,13 +24,13 @@ import java.io.ObjectOutputStream;
  */
 public class PeerServer extends Peer implements ServerSideChunkProtocol {
 
-    protected final ObjectProperty<ClientPeerServer> server
-            = new SimpleObjectProperty<>(new ClientPeerServer());
+    protected final ObjectProperty<ClientPeerServer> server;
     protected final BooleanProperty isServing = new SimpleBooleanProperty(false);
 
-    public PeerServer() {
+    public PeerServer() throws ListenerCouldntConnectException, NotConnectedException {
         super(null);
-        server.getValue().start();
+        server = new SimpleObjectProperty<>(new ClientPeerServer(Common.CHUNK_SERVE_POOL_SIZE));
+        new Thread(server.getValue()).start();
     }
 
     public static void sendEphemeralRequest(AbstractRemoteTracker tracker) {
@@ -47,41 +44,43 @@ public class PeerServer extends Peer implements ServerSideChunkProtocol {
         }
     }
 
-    @Override public void serveChunk() {
+    @Override public void serveChunk() {}
 
-    }
+    class ClientPeerServer extends MultiThreadedServer<ServerThread> {
 
-    class ClientPeerServer extends SimpleServer {
+        public ClientPeerServer(int poolSize)
+                throws ListenerCouldntConnectException, NotConnectedException
+        { super(poolSize); }
 
-        @Override protected void beforeRunLoop() {
-            setServingAddr(getAddr());
-            setIsServing(true);
-        }
-
-        @Override protected void runLoopCode() throws IOException {
-            String command = bufferedReader.readLine();
-            if (command == null) throw new RuntimeException("null command");
-            System.out.println("client peer received command: "+command);
-            switch (command) {
-                case PeerTalk.GET_AVAILABILITIES:
-                    serveAvailabilities();
-                    break;
-            }
-        }
+//        @Override protected void beforeRunLoop() {
+//            setServingAddr(getExternalSocketAddr());
+//            setIsServing(true);
+//        }
+//
+//        @Override protected void runLoopCode() throws IOException {
+//            String command = bufferedReader.readLine();
+//            if (command == null) throw new RuntimeException("null command");
+//            System.out.println("client peer received command: "+command);
+//            switch (command) {
+//                case PeerTalk.GET_AVAILABILITIES:
+//                    serveAvailabilities();
+//                    break;
+//            }
+//        }
 
         private void serveAvailabilities() throws IOException {
             System.out.println("serving availabilities");
-            try (ObjectOutputStream objOut = Common.objectOStream(conn);
-                 ObjectInputStream  objIn  = Common.objectIStream(conn))
-            {
-                MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
-                for (P2PFile pFile : Main.getLocalFiles()) {
-                    if (pFile.getMetaP2PFile().equals(mFile)) {
-                        objOut.writeObject(pFile.getAvailableChunks());
-                    }
-                }
-            }
-            catch (ClassNotFoundException e) { e.printStackTrace(); }
+//            try (ObjectOutputStream objOut = Common.objectOStream(conn);
+//                 ObjectInputStream  objIn  = Common.objectIStream(conn))
+//            {
+//                MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
+//                for (P2PFile pFile : Main.getLocalFiles()) {
+//                    if (pFile.getMetaP2PFile().equals(mFile)) {
+//                        objOut.writeObject(pFile.getAvailableChunks());
+//                    }
+//                }
+//            }
+//            catch (ClassNotFoundException e) { e.printStackTrace(); }
 
     }
 

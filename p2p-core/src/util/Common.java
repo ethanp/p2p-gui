@@ -48,12 +48,6 @@ public class Common {
         else return String.format("%.2f GB", numBytes/1E9);
     }
 
-    public static BufferedReader bufferedReader(Socket s) {
-        try { return new BufferedReader(new InputStreamReader(s.getInputStream())); }
-        catch (IOException e) { e.printStackTrace(); }
-        return null;
-    }
-
     public static BufferedWriter bufferedWriter(Socket s) {
         try { return new BufferedWriter(new OutputStreamWriter(s.getOutputStream())); }
         catch (IOException e) { e.printStackTrace(); }

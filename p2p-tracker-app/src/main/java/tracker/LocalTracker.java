@@ -1,33 +1,43 @@
 package tracker;
 
-import p2p.exceptions.ConnectToTrackerException;
-import p2p.tracker.AbstractRemoteTracker;
-import p2p.tracker.RealRemoteTracker;
+import Exceptions.ListenerCouldntConnectException;
+import Exceptions.NotConnectedException;
 import p2p.tracker.Tracker;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.List;
 
 /**
  * Ethan Petuchowski 1/15/15
  *
- * This contains the info that a Tracker knows about itself.
+ * This is the thing you instantiate to locally BECOME a live Tracker.
+ * The tracker-GUI and tracker-CLI are both just FRONTENDS for THIS.
+ *
+ * It has a list of swarms and a running server.
  */
-public class LocalTracker extends Tracker {
+public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
+    TrackerServer trackerServer;
 
-    public LocalTracker(InetSocketAddress addr) { super(addr); }
-    public LocalTracker(List<TrackerSwarm> swarms, InetSocketAddress addr) { super(addr, swarms); }
+    public LocalTracker(InetSocketAddress addr)
+            throws ListenerCouldntConnectException, NotConnectedException
+    {
+        super(addr);
+    }
 
-    public AbstractRemoteTracker asRemote() {
-        try {
-            return new RealRemoteTracker(getListeningSockAddr());
-        }
-        catch (ConnectToTrackerException | IOException e) {
-            // this should never happen.
-            // a tracker should have no issue connecting to itself...
-            e.printStackTrace();
-        }
-        return null;
+    public static LocalTracker create()
+            throws ListenerCouldntConnectException, NotConnectedException {
+        TrackerServer trkSrv = new TrackerServer();
+        LocalTracker localTracker = new LocalTracker(trkSrv.getExternalSocketAddr());
+        localTracker.setTrackerServer(trkSrv);
+        return localTracker;
+    }
+
+    @Override public void run() {}
+
+    public void setTrackerServer(TrackerServer trackerServer) {
+        this.trackerServer = trackerServer;
+    }
+
+    public InetSocketAddress getExternalSocketAddr() {
+        return trackerServer.getExternalSocketAddr();
     }
 }

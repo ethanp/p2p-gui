@@ -1,6 +1,7 @@
 package util.server;
 
-import util.Common;
+import Exceptions.ServersIOException;
+import util.ServersCommon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,10 +17,10 @@ public abstract class SimpleSingleServer extends SimpleServer {
     protected BufferedReader bufferedReader;
     protected PrintWriter printWriter;
 
-    @Override protected void useConnection(Socket connection) throws IOException {
+    @Override protected void useConnection(Socket connection) throws IOException, ServersIOException {
             singleSocket = connection;
-            bufferedReader = Common.bufferedReader(singleSocket);
-            printWriter = Common.printWriter(singleSocket);
+            bufferedReader = ServersCommon.bufferedReader(singleSocket);
+            printWriter = ServersCommon.printWriter(singleSocket);
             runLoopCode();
     }
 }

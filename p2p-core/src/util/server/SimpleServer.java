@@ -1,5 +1,6 @@
 package util.server;
 
+import Exceptions.ServersIOException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import util.Common;
@@ -65,5 +66,5 @@ public abstract class SimpleServer implements Runnable {
 
 
     protected void beforeRunLoop() { /* doing anything here is optional */ }
-    protected abstract void useConnection(Socket connection) throws IOException;
+    protected abstract void useConnection(Socket connection) throws IOException, ServersIOException;
 }

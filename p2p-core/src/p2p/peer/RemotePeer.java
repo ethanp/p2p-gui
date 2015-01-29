@@ -1,5 +1,6 @@
 package p2p.peer;
 
+import Exceptions.ServersIOException;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import p2p.exceptions.ConnectToPeerException;
@@ -79,7 +80,7 @@ public class RemotePeer extends Peer {
     }
 
     /* TODO this will be called by a FileDownload object (it is not called at all currently) */
-    public void downloadChunk(P2PFile pFile, int chunkIdx) throws ConnectToPeerException {
+    public void downloadChunk(P2PFile pFile, int chunkIdx) throws ConnectToPeerException, IOException, ServersIOException {
 
         /* just a logic-check to make sure that at least this client THINKS the peer
          * has the desired Chunk available for download

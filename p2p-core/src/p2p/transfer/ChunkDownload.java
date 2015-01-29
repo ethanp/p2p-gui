@@ -1,9 +1,10 @@
 package p2p.transfer;
 
+import Exceptions.ServersIOException;
 import p2p.file.p2pFile.P2PFile;
 import p2p.protocol.fileTransfer.ClientSideChunkProtocol;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import util.Common;
+import util.ServersCommon;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -24,14 +25,14 @@ public class ChunkDownload implements Runnable, ClientSideChunkProtocol {
     protected final PrintWriter peerOut;
     protected final BufferedReader peerIn;
 
-    public ChunkDownload(int chunkIdx, Socket peerConn, P2PFile pFile) {
+    public ChunkDownload(int chunkIdx, Socket peerConn, P2PFile pFile) throws IOException, ServersIOException {
         this.chunkIdx = chunkIdx;
         this.peerConn = peerConn;
         this.pFile = pFile;
 
         localFile = pFile.getLocalFile();
-        peerOut = Common.printWriter(peerConn);
-        peerIn = Common.bufferedReader(peerConn);
+        peerOut = ServersCommon.printWriter(peerConn);
+        peerIn = ServersCommon.bufferedReader(peerConn);
     }
 
     // TODO implement ChunkDownload.run()

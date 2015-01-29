@@ -1,11 +1,13 @@
 package p2p.tracker;
 
+import Exceptions.ServersIOException;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.file.p2pFile.P2PFile;
 import p2p.protocol.tracker.ClientSideTrackerProtocol;
 import p2p.tracker.swarm.ClientSwarm;
 import util.Common;
+import util.ServersCommon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +27,7 @@ public abstract class AbstractRemoteTracker extends Tracker<ClientSwarm> impleme
     protected BufferedReader in;
 
     public AbstractRemoteTracker(InetSocketAddress addr)
-            throws IOException, ConnectToTrackerException
-    {
+            throws IOException, ConnectToTrackerException, ServersIOException {
         super(addr);
         listFiles();
     }
@@ -40,7 +41,7 @@ public abstract class AbstractRemoteTracker extends Tracker<ClientSwarm> impleme
         createSwarmForMetaFile(pFile.getMetaP2PFile());
     }
 
-    public void connect() throws ConnectToTrackerException {
+    public void connect() throws ConnectToTrackerException, IOException, ServersIOException {
         try {
             connToTracker = Common.connectToInetSocketAddr(getListeningSockAddr());
         }
@@ -51,8 +52,8 @@ public abstract class AbstractRemoteTracker extends Tracker<ClientSwarm> impleme
                     "tried to connect to " + Common.ipPortToString(getListeningSockAddr())+
                     " but received "       + e.getMessage());
         }
-        out = Common.printWriter(connToTracker);
-        in = Common.bufferedReader(connToTracker);
+        out = ServersCommon.printWriter(connToTracker);
+        in = ServersCommon.bufferedReader(connToTracker);
     }
 
     public void disconnect() throws IOException {
