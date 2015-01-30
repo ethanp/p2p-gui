@@ -26,14 +26,11 @@ public class RealRemoteTracker extends AbstractRemoteTracker {
     }
 
     /**
-     * Tracker receives P2PFile from Peer looks for it among its LocalSwarms
-     * If it exists, add Peer to Swarm
-     * Otherwise create a new Swarm for it
+     * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
+     * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest() throws IOException, ConnectToTrackerException, ServersIOException {
-        connect();
-        out.println(TrackerTalk.ADD_FILE);
-        disconnect();
+    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
+
     }
 
     /**

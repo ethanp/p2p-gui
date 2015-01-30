@@ -2,7 +2,7 @@ package p2p.peer;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import util.Common;
+import util.ServersCommon;
 
 import java.net.InetSocketAddress;
 
@@ -31,7 +31,7 @@ import java.net.InetSocketAddress;
 public abstract class Peer {
 
     @Override public String toString() {
-        return Common.ipPortToString(servingAddr.get());
+        return ServersCommon.ipPortToString(servingAddr.get());
     }
 
     protected final ObjectProperty<InetSocketAddress> servingAddr;

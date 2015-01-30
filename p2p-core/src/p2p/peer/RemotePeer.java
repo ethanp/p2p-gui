@@ -1,5 +1,6 @@
 package p2p.peer;
 
+import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
@@ -8,7 +9,7 @@ import p2p.file.meta.MetaP2PFile;
 import p2p.file.p2pFile.P2PFile;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.transfer.ChunkDownload;
-import util.Common;
+import util.ServersCommon;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -43,9 +44,9 @@ public class RemotePeer extends Peer {
 
         @Override public void run() {
             try (Socket             peerConn = connectToPeer();
-                 ObjectOutputStream objOut   = Common.objectOStream(peerConn);
-                 ObjectInputStream  objIn    = Common.objectIStream(peerConn);
-                 PrintWriter        cmdPrt   = Common.printWriter(peerConn))
+                 ObjectOutputStream objOut   = ServersCommon.objectOStream(peerConn);
+                 ObjectInputStream  objIn    = ServersCommon.objectIStream(peerConn);
+                 PrintWriter        cmdPrt   = ServersCommon.printWriter(peerConn))
             {
                 cmdPrt.println(PeerTalk.GET_AVAILABILITIES);
                 cmdPrt.flush();
@@ -58,7 +59,7 @@ public class RemotePeer extends Peer {
                     e.printStackTrace();
                 }
             }
-            catch (IOException | ConnectToPeerException e) {
+            catch (IOException | ConnectToPeerException | ServersIOException e) {
                 e.printStackTrace();
             }
         }
@@ -70,12 +71,12 @@ public class RemotePeer extends Peer {
 
     private Socket connectToPeer() throws ConnectToPeerException {
         try {
-            return Common.connectToInetSocketAddr(getServingAddr());
+            return ServersCommon.connectToInetSocketAddr(getServingAddr());
         }
-        catch (IOException e) {
+        catch (FailedToFindServerException e) {
             e.printStackTrace();
             throw new ConnectToPeerException("Couldn't connect to peer at "+
-                                             Common.ipPortToString(getServingAddr()));
+                                             ServersCommon.ipPortToString(getServingAddr()));
         }
     }
 

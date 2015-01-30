@@ -19,11 +19,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 /**
  * Ethan Petuchowski 1/28/15
  */
 public class ServersCommon {
+
+    public static Random r = new Random();
+    public static int randInt(int bound) { return r.nextInt(bound); }
+
     public static BufferedReader bufferedReader(Socket s) throws IOException {
         return new BufferedReader(new InputStreamReader(s.getInputStream()));
     }
@@ -91,9 +96,7 @@ public class ServersCommon {
         return new Socket(addr.getAddress(), addr.getPort());
     }
 
-    public static InetSocketAddress addrFromString(String addrStr)
-            throws UnknownHostException
-    {
+    public static InetSocketAddress addrFromString(String addrStr) throws UnknownHostException {
         String[] pieces = addrStr.split(":");
         InetAddress ipAddr = InetAddress.getByName(pieces[0]);
         int portNo = Integer.parseInt(pieces[1]);
@@ -159,5 +162,14 @@ public class ServersCommon {
         catch (IOException e) {
             throw new FailedToFindServerException(e);
         }
+    }
+
+    public static String randomIPPortString() {
+        return r.nextInt(255)+"."+r.nextInt(255)+"."+
+               r.nextInt(255)+"."+r.nextInt(255)+":"+r.nextInt(5000);
+    }
+
+    public static InetSocketAddress randomSocketAddr() {
+        return stringToIPPort(randomIPPortString());
     }
 }

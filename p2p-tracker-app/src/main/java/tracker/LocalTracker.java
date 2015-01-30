@@ -28,9 +28,9 @@ public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
         TrackerSwarm swarm = getSwarmForFile(meta);
         if (swarm == null) {
             swarm = new TrackerSwarm(meta, this);
+            getSwarms().add(swarm);
         }
         swarm.getSeeders().add(new TrackerPeer(addr));
-        getSwarms().add(swarm);
     }
 
     public static LocalTracker create()

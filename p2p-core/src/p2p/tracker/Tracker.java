@@ -8,7 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.swarm.Swarm;
-import util.Common;
+import util.ServersCommon;
 
 import java.net.InetSocketAddress;
 
@@ -38,7 +38,7 @@ public abstract class Tracker<S extends Swarm> {
     public InetSocketAddress getListeningSockAddr() { return listeningSockAddr.get(); }
     public ObjectProperty<InetSocketAddress> listeningSockAddrProperty(){return listeningSockAddr;}
     public void setListeningSockAddr(InetSocketAddress addr) { this.listeningSockAddr.set(addr); }
-    public String getIpPortString() { return Common.ipPortToString(getListeningSockAddr()); }
+    public String getIpPortString() { return ServersCommon.ipPortToString(getListeningSockAddr()); }
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;

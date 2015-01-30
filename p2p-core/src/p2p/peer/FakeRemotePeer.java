@@ -1,6 +1,6 @@
 package p2p.peer;
 
-import util.Common;
+import util.ServersCommon;
 
 import java.net.InetSocketAddress;
 
@@ -11,6 +11,6 @@ public class FakeRemotePeer extends RemotePeer {
     public FakeRemotePeer(String fakeAddr) { super(new InetSocketAddress(fakeAddr, 666)); }
 
     public static FakeRemotePeer createWithUnresolvedIP() {
-        return new FakeRemotePeer(Common.randomIPPortString());
+        return new FakeRemotePeer(ServersCommon.randomIPPortString());
     }
 }

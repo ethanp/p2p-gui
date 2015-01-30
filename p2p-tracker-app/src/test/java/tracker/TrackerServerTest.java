@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
+import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.tracker.ClientSideTrackerProtocol;
 import p2p.tracker.swarm.ClientSwarm;
 import util.ServersCommon;
@@ -52,7 +53,7 @@ public class TrackerServerTest implements ClientSideTrackerProtocol {
         final String sentString = "tell me this\n"+
                                   "I got somethin' to tell ya\n";
 
-        printWriter.println("ECHO");
+        printWriter.println(PeerTalk.ECHO);
         printWriter.println(sentString);
         printWriter.flush();
         StringBuilder response = new StringBuilder();
@@ -66,27 +67,67 @@ public class TrackerServerTest implements ClientSideTrackerProtocol {
         assertEquals(sentString, response.toString());
     }
 
-    @Test public void testAddNewFileRequest() throws IOException, ServersIOException, InterruptedException {
-
-        printWriter.println("ADD");
-        printWriter.flush();
+    @Test public void testAddNewFileRequest() throws IOException, ServersIOException, InterruptedException, ConnectToTrackerException {
 
         MetaP2PFile meta = MetaP2PFile.genFake();
+        InetSocketAddress addr = ServersCommon.randomSocketAddr();
 
-        printWriter.println(meta.serializeToString());
-        printWriter.flush();
-
-        synchronized (trackerServer) { trackerServer.wait(); }
+        addFileRequest(meta, addr);
 
         assertEquals(1, trackerServer.getTracker().getSwarms().size());
+
+
+        final TrackerSwarm trackerSwarm = trackerServer.getTracker().getSwarms().get(0);
+        final MetaP2PFile trackerMeta = trackerSwarm.getMetaP2P();
+
+        assertEquals(meta.getFilename(), trackerMeta.getFilename());
+        assertEquals(meta.getDigest(), trackerMeta.getDigest());
+        assertEquals(meta.getFilesizeBytes(), trackerMeta.getFilesizeBytes());
+
+        assertEquals(1, trackerSwarm.getSeeders().size());
+        assertEquals(0, trackerSwarm.getLeechers().size());
+    }
+
+    @Test public void testNewPeerForExistingFileRequest() throws FailedToFindServerException, IOException, ServersIOException, ConnectToTrackerException {
+        MetaP2PFile meta = MetaP2PFile.genFake();
+        InetSocketAddress addr1 = ServersCommon.randomSocketAddr();
+        InetSocketAddress addr2 = ServersCommon.randomSocketAddr();
+        addFileRequest(meta, addr1);
+        socket.close();
+        socket = ServersCommon.connectLocallyToInetAddr(trackerServer.getExternalSocketAddr());
+        printWriter = ServersCommon.printWriter(socket);
+        addFileRequest(meta, addr2);
+        assertEquals(1, trackerServer.getTracker().getSwarms().size());
+        assertEquals(2, trackerServer.getTracker().getSwarms().get(0).getSeeders().size());
+        assertEquals(0, trackerServer.getTracker().getSwarms().get(0).getLeechers().size());
     }
 
     /**
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest() throws IOException, ConnectToTrackerException, ServersIOException {
+    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
 
+        /* Command */
+        printWriter.println(PeerTalk.ADD_FILE_REQUEST);
+        printWriter.flush();
+
+        /* Peer server's listening port */
+        printWriter.println(ServersCommon.randomIPPortString());
+
+        /* Upload MetaFile */
+        printWriter.println(meta.serializeToString());
+        printWriter.flush();
+
+        /* wait for tracker to do whatever it has to do */
+        synchronized (trackerServer) {
+            try {
+                trackerServer.wait();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

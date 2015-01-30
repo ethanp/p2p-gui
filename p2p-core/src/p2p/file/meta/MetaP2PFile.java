@@ -69,9 +69,9 @@ public class MetaP2PFile {
         if (this == o) return true;
         if (!(o instanceof MetaP2PFile)) return false;
         MetaP2PFile file = (MetaP2PFile) o;
-        if (!digest.equals(file.digest)) return false;
-        if (!filename.equals(file.filename)) return false;
-        if (!filesizeBytes.equals(file.filesizeBytes)) return false;
+        if (!getDigest().equals(file.getDigest())) return false;
+        if (!getFilename().equals(file.getFilename())) return false;
+        if (getFilesizeBytes() != file.getFilesizeBytes()) return false;
         return true;
     }
 

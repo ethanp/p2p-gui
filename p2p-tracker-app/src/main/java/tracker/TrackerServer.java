@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2PFile;
+import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
 import servers.SingleThreadedServer;
 import util.ServersCommon;
@@ -16,7 +17,6 @@ import util.ServersCommon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -40,10 +40,11 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
      * Add TrackerPeer to the TrackerSwarm.
      */
     @Override public void addFileRequest() throws ServersIOException, CreateP2PFileException {
-        InetAddress otherEndAddress = socket.getInetAddress();
-        InetSocketAddress addr = new InetSocketAddress(otherEndAddress, socket.getPort());
         MetaP2PFile meta;
+        InetSocketAddress addr;
         try {
+            String[] components = bufferedReader.readLine().split(":");
+            addr = new InetSocketAddress(components[0], Integer.parseInt(components[1]));
             meta = MetaP2PFile.deserializeFromReader(bufferedReader);
         }
         catch (IOException e) {
@@ -86,10 +87,10 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
         System.out.println("tracker received command: "+command);
 
         switch (command) {
-            case "ECHO":
+            case PeerTalk.ECHO:
                 echo();
                 break;
-            case "ADD":
+            case PeerTalk.ADD_FILE_REQUEST:
                 try {
                     addFileRequest();
                 }

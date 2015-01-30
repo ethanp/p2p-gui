@@ -8,6 +8,7 @@ import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.swarm.ClientSwarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
+import util.ServersCommon;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -34,7 +35,7 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     }
 
     public static FakeRemoteTracker makeFakeTracker() {
-        String ip = Common.randomIPPortString();
+        String ip = ServersCommon.randomIPPortString();
         FakeRemoteTracker t = null;
         try { t = new FakeRemoteTracker(ip); }
         catch (ConnectToTrackerException | IOException | ServersIOException e) { e.printStackTrace(); }
@@ -64,7 +65,7 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest() {
+    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
 
     }
 

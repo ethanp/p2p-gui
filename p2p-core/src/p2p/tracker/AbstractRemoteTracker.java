@@ -1,12 +1,12 @@
 package p2p.tracker;
 
+import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.file.p2pFile.P2PFile;
 import p2p.protocol.tracker.ClientSideTrackerProtocol;
 import p2p.tracker.swarm.ClientSwarm;
-import util.Common;
 import util.ServersCommon;
 
 import java.io.BufferedReader;
@@ -43,13 +43,13 @@ public abstract class AbstractRemoteTracker extends Tracker<ClientSwarm> impleme
 
     public void connect() throws ConnectToTrackerException, IOException, ServersIOException {
         try {
-            connToTracker = Common.connectToInetSocketAddr(getListeningSockAddr());
+            connToTracker = ServersCommon.connectToInetSocketAddr(getListeningSockAddr());
         }
-        catch (IOException e) {
+        catch (FailedToFindServerException e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
             throw new ConnectToTrackerException(
-                    "tried to connect to " + Common.ipPortToString(getListeningSockAddr())+
+                    "tried to connect to " + ServersCommon.ipPortToString(getListeningSockAddr())+
                     " but received "       + e.getMessage());
         }
         out = ServersCommon.printWriter(connToTracker);

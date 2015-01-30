@@ -2,9 +2,11 @@ package p2p.protocol.tracker;
 
 import Exceptions.ServersIOException;
 import p2p.exceptions.ConnectToTrackerException;
+import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.swarm.ClientSwarm;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Ethan Petuchowski 1/16/15
@@ -15,7 +17,7 @@ public interface ClientSideTrackerProtocol {
      * If it exists, add Peer to Swarm
      * Otherwise create a new Swarm for it
      */
-    public void addFileRequest() throws IOException, ConnectToTrackerException, ServersIOException;
+    public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException;
 
     /**
      * Tracker tells a Peer who wants to download a P2PFile
