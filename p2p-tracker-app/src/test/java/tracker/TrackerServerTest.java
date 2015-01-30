@@ -14,8 +14,6 @@ import util.ServersCommon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -29,11 +27,11 @@ public class TrackerServerTest implements ClientSideTrackerProtocol {
     PrintWriter printWriter;
     BufferedReader bufferedReader;
     Socket socket;
-    ObjectOutputStream oos;
-    ObjectInputStream ois;
+    LocalTracker localTracker;
     @Before
     public void setUp() throws Exception {
-        trackerServer = new TrackerServer();
+        localTracker = LocalTracker.create();
+        trackerServer = localTracker.getTrackerServer();
         new Thread(trackerServer).start();
         socket = ServersCommon.connectLocallyToInetAddr(trackerServer.getExternalSocketAddr());
         printWriter = ServersCommon.printWriter(socket);
@@ -68,16 +66,18 @@ public class TrackerServerTest implements ClientSideTrackerProtocol {
         assertEquals(sentString, response.toString());
     }
 
-    @Test public void testAddNewFileRequest() throws IOException, ServersIOException {
-
-        oos = ServersCommon.objectOStream(socket);
-        ois = ServersCommon.objectIStream(socket);
+    @Test public void testAddNewFileRequest() throws IOException, ServersIOException, InterruptedException {
 
         printWriter.println("ADD");
         printWriter.flush();
 
         MetaP2PFile meta = MetaP2PFile.genFake();
-        oos.writeObject(meta);
+
+        printWriter.println(meta.serializeToString());
+        printWriter.flush();
+
+        synchronized (trackerServer) { trackerServer.wait(); }
+
         assertEquals(1, trackerServer.getTracker().getSwarms().size());
     }
 

@@ -7,6 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
 import servers.SingleThreadedServer;
@@ -14,8 +15,6 @@ import util.ServersCommon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -40,13 +39,19 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
      * If no corresponding TrackerSwarm exists, create one.
      * Add TrackerPeer to the TrackerSwarm.
      */
-    @Override public void addFileRequest() throws ServersIOException {
+    @Override public void addFileRequest() throws ServersIOException, CreateP2PFileException {
         InetAddress otherEndAddress = socket.getInetAddress();
         InetSocketAddress addr = new InetSocketAddress(otherEndAddress, socket.getPort());
-        ObjectInputStream ois = ServersCommon.objectIStream(socket);
-        ObjectOutputStream oos = ServersCommon.objectOStream(socket);
-        MetaP2PFile meta = null; // TODO receive from OOS
+        MetaP2PFile meta;
+        try {
+            meta = MetaP2PFile.deserializeFromReader(bufferedReader);
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
         getTracker().addAddrToSwarmFor(addr, meta);
+
+        synchronized (this) { this.notifyAll(); } // for unit test
     }
 
     /**
@@ -64,20 +69,34 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
 
     @Override protected void dealWithSocket(Socket socket) throws ServersIOException {
         this.socket = socket;
+
         rcvReqCt.add(1);
+
         try {
             bufferedReader = ServersCommon.bufferedReader(socket);
             command = bufferedReader.readLine();
         }
         catch (IOException e) {
-            /* If this ever actually happens I will deal with it then */
-            e.printStackTrace();
+            throw new ServersIOException(e);
         }
-        if (command == null) throw new RuntimeException("null command");
+
+        if (command == null)
+            throw new RuntimeException("null command");
+
         System.out.println("tracker received command: "+command);
+
         switch (command) {
-            case "ECHO": echo();           return;
-            case "ADD":  addFileRequest(); return;
+            case "ECHO":
+                echo();
+                break;
+            case "ADD":
+                try {
+                    addFileRequest();
+                }
+                catch (CreateP2PFileException e) {
+                    e.printStackTrace();
+                }
+                break;
             default: System.err.println("ERROR: There is no case to handle that command.");
         }
     }

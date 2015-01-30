@@ -30,17 +30,24 @@ public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
             swarm = new TrackerSwarm(meta, this);
         }
         swarm.getSeeders().add(new TrackerPeer(addr));
+        getSwarms().add(swarm);
     }
 
     public static LocalTracker create()
-            throws ListenerCouldntConnectException, NotConnectedException {
+            throws ListenerCouldntConnectException, NotConnectedException
+    {
         TrackerServer trkSrv = new TrackerServer();
         LocalTracker localTracker = new LocalTracker(trkSrv.getExternalSocketAddr());
+        trkSrv.setTracker(localTracker);
         localTracker.setTrackerServer(trkSrv);
         return localTracker;
     }
 
     @Override public void run() {}
+
+    public TrackerServer getTrackerServer() {
+        return trackerServer;
+    }
 
     public void setTrackerServer(TrackerServer trackerServer) {
         this.trackerServer = trackerServer;

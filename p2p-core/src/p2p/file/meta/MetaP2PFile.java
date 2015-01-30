@@ -7,6 +7,9 @@ import javafx.beans.property.StringProperty;
 import p2p.exceptions.CreateP2PFileException;
 import util.Common;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 /**
  * Ethan Petuchowski 1/7/15
  */
@@ -18,6 +21,12 @@ public class MetaP2PFile {
 
     public String formattedFilesizeString() {
         return Common.formatByteCountToString(getFilesizeBytes());
+    }
+
+    public String serializeToString() {
+        return getFilename()        +"\n"
+             + getFilesizeBytes()   +"\n"
+             + getDigest()          +"\n";
     }
 
     public MetaP2PFile(String filename, int filesize, String sha2digest)
@@ -72,5 +81,15 @@ public class MetaP2PFile {
         result = 31*result+filesizeBytes.hashCode();
         result = 31*result+digest.hashCode();
         return result;
+    }
+
+    public static MetaP2PFile deserializeFromReader(BufferedReader reader)
+            throws IOException, CreateP2PFileException
+    {
+        String filename = reader.readLine();
+        String filesize = reader.readLine();
+        String digest = reader.readLine();
+        int filebytes = Integer.parseInt(filesize);
+        return new MetaP2PFile(filename, filebytes, digest);
     }
 }
