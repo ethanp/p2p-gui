@@ -1,6 +1,8 @@
 package client.view.panes.trackers;
 
+import Exceptions.ServersIOException;
 import client.Main;
+import client.tracker.RemoteTracker;
 import client.util.ClientStateUtil;
 import client.util.ViewUtil;
 import javafx.event.ActionEvent;
@@ -9,9 +11,8 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeTableCell;
 import org.controlsfx.dialog.Dialogs;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.tracker.RealRemoteTracker;
-import p2p.transfer.FileDownload;
-import util.Common;
+import client.download.FileDownload;
+import util.ServersCommon;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -62,7 +63,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 try {
                     getItem().getTracker().listFiles();
                 }
-                catch (IOException | ConnectToTrackerException ex) {
+                catch (ServersIOException | IOException | ConnectToTrackerException ex) {
                     catchTrackerConnectionIssue(ex);
                 }
             });
@@ -104,10 +105,17 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
 
         response.ifPresent(addr -> {
             try {
-                InetSocketAddress isa = Common.stringToIPPort(addr);
-                final RealRemoteTracker newTracker = new RealRemoteTracker(isa);
-                Main.getKnownTrackers().add(newTracker);
-                newTracker.listFiles();
+                InetSocketAddress isa = ServersCommon.stringToIPPort(addr);
+                RemoteTracker newTracker;
+                try {
+                    newTracker = new RemoteTracker(isa);
+                    Main.getKnownTrackers().add(newTracker);
+                    newTracker.listFiles();
+                }
+                catch (ServersIOException e) {
+                    e.printStackTrace();
+                    // TODO implement TrackersCell addRealTrackerDialog
+                }
             } catch (IOException | ConnectToTrackerException e) {
                 catchTrackerConnectionIssue(e);
             }

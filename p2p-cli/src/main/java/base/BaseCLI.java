@@ -22,5 +22,8 @@ public class BaseCLI {
         }
     }
 
-    public static void run(){throw new NotImplementedException();}
+    public static void run() {
+        // TODO implement BaseCLI run
+        throw new NotImplementedException();
+    }
 }

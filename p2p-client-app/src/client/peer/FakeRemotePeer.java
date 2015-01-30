@@ -1,4 +1,4 @@
-package p2p.peer;
+package client.peer;
 
 import util.ServersCommon;
 

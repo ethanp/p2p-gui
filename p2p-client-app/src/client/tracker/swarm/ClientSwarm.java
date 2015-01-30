@@ -1,9 +1,10 @@
-package p2p.tracker.swarm;
+package client.tracker.swarm;
 
+import client.tracker.RemoteTracker;
 import p2p.file.meta.MetaP2PFile;
-import p2p.peer.FakeRemotePeer;
-import p2p.peer.RemotePeer;
-import p2p.tracker.AbstractRemoteTracker;
+import client.peer.FakeRemotePeer;
+import client.peer.RemotePeer;
+import p2p.tracker.swarm.Swarm;
 import util.Common;
 
 /**
@@ -12,8 +13,8 @@ import util.Common;
  * The type of Swarm held by a Client allowing it to decide
  * from which Peer to download which Chunk
  */
-public class ClientSwarm extends Swarm<AbstractRemoteTracker, RemotePeer> {
-    public ClientSwarm(MetaP2PFile baseMetaP2PFile, AbstractRemoteTracker trkr) {
+public class ClientSwarm extends Swarm<RemoteTracker, RemotePeer> {
+    public ClientSwarm(MetaP2PFile baseMetaP2PFile, RemoteTracker trkr) {
         super(baseMetaP2PFile, trkr);
     }
 

@@ -1,11 +1,11 @@
-package p2p.tracker;
+package client.tracker;
 
 import Exceptions.ServersIOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
-import p2p.tracker.swarm.ClientSwarm;
+import client.tracker.swarm.ClientSwarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 import util.ServersCommon;
@@ -16,15 +16,16 @@ import java.net.InetSocketAddress;
 /**
  * Ethan Petuchowski 1/8/15
  */
-public class FakeRemoteTracker extends AbstractRemoteTracker {
+public class FakeRemoteTracker extends RemoteTracker {
     String ipPortString;
 
     static FakeRemoteTracker defaultFakeRemoteTracker;
 
     static {
-        try { defaultFakeRemoteTracker = new FakeRemoteTracker("123.123.123.123:3300"); }
-        catch (ConnectToTrackerException | IOException e) { e.printStackTrace(); }
-        catch (ServersIOException e) {
+        try {
+            defaultFakeRemoteTracker = new FakeRemoteTracker("123.123.123.123:3300");
+        }
+        catch (ConnectToTrackerException | IOException | ServersIOException e) {
             e.printStackTrace();
         }
         defaultFakeRemoteTracker.listFiles();
@@ -57,7 +58,7 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     @Override public String getIpPortString() { return ipPortString; }
 
     @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta) {
-        // TODO
+        // TODO implement FakeRemoteTracker addAddrToSwarmFor
         throw new NotImplementedException();
     }
 
@@ -72,10 +73,12 @@ public class FakeRemoteTracker extends AbstractRemoteTracker {
     /**
      * Tracker tells a Peer who wants to download a P2PFile about the specific IP Addresses of Peers
      * in an existing Swarm so that the Peer can update its internal view of the Swarm
-     * @param clientSwarm
+     * @param meta
      */
-    @Override public void updateSwarmInfo(ClientSwarm clientSwarm) {
-        getSwarmForFile(clientSwarm.getMetaP2P()).addFakePeers();
+    @Override public ClientSwarm updateSwarmInfo(MetaP2PFile meta) {
+        ClientSwarm cs = getSwarmForFile(meta);
+        cs.addFakePeers();
+        return cs;
     }
 
     /**

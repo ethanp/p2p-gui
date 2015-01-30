@@ -1,5 +1,7 @@
-package p2p.file.p2pFile;
+package client.p2pFile;
 
+import client.tracker.RemoteTracker;
+import client.tracker.swarm.ClientSwarm;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -11,8 +13,6 @@ import p2p.exceptions.CreateP2PFileException;
 import p2p.file.chunk.Chunk;
 import p2p.file.meta.MetaP2PFile;
 import p2p.peer.ChunksForService;
-import p2p.tracker.AbstractRemoteTracker;
-import p2p.tracker.swarm.ClientSwarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 
@@ -30,7 +30,7 @@ import java.util.List;
 public class P2PFile {
 
     protected final ObjectProperty<File>                localFile;
-    protected final ListProperty<AbstractRemoteTracker> knownTrackers;
+    protected final ListProperty<RemoteTracker>         knownTrackers;
     protected final ListProperty<ClientSwarm>           swarms;
     protected final IntegerProperty                     bytesPerChunk;
     protected final IntegerProperty                     numChunks;
@@ -101,11 +101,12 @@ public class P2PFile {
         /* since the file is local, of course ALL chunks are available for service */
         toRet.getAvailableChunks().setAllAsAvailable();
 
+        // TODO implement P2PFile importLocalFile
         throw new NotImplementedException();
         // TODO I suppose this will have to be added to the Main.localFiles AFTER this finishes
     }
 
-    public P2PFile addTracker(AbstractRemoteTracker tracker) {
+    public P2PFile addTracker(RemoteTracker tracker) {
         knownTrackers.add(tracker);
         return this;
     }

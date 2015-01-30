@@ -1,4 +1,4 @@
-package p2p.protocol.fileTransfer;
+package client.protocol;
 
 /**
  * Ethan Petuchowski 1/18/15

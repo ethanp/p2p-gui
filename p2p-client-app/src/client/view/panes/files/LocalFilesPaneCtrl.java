@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
-import p2p.file.p2pFile.P2PFile;
+import client.p2pFile.P2PFile;
 
 import java.util.Arrays;
 import java.util.List;

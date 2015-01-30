@@ -2,8 +2,8 @@ package client.util;
 
 import client.Main;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.p2pFile.LocalFakeFile;
-import p2p.tracker.FakeRemoteTracker;
+import client.p2pFile.LocalFakeFile;
+import client.tracker.FakeRemoteTracker;
 
 /**
  * Ethan Petuchowski 1/15/15

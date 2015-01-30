@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.peer.Peer;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
-import p2p.tracker.AbstractRemoteTracker;
+import client.tracker.RemoteTracker;
 import servers.MultiThreadedServer;
 import servers.ServerThread;
 import util.Common;
@@ -33,7 +33,7 @@ public class PeerServer extends Peer implements ServerSideChunkProtocol {
         new Thread(server.getValue()).start();
     }
 
-    public static void sendEphemeralRequest(AbstractRemoteTracker tracker) {
+    public static void sendEphemeralRequest(RemoteTracker tracker) {
         try {
             tracker.addFileRequest();
         }

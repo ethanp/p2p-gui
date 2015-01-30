@@ -4,8 +4,8 @@ import client.Main;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
-import p2p.tracker.AbstractRemoteTracker;
-import p2p.tracker.swarm.ClientSwarm;
+import client.tracker.RemoteTracker;
+import client.tracker.swarm.ClientSwarm;
 
 /**
  * Ethan Petuchowski 1/12/15
@@ -20,10 +20,10 @@ public class TrackerTreeItem extends TreeItem<Celery> {
 
     @Override public boolean isLeaf() { return getValue().isSwarm(); }
 
-    private final ListChangeListener<AbstractRemoteTracker> trackersListener = c -> {
+    private final ListChangeListener<RemoteTracker> trackersListener = c -> {
         while (c.next()) {
             if (c.wasRemoved()) {
-                for (AbstractRemoteTracker f : c.getRemoved()) {
+                for (RemoteTracker f : c.getRemoved()) {
                     TreeItem<Celery> r = null;
                     for (TreeItem<Celery> m : getChildren()) {
                         if (m.getValue().equalsTracker(f)) {
@@ -37,7 +37,7 @@ public class TrackerTreeItem extends TreeItem<Celery> {
                 }
             }
             if (c.wasAdded()) {
-                for (AbstractRemoteTracker f : c.getAddedSubList()) {
+                for (RemoteTracker f : c.getAddedSubList()) {
                     getChildren().add(new TrackerTreeItem(new Celery(f)));
                 }
             }
@@ -78,7 +78,7 @@ public class TrackerTreeItem extends TreeItem<Celery> {
             }
             else if (getValue().isRoot()) {
                 Main.getKnownTrackers().addListener(trackersListener);
-                for (AbstractRemoteTracker tracker : Main.getKnownTrackers())
+                for (RemoteTracker tracker : Main.getKnownTrackers())
                     super.getChildren().add(new TrackerTreeItem(new Celery(tracker)));
             }
         }

@@ -1,9 +1,9 @@
-package p2p.protocol.tracker;
+package client.protocol;
 
 import Exceptions.ServersIOException;
+import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
-import p2p.tracker.swarm.ClientSwarm;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,9 +23,9 @@ public interface ClientSideTrackerProtocol {
      * Tracker tells a Peer who wants to download a P2PFile
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
-     * @param clientSwarm
+     * @param meta
      */
-    public void updateSwarmInfo(ClientSwarm clientSwarm) throws IOException, ConnectToTrackerException, ServersIOException;
+    public ClientSwarm updateSwarmInfo(MetaP2PFile meta) throws IOException, ConnectToTrackerException, ServersIOException;
 
     /**
      * Tracker sends Peer its full list of Swarms

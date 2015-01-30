@@ -1,8 +1,8 @@
-package p2p.transfer;
+package client.download;
 
 import Exceptions.ServersIOException;
-import p2p.file.p2pFile.P2PFile;
-import p2p.protocol.fileTransfer.ClientSideChunkProtocol;
+import client.p2pFile.P2PFile;
+import client.protocol.ClientSideChunkProtocol;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;
 
@@ -56,7 +56,7 @@ public class ChunkDownload implements Runnable, ClientSideChunkProtocol {
             /* TODO use the ClientSideChunkProtocol (i.e. requestChunk() below) */
         }
         catch (IOException e) { e.printStackTrace(); }
-
+        // TODO implement ChunkDownload run
         throw new NotImplementedException();
     }
 

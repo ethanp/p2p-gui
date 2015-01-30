@@ -1,14 +1,16 @@
-package p2p.peer;
+package client.peer;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
+import client.download.ChunkDownload;
+import client.p2pFile.P2PFile;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import p2p.exceptions.ConnectToPeerException;
 import p2p.file.meta.MetaP2PFile;
-import p2p.file.p2pFile.P2PFile;
+import p2p.peer.ChunksForService;
+import p2p.peer.Peer;
 import p2p.protocol.fileTransfer.PeerTalk;
-import p2p.transfer.ChunkDownload;
 import util.ServersCommon;
 
 import java.io.IOException;

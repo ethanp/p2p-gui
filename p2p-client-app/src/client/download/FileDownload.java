@@ -1,9 +1,9 @@
-package p2p.transfer;
+package client.download;
 
+import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToPeerException;
-import p2p.file.p2pFile.P2PFile;
-import p2p.peer.RemotePeer;
-import p2p.tracker.swarm.ClientSwarm;
+import client.p2pFile.P2PFile;
+import client.peer.RemotePeer;
 import util.Common;
 
 import java.io.File;

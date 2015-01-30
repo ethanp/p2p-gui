@@ -17,11 +17,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.p2pFile.LocalFakeFile;
-import p2p.file.p2pFile.P2PFile;
-import p2p.tracker.AbstractRemoteTracker;
-import p2p.tracker.FakeRemoteTracker;
-import p2p.transfer.FileDownload;
+import client.p2pFile.LocalFakeFile;
+import client.p2pFile.P2PFile;
+import client.tracker.RemoteTracker;
+import client.tracker.FakeRemoteTracker;
+import client.download.FileDownload;
 import util.Common;
 
 import java.io.File;
@@ -36,7 +36,7 @@ public class Main extends Application {
 
     public static Stage getPrimaryStage() { return primaryStage; }
     public static PeerServer getPeerServer() { return peerServer; }
-    public static ObservableList<AbstractRemoteTracker> getKnownTrackers() { return knownTrackers; }
+    public static ObservableList<RemoteTracker> getKnownTrackers() { return knownTrackers; }
     public static ObservableList<P2PFile> getLocalFiles() { return localFiles; }
     public static File getUserDownloadDirectory() { return userDownloadDirectory.get(); }
     public static ObjectProperty<File> userDownloadDirectoryProperty() { return userDownloadDirectory; }
@@ -56,7 +56,7 @@ public class Main extends Application {
         fileDownloadPool.submit(fileDownload);
     }
 
-    private static ObservableList<AbstractRemoteTracker> knownTrackers = FXCollections.observableArrayList();
+    private static ObservableList<RemoteTracker> knownTrackers = FXCollections.observableArrayList();
     private static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
 
     public static void addLocalFiles(P2PFile... files) {
