@@ -19,8 +19,8 @@ latex footer:   mmd-memoir-footer
 
 ## How a Client downloads a File
 
-### Flowchart of the Process (in Progress)
-![Flowchart png](FileDl.png)
+### Flowchart of the Process (1st vrsn)
+![Flowchart png](FileDL.png)
 
 ### Relevant Fields
 
