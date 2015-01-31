@@ -19,6 +19,9 @@ latex footer:   mmd-memoir-footer
 
 ## How a Client downloads a File
 
+### Flowchart of the Process (in Progress)
+![Flowchart png](FileDl.png)
+
 ### Relevant Fields
 
     /* in package 'client' of module 'p2p-client' */

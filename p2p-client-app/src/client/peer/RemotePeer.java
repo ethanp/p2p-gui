@@ -39,10 +39,10 @@ public class RemotePeer extends Peer {
             && chunksOfFiles.get(mFile).hasIdx(chunkIdx);
     }
 
-    public class ChunkAvailabilityUpdater implements Runnable {
+    public class ChunkAvblUpdater implements Runnable {
         MetaP2PFile metaFile;
 
-        public ChunkAvailabilityUpdater(MetaP2PFile mFile) { metaFile = mFile; }
+        public ChunkAvblUpdater(MetaP2PFile mFile) { metaFile = mFile; }
 
         @Override public void run() {
             try (Socket             peerConn = connectToPeer();
@@ -67,8 +67,8 @@ public class RemotePeer extends Peer {
         }
     }
 
-    public ChunkAvailabilityUpdater createAvailabilityUpdater(MetaP2PFile mFile) {
-        return new ChunkAvailabilityUpdater(mFile);
+    public ChunkAvblUpdater avblUpdater(MetaP2PFile mFile) {
+        return new ChunkAvblUpdater(mFile);
     }
 
     private Socket connectToPeer() throws ConnectToPeerException {
