@@ -158,7 +158,7 @@ public class TrackerServerTest {
         printWriter.flush();
 
         /* Peer server's listening port */
-        printWriter.println(ServersCommon.randomIPPortString());
+        printWriter.println(ServersCommon.ipPortToString(addr));
 
         /* Upload MetaFile */
         printWriter.println(meta.serializeToString());

@@ -1,5 +1,6 @@
 package client.view.panes.trackers;
 
+import Exceptions.ServersIOException;
 import client.Main;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,9 +27,11 @@ public class Celery {
     public RemoteTracker getTracker() { return tracker; }
     public ClientSwarm getSwarm() { return swarm; }
 
-    public void updateThisSwarm() throws IOException, ConnectToTrackerException {
-        assert isSwarm() : "can only update a swarm";
-        getSwarm().getTracker().updateSwarmInfo(getSwarm());
+    public void updateThisSwarm() throws ConnectToTrackerException, ServersIOException, IOException {
+        if (!isSwarm())
+            throw new RuntimeException("can only update a swarm");
+
+        getSwarm().getTracker().updateSwarmInfo(getSwarm().getMetaP2P());
     }
 
     /* subtype checkers */
@@ -61,7 +64,7 @@ public class Celery {
     }
 
     public String getSize() {
-        if (isSwarm()) return swarm.getMetaP2P().formattedFilesizeString();
+        if (isSwarm()) return swarm.getMetaP2P().formattedFilesizeStr();
         if (isTracker()) return tracker.getSwarms().size() + " files";
         else return "";
     }

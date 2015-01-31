@@ -19,7 +19,7 @@ public class MetaP2PFile {
     protected final IntegerProperty filesizeBytes;
     protected final StringProperty digest; /* only req'd bc we use 'tracker' as 'index' */
 
-    public String formattedFilesizeString() {
+    public String formattedFilesizeStr() {
         return Common.formatByteCountToString(getFilesizeBytes());
     }
 

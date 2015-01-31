@@ -18,10 +18,10 @@ import java.net.InetSocketAddress;
 public abstract class Tracker<S extends Swarm> {
 
     protected final ListProperty<S> swarms;
-    protected final ObjectProperty<InetSocketAddress> listeningSockAddr;
+    protected final ObjectProperty<InetSocketAddress> trkrListenAddr;
 
     public Tracker(InetSocketAddress addr) {
-        listeningSockAddr = new SimpleObjectProperty<>(addr);
+        trkrListenAddr = new SimpleObjectProperty<>(addr);
         swarms = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
@@ -35,22 +35,22 @@ public abstract class Tracker<S extends Swarm> {
     public ObservableList<S> getSwarms() { return swarms.get(); }
     public ListProperty<S> swarmsProperty() { return swarms; }
     public void setSwarms(ObservableList<S> swarms) { this.swarms.set(swarms); }
-    public InetSocketAddress getListeningSockAddr() { return listeningSockAddr.get(); }
-    public ObjectProperty<InetSocketAddress> listeningSockAddrProperty(){return listeningSockAddr;}
-    public void setListeningSockAddr(InetSocketAddress addr) { this.listeningSockAddr.set(addr); }
-    public String getIpPortString() { return ServersCommon.ipPortToString(getListeningSockAddr()); }
+    public InetSocketAddress getTrkrListenAddr() { return trkrListenAddr.get(); }
+    public ObjectProperty<InetSocketAddress> trkrListenAddrProperty(){return trkrListenAddr;}
+    public void setTrkrListenAddr(InetSocketAddress addr) { this.trkrListenAddr.set(addr); }
+    public String getIpPortString() { return ServersCommon.ipPortToString(getTrkrListenAddr()); }
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Tracker)) return false;
         Tracker tracker = (Tracker) o;
-        if (!listeningSockAddr.equals(tracker.listeningSockAddr)) return false;
+        if (!trkrListenAddr.equals(tracker.trkrListenAddr)) return false;
         if (!swarms.equals(tracker.swarms)) return false;
         return true;
     }
     @Override public int hashCode() {
         int result = swarms.hashCode();
-        result = 31*result+listeningSockAddr.hashCode();
+        result = 31*result+trkrListenAddr.hashCode();
         return result;
     }
 

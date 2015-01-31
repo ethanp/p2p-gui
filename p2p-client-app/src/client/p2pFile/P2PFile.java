@@ -30,7 +30,6 @@ import java.util.List;
 public class P2PFile {
 
     protected final ObjectProperty<File>                localFile;
-    protected final ListProperty<RemoteTracker>         knownTrackers;
     protected final ListProperty<ClientSwarm>           swarms;
     protected final IntegerProperty                     bytesPerChunk;
     protected final IntegerProperty                     numChunks;
@@ -42,7 +41,6 @@ public class P2PFile {
     public P2PFile(File localFile, MetaP2PFile metaP2PFile) {
         this.metaP2PFile = metaP2PFile;
         this.localFile   = new SimpleObjectProperty<>(localFile);
-        knownTrackers    = new SimpleListProperty<>(FXCollections.observableArrayList());
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
         bytesPerChunk    = new SimpleIntegerProperty(Common.DEFAULT_CHUNK_SIZE);
         int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.DEFAULT_CHUNK_SIZE);
@@ -107,17 +105,18 @@ public class P2PFile {
     }
 
     public P2PFile addTracker(RemoteTracker tracker) {
-        knownTrackers.add(tracker);
-        return this;
+        swarms.add(new ClientSwarm(metaP2PFile, tracker));
+        // TODO implement P2PFile addTracker
+        throw new NotImplementedException();
     }
 
-    public String getFilename() { return metaP2PFile.getFilename(); }
-    public String formattedFilesizeString() { return metaP2PFile.formattedFilesizeString(); }
 
     public String getCompletenessString() {
         return String.format("%.2f%%",getAvailableChunks().getProportionAvailable());
     }
 
+    public String           getFilename()           { return metaP2PFile.getFilename(); }
+    public String           formattedFileSizeStr()  { return metaP2PFile.formattedFilesizeStr(); }
     public int              getBytesPerChunk()      { return bytesPerChunk.get();   }
     public int              getNumChunks()          { return numChunks.get();       }
     public File             getLocalFile()          { return localFile.get();       }

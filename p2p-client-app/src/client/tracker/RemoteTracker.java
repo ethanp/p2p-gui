@@ -2,14 +2,14 @@ package client.tracker;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
+import client.p2pFile.P2PFile;
+import client.protocol.ClientSideTrackerProtocol;
+import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2PFile;
-import client.p2pFile.P2PFile;
 import p2p.protocol.fileTransfer.PeerTalk;
-import client.protocol.ClientSideTrackerProtocol;
 import p2p.protocol.tracker.TrackerTalk;
 import p2p.tracker.Tracker;
-import client.tracker.swarm.ClientSwarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;
 
@@ -48,13 +48,13 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
 
     public void connect() throws ConnectToTrackerException, IOException, ServersIOException {
         try {
-            connToTracker = ServersCommon.connectToInetSocketAddr(getListeningSockAddr());
+            connToTracker = ServersCommon.connectToInetSocketAddr(getTrkrListenAddr());
         }
         catch (FailedToFindServerException e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
             throw new ConnectToTrackerException(
-                    "tried to connect to " + ServersCommon.ipPortToString(getListeningSockAddr())+
+                    "tried to connect to " + ServersCommon.ipPortToString(getTrkrListenAddr())+
                     " but received "       + e.getMessage());
         }
         out = ServersCommon.printWriter(connToTracker);
@@ -74,24 +74,17 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         throw new NotImplementedException();
     }
 
-    public void addFileRequest() throws ServersIOException, ConnectToTrackerException, IOException {
-        MetaP2PFile meta = null;
-        InetSocketAddress addr = null;
-        addFileRequest(meta, addr);
-    }
-
     /**
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
+    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
         out.println(PeerTalk.ADD_FILE_REQUEST);
+        out.println(ServersCommon.ipPortToString(peerListenAddr));
+        out.println(meta.serializeToString());
         out.flush();
-        out.println(); // TODO not done
         disconnect();
-        // TODO implement RemoteTracker addFileRequest
-        throw new NotImplementedException();
     }
 
     /**
@@ -100,9 +93,35 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * so that the Peer can update its internal view of the Swarm
      */
     @Override public ClientSwarm updateSwarmInfo(MetaP2PFile meta)
-            throws IOException, ConnectToTrackerException, ServersIOException {
+            throws IOException, ConnectToTrackerException, ServersIOException
+    {
+        ClientSwarm clientSwarm = new ClientSwarm(meta, this);
         connect();
+
+        /* Send Command */
         out.println(TrackerTalk.SWARM_UPDATE);
+
+        /* Tell Tracker which File we're talking about */
+        out.println(meta.serializeToString());
+
+        /* get number of seeders and leechers */
+        String sNumSdrs = in.readLine();
+        String sNumLchrs = in.readLine();
+        int numSdrs = Integer.parseInt(sNumSdrs);
+        int numLchrs = Integer.parseInt(sNumLchrs);
+
+        /* Rcv Seeders and add them to Swarm */
+        for (int i = 0; i < numSdrs; i++) {
+            String sAddr = in.readLine();
+            InetSocketAddress addr = ServersCommon.addrFromString(sAddr);
+//            TODO new RemotePeer(addr);
+        }
+
+        /* Rcv Leechers and add them to Swarm */
+        for (int i = 0; i < numLchrs; i++) {
+
+        }
+
         disconnect();
         // TODO implement RemoteTracker updateSwarmInfo
         throw new NotImplementedException();

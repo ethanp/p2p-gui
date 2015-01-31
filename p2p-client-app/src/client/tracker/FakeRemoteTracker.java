@@ -66,7 +66,7 @@ public class FakeRemoteTracker extends RemoteTracker {
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
+    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
 
     }
 

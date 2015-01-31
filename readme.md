@@ -49,8 +49,7 @@ latex footer:   mmd-memoir-footer
         StringProperty digest;
     }
 
-### Mechanism
-
+### Before we Begin
 1. (done) The Client connects to (and instantiates) an `AbstractRemoteTracker`
    by Socket Address and on it calls `ClientSideTrackerProtocol`'s
    `listFiles()` RPC to obtain `ClientSwarm`s to fill in the `Tracker`'s
@@ -59,8 +58,12 @@ latex footer:   mmd-memoir-footer
 2. (done) Initially, the `chunksOfFiles` property of each `RemotePeer` in a
    `ClientSwarm` is empty, because the Tracker does not maintain that info (it
    only maintains the `servingAddr`s).
+
+### It starts with the User Interface
 3. User right-clicks on a Tracker's file and selects `Download File`.
     * This triggers `TrackersCell.updateItem().isSwarm()->downloadFile()`.
+
+### starting at downloadFile()
 4. We create a `P2PFile`, and hence a `File` in `Main`'s user-configured
    `localFiles` directory.
 4. We also create a `FileDownload` object, which sends a each `RemotePeer`
@@ -116,3 +119,49 @@ latex footer:   mmd-memoir-footer
 1. Prioritize downloading from faster Peers
     * Keep track of `historicAvgSpeed` in `RemotePeer`
 2. Cache recently-served chunks (not a lot) in the `PeerServer`
+
+## A Client retrives Swarm info from a Tracker
+
+This happens as the beginning of the process of a User downloading a file.
+
+### Relevant Fields
+
+    public class P2PFile {
+        List<ClientSwarm> swarms;
+        MetaP2PFile meta;
+    }
+
+    public class ClientSwarm extends Swarm<RemoteTracker, RemotePeer> {
+
+        /* via Swarm<RemoteTracker, RemotePeer> */
+        List<RemotePeer> seeders;
+        List<RemotePeer> leechers;
+        RemoteTracker tracker;
+        MetaP2PFile meta;
+    }
+
+    public class RemoteTracker extends Tracker<ClientSwarm> 
+                               implements ClientSideTrackerProtocol 
+    {
+        Socket connectionToTracker;
+        PrintWriter out;
+        BufferedReader in;
+
+        /* via Tracker<ClientSwarm> */
+        List<ClientSwarm> swarms;
+        InetSocketAddress trkrListenAddr;
+
+        /* for ClientSideTrackerProtocol */
+        public ClientSwarm updateSwarmInfo(MetaP2PFile meta) {
+            ClientSwarm clientSwarm = new ClientSwarm(meta, this);
+            requestSwarmInfoFor(meta);
+            int numSdrs = fromWire();
+            int numLchrs = fromWire();
+            for each seeder=fromWire(): add seeder to swarm;
+            for each leecher=fromWire(): add leecher to swarm;
+            return clientSwarm;
+        }
+    }
+
+### Mechanism
+1. 

@@ -1,5 +1,7 @@
 package client.p2pFile;
 
+import client.tracker.FakeRemoteTracker;
+import client.tracker.RemoteTracker;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2PFile;
 import util.Common;
@@ -31,7 +33,7 @@ public class LocalFakeFile extends P2PFile {
         return new LocalFakeFile(fakeFile.getName(), randomFilesize, fakeTracker);
     }
 
-    public LocalFakeFile(String filename, int filesize, AbstractRemoteTracker tracker)
+    public LocalFakeFile(String filename, int filesize, RemoteTracker tracker)
             throws CreateP2PFileException
     {
         super(containerFolder, new MetaP2PFile(filename, filesize, "FAKE_DIGEST_DEADBEEF"));

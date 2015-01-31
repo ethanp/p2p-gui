@@ -29,8 +29,8 @@ import java.util.List;
  */
 public abstract class Swarm<T extends Tracker, P extends Peer> {
     /* CODE */
-    protected final ListProperty<P> leechers;
     protected final ListProperty<P> seeders;
+    protected final ListProperty<P> leechers;
     protected final ObjectProperty<MetaP2PFile> metaP2P;
     protected final ObjectProperty<T> tracker;
 

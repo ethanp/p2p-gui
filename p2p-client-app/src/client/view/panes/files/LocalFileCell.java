@@ -25,7 +25,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
     private String getTxt() {
         switch (c) {
             case NAME:    return getItem().getFilename();
-            case SIZE:    return getItem().formattedFilesizeString();
+            case SIZE:    return getItem().formattedFileSizeStr();
             case PERCENT: return getItem().getCompletenessString();
         }
         throw new RuntimeException("unreachable");
