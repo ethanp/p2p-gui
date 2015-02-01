@@ -2,19 +2,23 @@ package client.server;
 
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NotConnectedException;
+import Exceptions.ServersIOException;
+import client.p2pFile.P2PFile;
+import client.state.ClientState;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import p2p.exceptions.ConnectToTrackerException;
-import p2p.peer.Peer;
+import p2p.file.meta.MetaP2PFile;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
-import client.tracker.RemoteTracker;
 import servers.MultiThreadedServer;
 import servers.ServerThread;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
+import util.ServersCommon;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 /**
  * Ethan Petuchowski 1/16/15
@@ -22,69 +26,50 @@ import java.io.IOException;
  * This is the "server" code running in the "p2p-client" to service upload
  * requests from external Peers.
  */
-public class PeerServer extends Peer implements ServerSideChunkProtocol {
+public class PeerServer extends MultiThreadedServer<ServerThread> {
 
-    protected final ObjectProperty<ClientPeerServer> server;
     protected final BooleanProperty isServing = new SimpleBooleanProperty(false);
 
     public PeerServer() throws ListenerCouldntConnectException, NotConnectedException {
-        super(null);
-        server = new SimpleObjectProperty<>(new ClientPeerServer(Common.CHUNK_SERVE_POOL_SIZE));
-        new Thread(server.getValue()).start();
+
+        // TODO I HAVE TO PASS A SERVER_SOCKET OR SOMETHING IN HERE TOO,...IT CAN'T JUST BE NULL!@!
+        super(null, Common.CHUNK_SERVE_POOL_SIZE);
     }
 
-    public static void sendEphemeralRequest(RemoteTracker tracker) {
-        try {
-            tracker.addFileRequest();
+
+    class PeerServerThread extends ServerThread implements ServerSideChunkProtocol {
+
+        public PeerServerThread(Socket socket) {
+            super(socket);
         }
-        catch (ConnectToTrackerException | IOException e) {
-            System.out.println("Couldn't send message from ephemeral client to given tracker");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
-    @Override public void serveChunk() {}
-
-    class ClientPeerServer extends MultiThreadedServer<ServerThread> {
-
-        public ClientPeerServer(int poolSize)
-                throws ListenerCouldntConnectException, NotConnectedException
-        { super(poolSize); }
-
-//        @Override protected void beforeRunLoop() {
-//            setServingAddr(getExternalSocketAddr());
-//            setIsServing(true);
-//        }
-//
-//        @Override protected void runLoopCode() throws IOException {
-//            String command = bufferedReader.readLine();
-//            if (command == null) throw new RuntimeException("null command");
-//            System.out.println("client peer received command: "+command);
-//            switch (command) {
-//                case PeerTalk.GET_AVAILABILITIES:
-//                    serveAvailabilities();
-//                    break;
-//            }
-//        }
-
-        private void serveAvailabilities() throws IOException {
+        private void serveAvailabilities() throws IOException, ServersIOException {
             System.out.println("serving availabilities");
-//            try (ObjectOutputStream objOut = Common.objectOStream(conn);
-//                 ObjectInputStream  objIn  = Common.objectIStream(conn))
-//            {
-//                MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
-//                for (P2PFile pFile : Main.getLocalFiles()) {
-//                    if (pFile.getMetaP2PFile().equals(mFile)) {
-//                        objOut.writeObject(pFile.getAvailableChunks());
-//                    }
-//                }
-//            }
-//            catch (ClassNotFoundException e) { e.printStackTrace(); }
+            try (ObjectOutputStream objOut = ServersCommon.objectOStream(socket);
+                 ObjectInputStream objIn = ServersCommon.objectIStream(socket)) {
+                MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
+                for (P2PFile pFile : ClientState.getLocalFiles()) {
+                    if (pFile.getMetaP2PFile().equals(mFile)) {
+                        objOut.writeObject(pFile.getAvailableChunks());
+                    }
+                }
+            }
+            catch (ClassNotFoundException e) { e.printStackTrace(); }
 
+        }
+
+        /* from ServerSideChunkProtocol */
+        @Override public void serveChunk() {
+            // TODO implement PeerServerThread serveChunk
+            throw new NotImplementedException();
+        }
+
+        @Override public void run() {
+           // TODO implement PeerServerThread run
+           throw new NotImplementedException();
+        }
     }
 
-    }
 
 
     public boolean getIsServing() { return isServing.get(); }

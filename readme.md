@@ -12,10 +12,7 @@ latex footer:   mmd-memoir-footer
 
 ## TODOs
 
-1. `SimpleServer`'s abstract server should definitely be *multithreaded*
-   because---although `Tracker`s don't---each `PeerServer` needs to be able to
-   respond to a *pool's* worth of requests at once.
-2. The Peer-server's *serving* of `Chunk`s
+1. The Peer-server's *serving* of `Chunk`s
 
 ## How a Client downloads a File
 

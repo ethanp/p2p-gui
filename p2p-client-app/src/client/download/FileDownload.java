@@ -46,7 +46,7 @@ public class FileDownload implements Runnable {
     }
 
     @Override public void run() {
-        /* TODO use `RemotePeer`'s `downloadChunk()` which will create `ChunkDownloads`
+        /* TODO use `RemotePeer`'s `requestChunk()` which will create `ChunkDownloads`
          * and deposit `Chunk`s of the file directly into the `localFile` */
         try {
             updateAllChunkAvailabilities();

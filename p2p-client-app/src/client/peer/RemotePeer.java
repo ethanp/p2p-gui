@@ -45,6 +45,10 @@ public class RemotePeer extends Peer {
         public ChunkAvblUpdater(MetaP2PFile mFile) { metaFile = mFile; }
 
         @Override public void run() {
+            updateAvailabilities();
+        }
+
+        protected void updateAvailabilities() {
             try (Socket             peerConn = connectToPeer();
                  ObjectOutputStream objOut   = ServersCommon.objectOStream(peerConn);
                  ObjectInputStream  objIn    = ServersCommon.objectIStream(peerConn);
@@ -71,7 +75,7 @@ public class RemotePeer extends Peer {
         return new ChunkAvblUpdater(mFile);
     }
 
-    private Socket connectToPeer() throws ConnectToPeerException {
+    protected Socket connectToPeer() throws ConnectToPeerException {
         try {
             return ServersCommon.connectToInetSocketAddr(getServingAddr());
         }
@@ -83,7 +87,7 @@ public class RemotePeer extends Peer {
     }
 
     /* TODO this will be called by a FileDownload object (it is not called at all currently) */
-    public void downloadChunk(P2PFile pFile, int chunkIdx) throws ConnectToPeerException, IOException, ServersIOException {
+    public void requestChunk(P2PFile pFile, int chunkIdx) throws ConnectToPeerException, IOException, ServersIOException {
 
         /* just a logic-check to make sure that at least this client THINKS the peer
          * has the desired Chunk available for download
