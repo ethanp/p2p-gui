@@ -8,7 +8,12 @@ package p2p.protocol.fileTransfer;
  * received, and used in a switch statement.
  */
 public abstract class PeerTalk {
-    public static final String GET_AVAILABILITIES = "GET";
-    public static final String ADD_FILE_REQUEST = "ADD";
-    public static final String ECHO = "ECHO";
+    public abstract class ToTracker {
+        public static final String GET_AVAILABILITIES = "GET";
+        public static final String ADD_FILE_REQUEST = "ADD";
+        public static final String ECHO = "ECHO";
+    }
+    public abstract class ToPeer {
+        public static final String GET_CHUNK = "CHUNK";
+    }
 }

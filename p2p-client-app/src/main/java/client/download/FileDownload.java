@@ -6,6 +6,7 @@ import client.tracker.swarm.ClientSwarm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import p2p.exceptions.ConnectToPeerException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 
 import java.io.File;
@@ -31,9 +32,11 @@ public class FileDownload implements Runnable {
 
     public FileDownload(File parentDir, ClientSwarm swarm, Collection<P2PFile> localFiles) {
         clientSwarms = FXCollections.observableSet(swarm);
-        pFile = P2PFile.newP2PFileInDir(parentDir, swarm.getMetaP2P());
-        localFiles.add(pFile);
-        localFile = pFile.getLocalFile();
+        // TODO implement FileDownload FileDownload
+        throw new NotImplementedException();
+//        pFile = P2PFile.newP2PFileInDir(parentDir, swarm.getMetaP2P());
+//        localFiles.add(pFile);
+//        localFile = pFile.getLocalFile();
     }
 
     protected Set<RemotePeer> getPeersFromSwarms() {

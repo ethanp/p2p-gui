@@ -3,16 +3,27 @@ package client.server;
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
+import client.p2pFile.P2PFile;
+import client.state.ClientState;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import p2p.exceptions.CreateP2PFileException;
+import p2p.file.chunk.Chunk;
+import p2p.file.meta.MetaP2PFile;
+import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import servers.MultiThreadedServer;
 import servers.Server;
 import servers.ServerThread;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
+import util.ServersCommon;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownServiceException;
 
 /**
  * Ethan Petuchowski 1/16/15
@@ -33,8 +44,12 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
     class ConnectionHandler extends ServerThread implements ServerSideChunkProtocol {
 
-        public ConnectionHandler(Socket socket) {
+        BufferedOutputStream outputStream;
+        BufferedReader reader;
+        public ConnectionHandler(Socket socket) throws ServersIOException {
             super(socket);
+            outputStream = ServersCommon.buffOStream(socket);
+            reader = ServersCommon.bufferedReader(socket);
         }
 
         @Override public void serveAvailabilities() {
@@ -49,14 +64,64 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
         }
 
         /* from ServerSideChunkProtocol */
-        @Override public void serveChunk() {
-            // TODO implement ConnectionHandler serveChunk
-            throw new NotImplementedException();
+        @Override public void serveChunk() throws IOException, CreateP2PFileException {
+            /* determine which file we're talking about */
+            MetaP2PFile meta = MetaP2PFile.deserializeFromReader(reader);
+
+            /* make sure I have that file */
+            P2PFile pFile = null;
+            for (P2PFile localFile : ClientState.getLocalFiles()) {
+                if (meta.equals(localFile.getMetaP2PFile())) {
+                    pFile = localFile;
+                }
+            }
+            if (pFile == null) {
+                // TODO respond that request is invalid
+                throw new NotImplementedException();
+            }
+
+            /* determine which chunk we're talking about */
+            int chunkIdx = Integer.parseInt(reader.readLine());
+
+            /* make sure I have that chunk */
+            Chunk chunk = pFile.getChunk(chunkIdx);
+            if (chunk == null) {
+                // TODO respond that request is invalid
+                throw new NotImplementedException();
+            }
+
+            /* inform downloader of chunk size */
+            String sizeString = chunk.size()+"\n";
+            outputStream.write(sizeString.getBytes());
+
+            /* serve the chunk */
+            outputStream.write(chunk.getData());
+            outputStream.flush();
+            try { socket.close(); } catch (IOException e) {/*ignore*/}
         }
 
         @Override public void run() {
-           // TODO implement ConnectionHandler run
-           throw new NotImplementedException();
+            try {
+                String command = reader.readLine();
+                System.out.println("PeerServer received command: "+command);
+                switch (command) {
+                    case PeerTalk.ToPeer.GET_CHUNK:
+                        try {
+                            serveChunk();
+                        }
+                        catch (CreateP2PFileException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    default:
+                        throw new UnknownServiceException("PeerServer can't handle a "+command);
+                }
+
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

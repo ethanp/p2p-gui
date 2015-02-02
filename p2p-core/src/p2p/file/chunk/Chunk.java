@@ -22,4 +22,7 @@ public abstract class Chunk {
         }
         this.data = data;
     }
+
+    public int size()       { return data.length; }
+    public byte[] getData() { return data; }
 }

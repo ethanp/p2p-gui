@@ -53,7 +53,7 @@ public class TrackerServerTest {
         final String sentString = "tell me this\n"+
                                   "I got somethin' to tell ya\n";
 
-        printWriter.println(PeerTalk.ECHO);
+        printWriter.println(PeerTalk.ToTracker.ECHO);
         printWriter.println(sentString);
         printWriter.flush();
         StringBuilder response = new StringBuilder();
@@ -154,7 +154,7 @@ public class TrackerServerTest {
     public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
 
         /* Command */
-        printWriter.println(PeerTalk.ADD_FILE_REQUEST);
+        printWriter.println(PeerTalk.ToTracker.ADD_FILE_REQUEST);
         printWriter.flush();
 
         /* Peer server's listening port */

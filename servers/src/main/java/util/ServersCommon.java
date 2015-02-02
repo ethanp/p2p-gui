@@ -5,6 +5,8 @@ import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import Exceptions.SocketCouldntConnectException;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,6 +44,24 @@ public class ServersCommon {
     public static BufferedWriter bufferedWriter(Socket s) throws ServersIOException {
         try {
             return new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
+    }
+
+    public static BufferedInputStream buffIStream(Socket s) throws ServersIOException {
+        try {
+            return new BufferedInputStream(s.getInputStream());
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
+    }
+
+        public static BufferedOutputStream buffOStream(Socket s) throws ServersIOException {
+        try {
+            return new BufferedOutputStream(s.getOutputStream());
         }
         catch (IOException e) {
             throw new ServersIOException(e);

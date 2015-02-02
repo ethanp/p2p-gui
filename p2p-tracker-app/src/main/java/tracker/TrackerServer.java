@@ -87,10 +87,10 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
         System.out.println("tracker received command: "+command);
 
         switch (command) {
-            case PeerTalk.ECHO:
+            case PeerTalk.ToTracker.ECHO:
                 echo();
                 break;
-            case PeerTalk.ADD_FILE_REQUEST:
+            case PeerTalk.ToTracker.ADD_FILE_REQUEST:
                 try {
                     addFileRequest();
                 }

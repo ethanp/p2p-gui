@@ -15,14 +15,10 @@ import p2p.file.meta.MetaP2PFile;
 import p2p.peer.ChunksForService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
+import util.SHA2Digest;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Ethan Petuchowski 1/17/15
@@ -33,7 +29,6 @@ public class P2PFile {
     protected final ListProperty<ClientSwarm>           swarms;
     protected final IntegerProperty                     bytesPerChunk;
     protected final IntegerProperty                     numChunks;
-    protected final ListProperty<Chunk>                 dataChunks;
     protected final ObjectProperty<ChunksForService>    availableChunks;
 
     protected final MetaP2PFile metaP2PFile;
@@ -42,61 +37,56 @@ public class P2PFile {
         this.metaP2PFile = metaP2PFile;
         this.localFile   = new SimpleObjectProperty<>(localFile);
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
-        bytesPerChunk    = new SimpleIntegerProperty(Common.DEFAULT_CHUNK_BYTES);
-        int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.DEFAULT_CHUNK_BYTES);
+        bytesPerChunk    = new SimpleIntegerProperty(Common.NUM_CHUNK_BYTES);
+        int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.NUM_CHUNK_BYTES);
         numChunks        = new SimpleIntegerProperty(iChunks);
-        dataChunks       = new SimpleListProperty<>(FXCollections.observableArrayList());
         availableChunks  = new SimpleObjectProperty<>(new ChunksForService(iChunks));
     }
 
-    /**
-     * Create a path on the filesystem for the file that will be downloaded
-     * DOES NOT add the file to the User's known Files
-     *      because we don't have access to User stuff here
-     *      that has to be done in the TrackersCell
-     * return a new P2PFile representation of the file
-     */
-    public static P2PFile newP2PFileInDir(File parentDir, MetaP2PFile metaP2PFile) {
-        return new P2PFile(new File(parentDir, metaP2PFile.getFilename()), metaP2PFile);
-    }
-
-    // TODO not finished yet
-    public static P2PFile importLocalFile(File fsFile) throws CreateP2PFileException {
-
+    public static P2PFile importLocalFile(File fsFile) throws CreateP2PFileException, IOException {
         if (!fsFile.exists())
             throw new CreateP2PFileException("you can't import a non-existent file");
         if (fsFile.isDirectory())
             throw new CreateP2PFileException("you can't import a directory");
-
-        File parentDir = fsFile.getParentFile();
-        String filename = fsFile.getName();
-
-        long lFilesize = fsFile.length();
-
-        if (lFilesize > (long) Common.MAX_FILESIZE)
+        if (fsFile.length() > (long) Common.MAX_FILESIZE)
             throw new CreateP2PFileException("file is too big, max size is "+
                                              Common.formatByteCountToString(Common.MAX_FILESIZE));
-        int filesize = (int) lFilesize;
 
-        /* create the digest of the file */
-        String digest = null; // TODO get digest
-
-        MetaP2PFile meta = new MetaP2PFile(filename, filesize, digest);
-        P2PFile toRet = P2PFile.newP2PFileInDir(parentDir, meta);
+        P2PFile toRet = new P2PFile(
+                fsFile,
+                new MetaP2PFile(
+                        fsFile.getName(),
+                        (int) fsFile.length(),
+                        SHA2Digest.createDigest(fsFile)
+                )
+        );
 
         /* since the file is local, of course ALL chunks are available for service */
         toRet.getAvailableChunks().setAllAsAvailable();
 
-        // TODO implement P2PFile importLocalFile
-        throw new NotImplementedException();
+        return toRet;
     }
 
     public P2PFile addTracker(RemoteTracker tracker) {
         swarms.add(new ClientSwarm(metaP2PFile, tracker));
+
+        /* should probably listFiles() on the tracker
+         * while adding the tracker itself to the ClientState
+         */
+
         // TODO implement P2PFile addTracker
         throw new NotImplementedException();
     }
 
+    public Chunk getChunk(int index) {
+        if (!getAvailableChunks().hasIdx(index))
+            return null;
+        if (index > getNumChunks())
+            throw new IllegalArgumentException("this file only has "+getNumChunks()+" chunks, " +
+                                               "but you wanted number "+index);
+        // TODO implement P2PFile getChunk
+        throw new NotImplementedException();
+    }
 
     public String getCompletenessString() {
         return String.format("%.2f%%",getAvailableChunks().getProportionAvailable());

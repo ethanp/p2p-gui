@@ -80,7 +80,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      */
     @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
-        out.println(PeerTalk.ADD_FILE_REQUEST);
+        out.println(PeerTalk.ToTracker.ADD_FILE_REQUEST);
         out.println(ServersCommon.ipPortToString(peerListenAddr));
         out.println(meta.serializeToString());
         out.flush();

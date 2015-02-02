@@ -16,6 +16,8 @@ import p2p.exceptions.CreateP2PFileException;
 import util.Common;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,11 +44,12 @@ public class ClientState {
         }
     }
 
-    public static void addLocalFiles(File... files) throws CreateP2PFileException {
-        for (File f : files) {
-            P2PFile p = P2PFile.importLocalFile(f);
-            localFiles.add(p);
-        }
+    public static void addLocalFile(File file) throws CreateP2PFileException, IOException {
+        localFiles.add(P2PFile.importLocalFile(file));
+    }
+
+    public static void addLocalFiles(File... files) throws CreateP2PFileException, IOException {
+        for (File file:files) addLocalFile(file);
     }
 
     public static void addLocalFiles(P2PFile... files) {
@@ -68,6 +71,7 @@ public class ClientState {
 
     /* getters & setters */
     public static PeerServer getPeerServer() { return peerServer; }
+    public static InetSocketAddress getExternalSocketAddr() { return peerServer.getExternalSocketAddr(); }
     public static void setUserDownloadDirectory(File file) { userDownloadDirectory.setValue(file); }
     public static File getUserDownloadDirectory() { return userDownloadDirectory.get(); }
     public static ObjectProperty<File> userDownloadDirectoryProperty() { return userDownloadDirectory; }
