@@ -1,8 +1,7 @@
 package client.state;
 
 import Exceptions.ListenerCouldntConnectException;
-import Exceptions.NotConnectedException;
-import client.download.FileDownload;
+import Exceptions.NoInternetConnectionException;
 import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
 import client.server.PeerServer;
@@ -37,13 +36,9 @@ public class ClientState {
         try {
             peerServer = new PeerServer();
         }
-        catch (ListenerCouldntConnectException | NotConnectedException e) {
+        catch (ListenerCouldntConnectException | NoInternetConnectionException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void startFileDownload(FileDownload fileDownload) {
-        fileDownloadPool.submit(fileDownload);
     }
 
     public static void addLocalFiles(P2PFile... files) {
@@ -55,12 +50,12 @@ public class ClientState {
             LocalFakeFile pFile1 = LocalFakeFile.genFakeFile();
             LocalFakeFile pFile2 = LocalFakeFile.genFakeFile();
             LocalFakeFile pFile3 = LocalFakeFile.genFakeFile();
-            ClientState.addLocalFiles(pFile1, pFile2, pFile3);
+            addLocalFiles(pFile1, pFile2, pFile3);
         }
         catch (CreateP2PFileException e) {
             e.printStackTrace();
         }
-        ClientState.getKnownTrackers().add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
+        knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 
     /* getters & setters */

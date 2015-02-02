@@ -1,8 +1,9 @@
 package util;
 
 import Exceptions.FailedToFindServerException;
-import Exceptions.NotConnectedException;
+import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
+import Exceptions.SocketCouldntConnectException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,12 +30,22 @@ public class ServersCommon {
     public static Random r = new Random();
     public static int randInt(int bound) { return r.nextInt(bound); }
 
-    public static BufferedReader bufferedReader(Socket s) throws IOException {
-        return new BufferedReader(new InputStreamReader(s.getInputStream()));
+    public static BufferedReader bufferedReader(Socket s) throws ServersIOException {
+        try {
+            return new BufferedReader(new InputStreamReader(s.getInputStream()));
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
     }
 
-    public static BufferedWriter bufferedWriter(Socket s) throws IOException {
-        return new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+    public static BufferedWriter bufferedWriter(Socket s) throws ServersIOException {
+        try {
+            return new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
     }
 
     public static PrintWriter printWriter(Socket s) throws ServersIOException {
@@ -67,7 +78,7 @@ public class ServersCommon {
         }
     }
 
-    public static InetAddress findMyIP() throws NotConnectedException {
+    public static InetAddress findMyIP() throws NoInternetConnectionException {
         URL aws = null;
         InetAddress toRet = null;
         try { aws = new URL("http://checkip.amazonaws.com"); }
@@ -81,7 +92,7 @@ public class ServersCommon {
             }
         }
         catch (IOException e) {
-            throw new NotConnectedException(e);
+            throw new NoInternetConnectionException(e);
         }
         finally {
             if (in != null) {
@@ -92,8 +103,13 @@ public class ServersCommon {
         return toRet;
     }
 
-    public static Socket socketAtAddr(InetSocketAddress addr) throws IOException {
-        return new Socket(addr.getAddress(), addr.getPort());
+    public static Socket socketAtAddr(InetSocketAddress addr) throws SocketCouldntConnectException {
+        try {
+            return new Socket(addr.getAddress(), addr.getPort());
+        }
+        catch (IOException e) {
+            throw new SocketCouldntConnectException(e);
+        }
     }
 
     public static InetSocketAddress addrFromString(String addrStr) throws UnknownHostException {
@@ -106,14 +122,14 @@ public class ServersCommon {
     /**
      * the range is CLOSED on BOTH ends
      */
-    public static ServerSocket socketPortInRange(int start, int end) throws IOException {
+    public static ServerSocket socketPortInRange(int start, int end) throws ServersIOException {
         int[] ports = new int[end-start+1];
         for (int i = 0; i <= end-start; i++)
             ports[i] = i+start;
         return socketPortFromOptions(ports);
     }
 
-    static ServerSocket socketPortFromOptions(int[] ports) throws IOException {
+    static ServerSocket socketPortFromOptions(int[] ports) throws ServersIOException {
         for (int port : ports) {
             try {
                 return new ServerSocket(port);
@@ -122,7 +138,7 @@ public class ServersCommon {
                 continue; /* try next port */
             }
         }
-        throw new IOException("no free port found");
+        throw new ServersIOException("no free port found");
     }
 
     public static String ipPortToString(InetSocketAddress addr) {
@@ -140,8 +156,7 @@ public class ServersCommon {
         return new InetSocketAddress(ipAddr, port);
     }
 
-    public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr)
-            throws FailedToFindServerException
+    public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr) throws FailedToFindServerException
     {
         InetAddress ipAddr = inetSocketAddr.getAddress();
         int port = inetSocketAddr.getPort();
@@ -153,8 +168,7 @@ public class ServersCommon {
         }
     }
 
-    public static Socket connectLocallyToInetAddr(InetSocketAddress inetSocketAddr)
-            throws FailedToFindServerException
+    public static Socket connectLocallyToInetAddr(InetSocketAddress inetSocketAddr) throws FailedToFindServerException
     {
         try {
             return new Socket("0.0.0.0", inetSocketAddr.getPort());

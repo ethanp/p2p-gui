@@ -1,7 +1,7 @@
 package tracker;
 
 import Exceptions.ListenerCouldntConnectException;
-import Exceptions.NotConnectedException;
+import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -30,7 +30,7 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
     protected BufferedReader bufferedReader;
     protected String command;
 
-    public TrackerServer() throws ListenerCouldntConnectException, NotConnectedException {
+    public TrackerServer() throws ListenerCouldntConnectException, NoInternetConnectionException {
         super();
     }
 

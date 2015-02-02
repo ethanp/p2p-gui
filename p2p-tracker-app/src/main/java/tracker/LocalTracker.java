@@ -1,7 +1,7 @@
 package tracker;
 
 import Exceptions.ListenerCouldntConnectException;
-import Exceptions.NotConnectedException;
+import Exceptions.NoInternetConnectionException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.tracker.Tracker;
 
@@ -19,7 +19,7 @@ public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
     TrackerServer trackerServer;
 
     public LocalTracker(InetSocketAddress addr)
-            throws ListenerCouldntConnectException, NotConnectedException
+            throws ListenerCouldntConnectException, NoInternetConnectionException
     {
         super(addr);
     }
@@ -34,7 +34,7 @@ public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
     }
 
     public static LocalTracker create()
-            throws ListenerCouldntConnectException, NotConnectedException
+            throws ListenerCouldntConnectException, NoInternetConnectionException
     {
         TrackerServer trkSrv = new TrackerServer();
         LocalTracker localTracker = new LocalTracker(trkSrv.getExternalSocketAddr());

@@ -1,7 +1,7 @@
 package client.server;
 
 import Exceptions.ListenerCouldntConnectException;
-import Exceptions.NotConnectedException;
+import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import client.p2pFile.P2PFile;
 import client.state.ClientState;
@@ -30,7 +30,7 @@ public class PeerServer extends MultiThreadedServer<ServerThread> {
 
     protected final BooleanProperty isServing = new SimpleBooleanProperty(false);
 
-    public PeerServer() throws ListenerCouldntConnectException, NotConnectedException {
+    public PeerServer() throws ListenerCouldntConnectException, NoInternetConnectionException {
 
         // TODO I HAVE TO PASS A SERVER_SOCKET OR SOMETHING IN HERE TOO,...IT CAN'T JUST BE NULL!@!
         super(null, Common.CHUNK_SERVE_POOL_SIZE);

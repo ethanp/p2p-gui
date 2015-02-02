@@ -2,7 +2,7 @@ package tracker;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ListenerCouldntConnectException;
-import Exceptions.NotConnectedException;
+import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,13 +34,13 @@ public class TrackerServerTest {
         localTracker = LocalTracker.create();
         trackerServer = localTracker.getTrackerServer();
         new Thread(trackerServer).start();
-        socket = ServersCommon.connectLocallyToInetAddr(trackerServer.getExternalSocketAddr());
+        socket = trackerServer.connectToLoopbackAddr();
         printWriter = ServersCommon.printWriter(socket);
         bufferedReader = ServersCommon.bufferedReader(socket);
     }
 
     @Test public void testServerConnectToRouter()
-            throws ListenerCouldntConnectException, NotConnectedException, InterruptedException
+            throws ListenerCouldntConnectException, NoInternetConnectionException, InterruptedException
     {
         final InetSocketAddress addr = trackerServer.getExternalSocketAddr();
         System.out.println("connected at: "+ServersCommon.ipPortToString(addr));
@@ -142,7 +142,7 @@ public class TrackerServerTest {
 
     private void reconnectToTrackerServer() throws IOException, FailedToFindServerException, ServersIOException {
         socket.close();
-        socket = ServersCommon.connectLocallyToInetAddr(trackerServer.getExternalSocketAddr());
+        socket = trackerServer.connectToLoopbackAddr();
         printWriter = ServersCommon.printWriter(socket);
     }
 
