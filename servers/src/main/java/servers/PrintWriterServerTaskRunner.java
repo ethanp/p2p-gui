@@ -10,11 +10,11 @@ import java.net.Socket;
 /**
  * Ethan Petuchowski 1/28/15
  */
-public abstract class PrintWriterServerThread extends ServerThread {
+public abstract class PrintWriterServerTaskRunner extends ServerTaskRunner {
     BufferedReader bufferedReader;
     PrintWriter printWriter;
 
-    public PrintWriterServerThread(Socket socket) throws ServersIOException {
+    public PrintWriterServerTaskRunner(Socket socket) throws ServersIOException {
         super(socket);
         bufferedReader = ServersCommon.bufferedReader(socket);
         printWriter = ServersCommon.printWriter(socket);

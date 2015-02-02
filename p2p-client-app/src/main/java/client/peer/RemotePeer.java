@@ -54,7 +54,7 @@ public class RemotePeer extends Peer {
                  ObjectInputStream  objIn    = ServersCommon.objectIStream(peerConn);
                  PrintWriter        cmdPrt   = ServersCommon.printWriter(peerConn))
             {
-                cmdPrt.println(PeerTalk.ToTracker.GET_AVAILABILITIES);
+                cmdPrt.println(PeerTalk.ToPeer.GET_AVAILABILITIES);
                 cmdPrt.flush();
                 objOut.writeObject(metaFile);
                 try {

@@ -23,6 +23,8 @@ public abstract class Server implements Runnable {
     public static final int LOWEST_PORT_FORWARDED = 3000;
     public static final int HIGHEST_PORT_FORWARDED = 3500;
 
+    public static final int TYPICAL_THREADPOOL_SIZE = 20; // pulled outta nowheres
+
     protected ServerSocket listener;
     protected InetAddress ipAddr;
 
@@ -81,7 +83,9 @@ public abstract class Server implements Runnable {
                 throw new InterruptedException();
             }
             beginningOfListenLoop();
-            try (Socket socket = listener.accept()) {
+            Socket socket;
+            try {
+                socket = listener.accept();
                 dealWithSocket(socket);
             }
             catch (IOException e) {

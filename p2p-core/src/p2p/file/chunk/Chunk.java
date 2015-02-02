@@ -7,7 +7,7 @@ import java.security.InvalidParameterException;
 /**
  * Ethan Petuchowski 1/8/15
  */
-public abstract class Chunk {
+public class Chunk {
 
 
     /* Should this be a "property"?  Would that add a ton of space overhead?

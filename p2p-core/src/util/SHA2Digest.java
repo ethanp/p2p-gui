@@ -27,7 +27,7 @@ public class SHA2Digest {
         }
         DigestInputStream fileDigester = new DigestInputStream(fileInputStream, messageDigest);
         byte[] buffer = new byte[8192]; // 8 KB (size came from the referenced code, dunno how it was chosen)
-        while (fileDigester.read(buffer) != 1);
+        while (fileDigester.read(buffer) != -1);
         fileInputStream.close();
         String digestString = Base64.getEncoder().encodeToString(messageDigest.digest());
         return digestString;

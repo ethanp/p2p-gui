@@ -90,6 +90,7 @@ public class MetaP2PFile {
         String filesize = reader.readLine();
         String digest = reader.readLine();
         int filebytes = Integer.parseInt(filesize);
+        reader.readLine(); // bc as it stands, we send it with 2 trailing newlines
         return new MetaP2PFile(filename, filebytes, digest);
     }
 }

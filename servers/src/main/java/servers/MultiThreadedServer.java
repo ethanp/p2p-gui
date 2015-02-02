@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 /**
  * Ethan Petuchowski 1/28/15
  */
-public abstract class MultiThreadedServer<ThreadType extends ServerThread> extends Server {
+public abstract class MultiThreadedServer<TaskType extends ServerTaskRunner> extends Server {
 
     protected ExecutorService threadPool;
 
@@ -36,9 +36,11 @@ public abstract class MultiThreadedServer<ThreadType extends ServerThread> exten
         threadPool = Executors.newFixedThreadPool(poolSize);
     }
 
+    protected abstract TaskType createTask(Socket socket) throws ServersIOException;
+
     /* implements abstract method */
-    @Override protected void dealWithSocket(Socket socket) {
-        ServerThread serverThread = ThreadType.create(socket);
-        threadPool.submit(serverThread);
+    @Override protected void dealWithSocket(Socket socket) throws ServersIOException {
+        TaskType serverTask = createTask(socket);
+        threadPool.submit(new Thread(serverTask));
     }
 }

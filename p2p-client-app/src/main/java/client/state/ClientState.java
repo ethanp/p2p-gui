@@ -38,6 +38,7 @@ public class ClientState {
     static {
         try {
             peerServer = new PeerServer();
+            new Thread(peerServer).start();
         }
         catch (ListenerCouldntConnectException | NoInternetConnectionException | ServersIOException e) {
             e.printStackTrace();

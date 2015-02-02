@@ -14,7 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -23,7 +22,7 @@ public class PeerServerTest {
 
     @Test public void testLocalServeChunk() throws Exception {
         /* a ClientApp starts automatically (just by loading the classes) bc of all the static fields */
-        final int CHUNK_INDEX = 1;
+        final int FIRST_CHUNK_INDEX = 0;
 
         /* create directories to serve from and download to */
         File serveDir = makeCleanDir("p2p-gui serve");
@@ -39,6 +38,7 @@ public class PeerServerTest {
         for (int i = 0; i < bytes.length; i++)
             bytes[i] = (byte) (i % (int) Byte.MAX_VALUE);
         outputStream.write(bytes);
+        outputStream.flush();
 
         /* Start make it request that chunk FROM ITSELF.
          * This sounds strange but it makes sense as a way to go about testing it
@@ -54,23 +54,33 @@ public class PeerServerTest {
         PrintWriter writer = ServersCommon.printWriter(socket);
         MetaP2PFile metaP2PFile = ClientState.getLocalFiles().get(0).getMetaP2PFile();
         BufferedInputStream inputStream = ServersCommon.buffIStream(socket);
-        Scanner scanner = new Scanner(inputStream);
 
-        /* request Chunk 1 of the file */
+        /* request Chunk index 0 of the file */
 
         writer.println(PeerTalk.ToPeer.GET_CHUNK);
         writer.println(metaP2PFile.serializeToString());
-        writer.println(CHUNK_INDEX);
+        writer.println(Integer.toString(FIRST_CHUNK_INDEX));
         writer.flush();
 
-        int responseSize = Integer.parseInt(scanner.nextLine());
+        /* look ma, no stackoverflow */
+        StringBuilder sb = new StringBuilder();
+        for (;;) {
+            byte[] forChar = new byte[1];
+            inputStream.read(forChar);
+            String newChar = new String(forChar);
+            if (newChar.equals("\n"))
+                break;
+            sb.append(newChar);
+        }
+        int responseSize = Integer.parseInt(sb.toString());
+
         assertEquals(bytes.length, responseSize);
 
         byte[] response = new byte[bytes.length];
         int bytesRcvd = 0;
         while (bytesRcvd < bytes.length) {
             int rcv = inputStream.read(response, bytesRcvd, bytes.length-bytesRcvd);
-            if (bytesRcvd >= 0) {
+            if (rcv >= 0) {
                 bytesRcvd += rcv;
             } else {
                 throw new RuntimeException("it seems the whole file wasn't downloaded");

@@ -14,7 +14,7 @@ import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import servers.MultiThreadedServer;
 import servers.Server;
-import servers.ServerThread;
+import servers.ServerTaskRunner;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 import util.ServersCommon;
@@ -41,8 +41,12 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
               Common.CHUNK_SERVE_POOL_SIZE);
     }
 
+    @Override protected ConnectionHandler createTask(Socket socket) throws ServersIOException {
+        return new ConnectionHandler(socket);
+    }
 
-    class ConnectionHandler extends ServerThread implements ServerSideChunkProtocol {
+
+    class ConnectionHandler extends ServerTaskRunner implements ServerSideChunkProtocol {
 
         BufferedOutputStream outputStream;
         BufferedReader reader;
@@ -73,36 +77,40 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             for (P2PFile localFile : ClientState.getLocalFiles()) {
                 if (meta.equals(localFile.getMetaP2PFile())) {
                     pFile = localFile;
+                    break;
                 }
             }
-            if (pFile == null) {
-                // TODO respond that request is invalid
-                throw new NotImplementedException();
-            }
-
             /* determine which chunk we're talking about */
-            int chunkIdx = Integer.parseInt(reader.readLine());
+            String chkIdxStr = reader.readLine();
+            int chunkIdx = Integer.parseInt(chkIdxStr);
 
-            /* make sure I have that chunk */
-            Chunk chunk = pFile.getChunk(chunkIdx);
-            if (chunk == null) {
-                // TODO respond that request is invalid
-                throw new NotImplementedException();
+            /* if I either don't have the file or the chunk, respond with -1:DOES_NOT_EXIST */
+            if (pFile == null || !pFile.hasChunk(chunkIdx)) {
+                String minusOne = String.valueOf(PeerTalk.ToPeer.DOES_NOT_EXIST);
+                outputStream.write(minusOne.getBytes());
             }
 
-            /* inform downloader of chunk size */
-            String sizeString = chunk.size()+"\n";
-            outputStream.write(sizeString.getBytes());
+            /* otherwise send the data to the requester */
+            else {
+                Chunk chunk = pFile.getChunk(chunkIdx);
 
-            /* serve the chunk */
-            outputStream.write(chunk.getData());
+                /* first inform downloader of chunk size */
+                String sizeString = chunk.size()+"\n";
+                outputStream.write(sizeString.getBytes());
+
+                /* then serve the chunk */
+                outputStream.write(chunk.getData());
+            }
+
             outputStream.flush();
-            try { socket.close(); } catch (IOException e) {/*ignore*/}
         }
 
         @Override public void run() {
             try {
                 String command = reader.readLine();
+                if (command == null) {
+                    throw new NotImplementedException();
+                }
                 System.out.println("PeerServer received command: "+command);
                 switch (command) {
                     case PeerTalk.ToPeer.GET_CHUNK:
@@ -112,6 +120,9 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
                         catch (CreateP2PFileException e) {
                             e.printStackTrace();
                         }
+                        break;
+                    case PeerTalk.ToPeer.GET_AVAILABILITIES:
+                        serveAvailabilities();
                         break;
                     default:
                         throw new UnknownServiceException("PeerServer can't handle a "+command);

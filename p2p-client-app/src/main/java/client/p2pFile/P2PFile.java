@@ -19,6 +19,7 @@ import util.SHA2Digest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * Ethan Petuchowski 1/17/15
@@ -78,14 +79,38 @@ public class P2PFile {
         throw new NotImplementedException();
     }
 
-    public Chunk getChunk(int index) {
-        if (!getAvailableChunks().hasIdx(index))
+    public boolean hasChunk(int index) {
+        return getAvailableChunks().hasIdx(index);
+    }
+
+    public Chunk getChunk(int index) throws IOException {
+        if (!hasChunk(index))
             return null;
-        if (index > getNumChunks())
+        if (index >= getNumChunks())
             throw new IllegalArgumentException("this file only has "+getNumChunks()+" chunks, " +
                                                "but you wanted number "+index);
-        // TODO implement P2PFile getChunk
-        throw new NotImplementedException();
+
+        RandomAccessFile file = new RandomAccessFile(getLocalFile(), "r");
+        file.seek(index * Common.NUM_CHUNK_BYTES);
+
+        byte[] buff;
+        if (index == getNumChunks()-1) {
+            /* last chunk can have different size */
+            int lastChunkSize = (int) (getFilesizeBytes() % (long) getBytesPerChunk());
+            if (lastChunkSize == 0)
+                buff = new byte[getBytesPerChunk()];
+            else
+                buff = new byte[lastChunkSize];
+        }
+        else {
+            buff = new byte[getBytesPerChunk()];
+        }
+        int bytesRead = file.read(buff);
+        if (bytesRead < buff.length) {
+            System.err.println("There was a problem reading the file");
+            throw new IOException();
+        }
+        return new Chunk(buff);
     }
 
     public String getCompletenessString() {
@@ -94,9 +119,10 @@ public class P2PFile {
 
     public String           getFilename()           { return metaP2PFile.getFilename(); }
     public String           formattedFileSizeStr()  { return metaP2PFile.formattedFilesizeStr(); }
-    public int              getBytesPerChunk()      { return bytesPerChunk.get();   }
-    public int              getNumChunks()          { return numChunks.get();       }
-    public File             getLocalFile()          { return localFile.get();       }
+    public int              getBytesPerChunk() { return bytesPerChunk.get();   }
+    public int              getNumChunks() { return numChunks.get();       }
+    public File             getLocalFile() { return localFile.get();       }
     public MetaP2PFile      getMetaP2PFile()        { return metaP2PFile;           }
-    public ChunksForService getAvailableChunks()    { return availableChunks.get(); }
+    public ChunksForService getAvailableChunks() { return availableChunks.get(); }
+    public long             getFilesizeBytes()      { return metaP2PFile.getFilesizeBytes(); }
 }

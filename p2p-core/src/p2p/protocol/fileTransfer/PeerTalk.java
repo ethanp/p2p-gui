@@ -9,11 +9,12 @@ package p2p.protocol.fileTransfer;
  */
 public abstract class PeerTalk {
     public abstract class ToTracker {
-        public static final String GET_AVAILABILITIES = "GET";
         public static final String ADD_FILE_REQUEST = "ADD";
         public static final String ECHO = "ECHO";
     }
     public abstract class ToPeer {
         public static final String GET_CHUNK = "CHUNK";
+        public static final String GET_AVAILABILITIES = "GET";
+        public static final int DOES_NOT_EXIST = -1;
     }
 }
