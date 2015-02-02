@@ -2,6 +2,7 @@ package client.view.panes.trackers;
 
 import Exceptions.ServersIOException;
 import client.Main;
+import client.state.ClientState;
 import client.tracker.RemoteTracker;
 import client.util.ClientStateUtil;
 import client.util.ViewUtil;
@@ -11,7 +12,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeTableCell;
 import org.controlsfx.dialog.Dialogs;
 import p2p.exceptions.ConnectToTrackerException;
-import client.download.FileDownload;
 import util.ServersCommon;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
         }
         if (getItem().isTracker()) {
             addOpt("Add fake tracker", e -> ClientStateUtil.addFakeTracker());
-            addOpt("Remove tracker", e -> Main.getKnownTrackers().remove(getItem().getTracker()));
+            addOpt("Remove tracker", e -> ClientState.getKnownTrackers().remove(getItem().getTracker()));
             addOpt("Refresh swarms", e -> {
                 try {
                     getItem().getTracker().listFiles();
@@ -74,7 +74,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 try {
                     getItem().updateThisSwarm();
                 }
-                catch (IOException | ConnectToTrackerException ex) {
+                catch (ServersIOException | IOException | ConnectToTrackerException ex) {
                     catchTrackerConnectionIssue(ex);
                 }
                 refresh();
@@ -85,13 +85,14 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
     }
 
     private void downloadFile() {
-        Main.startFileDownload(
-                new FileDownload(
-                        Main.getUserDownloadDirectory(),
-                        getItem().getSwarm(),
-                        Main.getLocalFiles()
-                )
-        );
+        /* TODO I'm not sure how I'm going to actually implement the file download process yet */
+//        Main.startFileDownload(
+//                new FileDownload(
+//                        ClientState.getUserDownloadDirectory(),
+//                        getItem().getSwarm(),
+//                        ClientState.getLocalFiles()
+//                )
+//        );
     }
 
     private void addRealTrackerDialog() {
@@ -109,7 +110,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 RemoteTracker newTracker;
                 try {
                     newTracker = new RemoteTracker(isa);
-                    Main.getKnownTrackers().add(newTracker);
+                    ClientState.getKnownTrackers().add(newTracker);
                     newTracker.listFiles();
                 }
                 catch (ServersIOException e) {

@@ -33,7 +33,6 @@ public class EchoSingleThreadedServerTest {
         assertFalse(reader.ready()); // inStream must be DONE being read
     }
 
-    /* TODO this doesn't work yet */
     @Test public void testEchoFromExternalIPAddress() throws Exception {
         EchoSingleThreadedServer server = new EchoSingleThreadedServer(3000, 3500);
         new Thread(server).start();
@@ -63,6 +62,7 @@ public class EchoSingleThreadedServerTest {
         pingAtIPPort(ipPort);
     }
 
+    /* Maybe not super cross-compatible with other IDEs, I don't know */
     private void pingAtIPPort(String ipPort) throws IOException, InterruptedException {
         String[] ip = ipPort.split(":");
         ProcessBuilder procBldr = new ProcessBuilder(

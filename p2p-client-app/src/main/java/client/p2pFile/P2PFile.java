@@ -42,8 +42,8 @@ public class P2PFile {
         this.metaP2PFile = metaP2PFile;
         this.localFile   = new SimpleObjectProperty<>(localFile);
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
-        bytesPerChunk    = new SimpleIntegerProperty(Common.DEFAULT_CHUNK_SIZE);
-        int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.DEFAULT_CHUNK_SIZE);
+        bytesPerChunk    = new SimpleIntegerProperty(Common.DEFAULT_CHUNK_BYTES);
+        int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.DEFAULT_CHUNK_BYTES);
         numChunks        = new SimpleIntegerProperty(iChunks);
         dataChunks       = new SimpleListProperty<>(FXCollections.observableArrayList());
         availableChunks  = new SimpleObjectProperty<>(new ChunksForService(iChunks));
@@ -63,10 +63,12 @@ public class P2PFile {
     // TODO not finished yet
     public static P2PFile importLocalFile(File fsFile) throws CreateP2PFileException {
 
+        if (!fsFile.exists())
+            throw new CreateP2PFileException("you can't import a non-existent file");
         if (fsFile.isDirectory())
-            throw new CreateP2PFileException("can't import a directory");
+            throw new CreateP2PFileException("you can't import a directory");
 
-        File containingDirectory = fsFile.getParentFile();
+        File parentDir = fsFile.getParentFile();
         String filename = fsFile.getName();
 
         long lFilesize = fsFile.length();
@@ -76,32 +78,17 @@ public class P2PFile {
                                              Common.formatByteCountToString(Common.MAX_FILESIZE));
         int filesize = (int) lFilesize;
 
-        List<Chunk> chunks = new ArrayList<>(filesize);
-
-        // TODO read the file
-        try (BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(fsFile))) {
-
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new CreateP2PFileException("file must exist");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            throw new CreateP2PFileException("problem reading file");
-        }
-
+        /* create the digest of the file */
         String digest = null; // TODO get digest
 
         MetaP2PFile meta = new MetaP2PFile(filename, filesize, digest);
-        P2PFile toRet = P2PFile.newP2PFileInDir(containingDirectory, meta);
+        P2PFile toRet = P2PFile.newP2PFileInDir(parentDir, meta);
 
         /* since the file is local, of course ALL chunks are available for service */
         toRet.getAvailableChunks().setAllAsAvailable();
 
         // TODO implement P2PFile importLocalFile
         throw new NotImplementedException();
-        // TODO I suppose this will have to be added to the Main.localFiles AFTER this finishes
     }
 
     public P2PFile addTracker(RemoteTracker tracker) {

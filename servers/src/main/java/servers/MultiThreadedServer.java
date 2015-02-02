@@ -36,6 +36,7 @@ public abstract class MultiThreadedServer<ThreadType extends ServerThread> exten
         threadPool = Executors.newFixedThreadPool(poolSize);
     }
 
+    /* implements abstract method */
     @Override protected void dealWithSocket(Socket socket) {
         ServerThread serverThread = ThreadType.create(socket);
         threadPool.submit(serverThread);

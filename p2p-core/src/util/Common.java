@@ -18,7 +18,11 @@ public class Common {
     public static final int PORT_MIN = 3000;
     public static final int PORT_MAX = 3500;
 
-    public static final int DEFAULT_CHUNK_SIZE = 1 << 12; // 4KB
+    public static final int NUM_CHUNK_BYTES = 1 << 12; // 4KB
+
+    /* chars have 2 bytes
+     * http://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html */
+    public static final int NUM_CHUNK_CHARS = NUM_CHUNK_BYTES / 2;
 
     public static final int MAX_FILESIZE = Integer.MAX_VALUE;
 

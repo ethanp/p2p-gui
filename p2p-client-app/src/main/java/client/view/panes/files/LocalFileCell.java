@@ -1,13 +1,13 @@
 package client.view.panes.files;
 
-import client.Main;
+import client.p2pFile.P2PFile;
+import client.state.ClientState;
+import client.tracker.RemoteTracker;
 import client.util.ClientStateUtil;
 import client.util.ViewUtil;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
-import client.p2pFile.P2PFile;
-import client.tracker.RemoteTracker;
 
 /**
  * Ethan Petuchowski 1/14/15
@@ -49,7 +49,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
         }
         else {
             setText(getTxt());
-            ViewUtil.addOpt(menu, "Remove file from list", e->Main.getLocalFiles().remove(getItem()));
+            ViewUtil.addOpt(menu, "Remove file from list", e-> ClientState.getLocalFiles().remove(getItem()));
             ViewUtil.addOpt(menu, "Add file to tracker", e->{});
         }
         ViewUtil.addOpt(menu, "Add new fake file", e-> ClientStateUtil.addFakeLocalFile());
@@ -59,7 +59,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
     // TODO not finished
     private ContextMenu getSendToTrackerMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        for (RemoteTracker tracker : Main.getKnownTrackers()) {
+        for (RemoteTracker tracker : ClientState.getKnownTrackers()) {
             MenuItem menuItem = new MenuItem(tracker.getIpPortString());
             menuItem.setOnAction(e -> tracker.createSwarmForFile(getItem()));
         }

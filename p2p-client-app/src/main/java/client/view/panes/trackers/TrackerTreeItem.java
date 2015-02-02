@@ -1,11 +1,11 @@
 package client.view.panes.trackers;
 
-import client.Main;
+import client.state.ClientState;
+import client.tracker.RemoteTracker;
+import client.tracker.swarm.ClientSwarm;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
-import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
 
 /**
  * Ethan Petuchowski 1/12/15
@@ -77,8 +77,8 @@ public class TrackerTreeItem extends TreeItem<Celery> {
                     super.getChildren().add(new TrackerTreeItem(new Celery(swarm)));
             }
             else if (getValue().isRoot()) {
-                Main.getKnownTrackers().addListener(trackersListener);
-                for (RemoteTracker tracker : Main.getKnownTrackers())
+                ClientState.getKnownTrackers().addListener(trackersListener);
+                for (RemoteTracker tracker : ClientState.getKnownTrackers())
                     super.getChildren().add(new TrackerTreeItem(new Celery(tracker)));
             }
         }

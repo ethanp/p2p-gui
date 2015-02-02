@@ -2,12 +2,13 @@ package p2p.file.chunk;
 
 import util.Common;
 
+import java.security.InvalidParameterException;
+
 /**
  * Ethan Petuchowski 1/8/15
  */
 public abstract class Chunk {
 
-    protected final int chunkSize;
 
     /* Should this be a "property"?  Would that add a ton of space overhead?
         Probably not because this thing is getting read->written->garbage collected
@@ -16,7 +17,9 @@ public abstract class Chunk {
     protected final byte[] data;
 
     public Chunk(byte[] data) {
-        this.chunkSize = Common.DEFAULT_CHUNK_SIZE;
+        if (data.length > Common.NUM_CHUNK_BYTES) {
+            throw new InvalidParameterException("that byte[] is too big");
+        }
         this.data = data;
     }
 }

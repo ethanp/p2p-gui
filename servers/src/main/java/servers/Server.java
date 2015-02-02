@@ -20,6 +20,9 @@ public abstract class Server implements Runnable {
     public static final boolean LOOPBACK_ADDR = true;
     public static final boolean EXTERNAL_ADDR = false;
 
+    public static final int LOWEST_PORT_FORWARDED = 3000;
+    public static final int HIGHEST_PORT_FORWARDED = 3500;
+
     protected ServerSocket listener;
     protected InetAddress ipAddr;
 
