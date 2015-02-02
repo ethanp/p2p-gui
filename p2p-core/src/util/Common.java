@@ -1,5 +1,7 @@
 package util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 
 /**
@@ -37,5 +39,29 @@ public class Common {
         if (numBytes < 1E6) return String.format("%.2f KB", numBytes/1E3);
         if (numBytes < 1E9) return String.format("%.2f MB", numBytes/1E6);
         else return String.format("%.2f GB", numBytes/1E9);
+    }
+
+    /* 2/2/15 no idea if this has any good or bad properties
+     *        all I know is that it has worked for me so far
+     *
+     * Source: nowhere.
+     */
+    public static int readIntLineFromStream(InputStream stream) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        byte[] forChar;
+        for (;;) {
+            forChar = new byte[1];
+            stream.read(forChar); // for a buffered stream, these are probably all from the buffer
+
+            // for speed one could use a switch on the values of 0-9 & \n and throw errors otw
+            // but this is fine for now.
+            String newChar = new String(forChar);
+
+            if (newChar.equals("\n"))
+                break;
+
+            sb.append(newChar);
+        }
+        return Integer.parseInt(sb.toString());
     }
 }

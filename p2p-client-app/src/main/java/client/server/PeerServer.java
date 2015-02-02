@@ -84,9 +84,14 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             String chkIdxStr = reader.readLine();
             int chunkIdx = Integer.parseInt(chkIdxStr);
 
-            /* if I either don't have the file or the chunk, respond with -1:DOES_NOT_EXIST */
-            if (pFile == null || !pFile.hasChunk(chunkIdx)) {
-                String minusOne = String.valueOf(PeerTalk.ToPeer.DOES_NOT_EXIST);
+            if (pFile != null && (chunkIdx < 0 || chunkIdx >= pFile.getNumChunks())) {
+                String oobError = PeerTalk.ToPeer.OUT_OF_BOUNDS+"\n";
+                outputStream.write(oobError.getBytes());
+            }
+
+            /* if I either don't have the file or the chunk, respond with -1:NOT_AVAILABLE */
+            else if (pFile == null || !pFile.hasChunk(chunkIdx)) {
+                String minusOne = PeerTalk.ToPeer.NOT_AVAILABLE+"\n";
                 outputStream.write(minusOne.getBytes());
             }
 
