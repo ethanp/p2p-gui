@@ -119,10 +119,10 @@ public class P2PFile {
 
     public String           getFilename()           { return metaP2PFile.getFilename(); }
     public String           formattedFileSizeStr()  { return metaP2PFile.formattedFilesizeStr(); }
-    public int              getBytesPerChunk() { return bytesPerChunk.get();   }
-    public int              getNumChunks() { return numChunks.get();       }
-    public File             getLocalFile() { return localFile.get();       }
+    public int              getBytesPerChunk()      { return bytesPerChunk.get();   }
+    public int              getNumChunks()          { return numChunks.get();       }
+    public File             getLocalFile()          { return localFile.get();       }
     public MetaP2PFile      getMetaP2PFile()        { return metaP2PFile;           }
-    public ChunksForService getAvailableChunks() { return availableChunks.get(); }
+    public ChunksForService getAvailableChunks()    { return availableChunks.get(); }
     public long             getFilesizeBytes()      { return metaP2PFile.getFilesizeBytes(); }
 }

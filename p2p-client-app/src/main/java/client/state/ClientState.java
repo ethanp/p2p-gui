@@ -49,6 +49,15 @@ public class ClientState {
         localFiles.add(P2PFile.importLocalFile(file));
     }
 
+    public static P2PFile getLocalP2PFile(File file) {
+        for (P2PFile pFile : localFiles) {
+            if (pFile.getLocalFile().equals(file)) {
+                return pFile;
+            }
+        }
+        return null;
+    }
+
     public static void addLocalFiles(File... files) throws CreateP2PFileException, IOException {
         for (File file:files) addLocalFile(file);
     }

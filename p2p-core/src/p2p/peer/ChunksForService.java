@@ -19,13 +19,8 @@ public class ChunksForService {
         return bitSet.get(chunkIdx); // Returns value of bit with specified index
     }
 
-    public int numChunks() {
-        return bitSet.size();
-    }
-    public void setAllAsAvailable() {
-        bitSet.set(0, numChunks(), true);
-    }
-    public double getProportionAvailable() {
-        return ((double) bitSet.cardinality()) / numChunks();
-    }
+    public void setChunkAvailable(int index, boolean available) { bitSet.set(index, available); }
+    public int numChunks()                 { return bitSet.size(); }
+    public void setAllAsAvailable()        { bitSet.set(0, numChunks(), true); }
+    public double getProportionAvailable() { return ((double) bitSet.cardinality()) / numChunks(); }
 }

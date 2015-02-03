@@ -15,7 +15,8 @@ public abstract class PeerTalk {
     public abstract class ToPeer {
         public static final String GET_CHUNK = "CHUNK";
         public static final String GET_AVAILABILITIES = "GET";
-        public static final int NOT_AVAILABLE = -1;
-        public static final int OUT_OF_BOUNDS = -2;
+        public static final int CHUNK_NOT_AVAILABLE = -1;
+        public static final int FILE_NOT_AVAILABLE = -2;
+        public static final int OUT_OF_BOUNDS = -3;
     }
 }

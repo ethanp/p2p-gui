@@ -80,34 +80,31 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
                     break;
                 }
             }
+
             /* determine which chunk we're talking about */
             String chkIdxStr = reader.readLine();
             int chunkIdx = Integer.parseInt(chkIdxStr);
 
-            if (pFile != null && (chunkIdx < 0 || chunkIdx >= pFile.getNumChunks())) {
-                String oobError = PeerTalk.ToPeer.OUT_OF_BOUNDS+"\n";
-                outputStream.write(oobError.getBytes());
-            }
+            /* report errors if something is the matter */
+            if (pFile == null)
+                sendIntLine(PeerTalk.ToPeer.FILE_NOT_AVAILABLE);
+            else if (chunkIdx < 0 || chunkIdx >= pFile.getNumChunks())
+                sendIntLine(PeerTalk.ToPeer.OUT_OF_BOUNDS);
+            else if (!pFile.hasChunk(chunkIdx))
+                sendIntLine(PeerTalk.ToPeer.CHUNK_NOT_AVAILABLE);
 
-            /* if I either don't have the file or the chunk, respond with -1:NOT_AVAILABLE */
-            else if (pFile == null || !pFile.hasChunk(chunkIdx)) {
-                String minusOne = PeerTalk.ToPeer.NOT_AVAILABLE+"\n";
-                outputStream.write(minusOne.getBytes());
-            }
-
-            /* otherwise send the data to the requester */
+            /* send the data to the requester */
             else {
                 Chunk chunk = pFile.getChunk(chunkIdx);
-
-                /* first inform downloader of chunk size */
-                String sizeString = chunk.size()+"\n";
-                outputStream.write(sizeString.getBytes());
-
-                /* then serve the chunk */
-                outputStream.write(chunk.getData());
+                sendIntLine(chunk.size());              // inform downloader of size
+                outputStream.write(chunk.getData());    // serve
             }
-
             outputStream.flush();
+        }
+
+        private void sendIntLine(int intToSend) throws IOException {
+            String intStr = intToSend+"\n";
+            outputStream.write(intStr.getBytes());
         }
 
         @Override public void run() {
