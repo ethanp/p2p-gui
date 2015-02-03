@@ -58,13 +58,14 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
         @Override public void serveAvailabilities() {
             System.out.println("serving availabilities");
-//                MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
-//                for (P2PFile pFile : ClientState.getLocalFiles()) {
-//                    if (pFile.getMetaP2PFile().equals(mFile)) {
-//                        objOut.writeObject(pFile.getAvailableChunks());
-//                    }
-//                }
-//            }
+            /*
+            MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
+            for (P2PFile pFile : ClientState.getLocalFiles()) {
+                if (pFile.getMetaP2PFile().equals(mFile)) {
+                    objOut.writeObject(pFile.getAvailableChunks());
+                }
+            }
+            */
         }
 
         /* from ServerSideChunkProtocol */
@@ -137,8 +138,6 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
         }
     }
-
-
 
     public boolean getIsServing() { return isServing.get(); }
     public BooleanProperty isServingProperty() { return isServing; }

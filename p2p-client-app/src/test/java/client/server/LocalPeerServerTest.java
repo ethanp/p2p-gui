@@ -50,8 +50,9 @@ public class LocalPeerServerTest {
         connectToMyOwnPeerServer();
     }
 
-    private void serveFile(File file) throws CreateP2PFileException, IOException {
+    private P2PFile serveFile(File file) throws CreateP2PFileException, IOException {
         ClientState.addLocalFile(file);
+        return ClientState.getLocalP2PFile(file);
     }
 
     private void createDirectories() throws FileNotFoundException {
@@ -85,13 +86,14 @@ public class LocalPeerServerTest {
                 if (numBytes >= Common.NUM_CHUNK_BYTES) {
                     r.nextBytes(bytes);
                     numBytes -= Common.NUM_CHUNK_BYTES;
+                    out.write(bytes);
                 }
                 else {
                     byte[] smallBytes = new byte[numBytes];
                     r.nextBytes(smallBytes);
-                    numBytes = 0;
+                    out.write(smallBytes);
+                    break;
                 }
-                out.write(bytes);
             }
         }
         catch (IOException e) {
@@ -158,12 +160,21 @@ public class LocalPeerServerTest {
     @Test public void testRequestNotOwnedChunk() throws Exception {
         File unknownFile = new File(serveDir, "partially-chunkless");
         fillFileWithRandomData(unknownFile, Common.NUM_CHUNK_BYTES * 3);
-        serveFile(unknownFile);
-        P2PFile pFile = ClientState.getLocalP2PFile(unknownFile);
+        P2PFile pFile = serveFile(unknownFile);
         pFile.getAvailableChunks().setChunkAvailable(1, false);
-        MetaP2PFile correspondingMetaFile = pFile.getMetaP2PFile();
-        requestChunk(correspondingMetaFile, 1);
+        MetaP2PFile meta = pFile.getMetaP2PFile();
+        requestChunk(meta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(PeerTalk.ToPeer.CHUNK_NOT_AVAILABLE, responseSize);
+    }
+
+    @Test public void testRequestSmallerThanNormalChunk() throws Exception {
+        File weirdShapeFile = new File(serveDir, "small-last-chunk");
+        fillFileWithRandomData(weirdShapeFile, Common.NUM_CHUNK_BYTES*3-200);
+        P2PFile pFile = serveFile(weirdShapeFile);
+        MetaP2PFile meta = pFile.getMetaP2PFile();
+        requestChunk(meta, 2);
+        int responseSize = Common.readIntLineFromStream(inputStream);
+        assertEquals(Common.NUM_CHUNK_BYTES - 200, responseSize);
     }
 }

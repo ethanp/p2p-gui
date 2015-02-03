@@ -39,7 +39,7 @@ public class P2PFile {
         this.localFile   = new SimpleObjectProperty<>(localFile);
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
         bytesPerChunk    = new SimpleIntegerProperty(Common.NUM_CHUNK_BYTES);
-        int iChunks      = (int) (metaP2PFile.getFilesizeBytes()/Common.NUM_CHUNK_BYTES);
+        int iChunks      = (int) Math.ceil((double)metaP2PFile.getFilesizeBytes()/Common.NUM_CHUNK_BYTES);
         numChunks        = new SimpleIntegerProperty(iChunks);
         availableChunks  = new SimpleObjectProperty<>(new ChunksForService(iChunks));
     }
