@@ -53,10 +53,12 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
     public ObservableList<P> getSeeders() { return seeders.get(); }
     public ListProperty<P> seedersProperty() { return seeders; }
     public void setSeeders(ObservableList<P> seeders) { this.seeders.set(seeders); }
+    public void addSeeder(P seeder) { seeders.get().add(seeder); }
 
     public ObservableList<P> getLeechers() { return leechers.get(); }
     public ListProperty<P> leechersProperty() { return leechers; }
     public void setLeechers(ObservableList<P> leechers) { this.leechers.set(leechers); }
+    public void addLeecher(P leecher) { seeders.get().add(leecher); }
 
     public MetaP2PFile getMetaP2P() { return metaP2P.get(); }
     public ObjectProperty<MetaP2PFile> metaP2PProperty() { return metaP2P; }

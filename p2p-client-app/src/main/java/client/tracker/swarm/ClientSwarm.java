@@ -22,9 +22,9 @@ public class ClientSwarm extends Swarm<RemoteTracker, RemotePeer> {
         int nSeeders = Common.randInt(10);
         int nLeechers = Common.randInt(10);
         for (int i = 0; i < nSeeders; i++)
-            getSeeders().add(FakeRemotePeer.createWithUnresolvedIP());
+            addSeeder(FakeRemotePeer.createWithUnresolvedIP());
         for (int i = 0; i < nLeechers; i++)
-            getLeechers().add(FakeRemotePeer.createWithUnresolvedIP());
+            addLeecher(FakeRemotePeer.createWithUnresolvedIP());
         return this;
     }
 }

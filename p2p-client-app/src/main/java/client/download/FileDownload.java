@@ -30,16 +30,21 @@ public class FileDownload implements Runnable {
     private static final ExecutorService threadPool
             = Executors.newFixedThreadPool(Common.CHUNK_AVAILABILITY_POOL_SIZE);
 
-    public FileDownload(File parentDir, ClientSwarm swarm) {
+    /**
+     * creates the required OS-File object and P2PFile
+     *
+     * @param downloadDirectory the parent directory for the file to be downloaded
+     * @param swarm the (first) swarm of the file were downloading.
+     *              More swarms belonging to other trackers can be added after the
+     *              fact to (potentially) make the download faster.
+     */
+    public FileDownload(File downloadDirectory, ClientSwarm swarm) {
         clientSwarms = FXCollections.observableSet(swarm);
-        // TODO implement FileDownload FileDownload
-        throw new NotImplementedException();
-//        pFile = P2PFile.newP2PFileInDir(parentDir, swarm.getMetaP2P());
-//        localFiles.add(pFile);
-//        localFile = pFile.getLocalFile();
+        localFile = new File(downloadDirectory, swarm.getMetaP2P().getFilename());
+        pFile = new P2PFile(localFile, swarm.getMetaP2P());
     }
 
-    private Set<RemotePeer> getPeersFromSwarms() {
+    private Set<RemotePeer> allKnownPeers() {
         Set<RemotePeer> peers = new HashSet<>();
         for (ClientSwarm clientSwarm : clientSwarms)
             for (RemotePeer peer : clientSwarm.getAllPeers())
@@ -49,8 +54,6 @@ public class FileDownload implements Runnable {
     }
 
     @Override public void run() {
-        /* TODO use `RemotePeer`'s `requestChunk()` which will create `ChunkDownloads`
-         * and deposit `Chunk`s of the file directly into the `localFile` */
         try {
             updateAllChunkAvailabilities();
         }
@@ -58,14 +61,11 @@ public class FileDownload implements Runnable {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-
-        int[] availabilityCounts = getChunkAvailabilityCounts();
-
     }
 
-    private void updateAllChunkAvailabilities() throws ConnectToPeerException, IOException {
+    public void updateAllChunkAvailabilities() throws ConnectToPeerException, IOException {
 
-        for (RemotePeer peer : getPeersFromSwarms()) {
+        for (RemotePeer peer : allKnownPeers()) {
             threadPool.submit(peer.avblUpdater(pFile.getMetaPFile()));
         }
 
@@ -79,12 +79,13 @@ public class FileDownload implements Runnable {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+        synchronized (clientSwarms) { clientSwarms.notifyAll(); }
     }
 
     private int[] getChunkAvailabilityCounts() {
         int[] avb = new int[pFile.getNumChunks()];
         for (int i = 0; i < pFile.getNumChunks(); i++) {
-            for (RemotePeer peer : getPeersFromSwarms()) {
+            for (RemotePeer peer : allKnownPeers()) {
                 if (peer.hasChunk(i, pFile.getMetaPFile())) {
                     avb[i]++;
                 }
@@ -101,4 +102,5 @@ public class FileDownload implements Runnable {
     public void markChunkAsAvbl(int idx) { pFile.markChunkAsAvbl(idx); }
     public P2PFile getPFile() { return pFile;}
     public MetaP2PFile getMFile() { return pFile.getMetaPFile(); }
+    public ObservableSet<ClientSwarm> getClientSwarms() { return clientSwarms; }
 }

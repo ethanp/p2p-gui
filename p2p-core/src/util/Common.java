@@ -48,20 +48,28 @@ public class Common {
      */
     public static int readIntLineFromStream(InputStream stream) throws IOException {
         StringBuilder sb = new StringBuilder();
-        byte[] forChar;
+        byte[] forChar = new byte[1];
         for (;;) {
-            forChar = new byte[1];
-            stream.read(forChar); // for a buffered stream, these are probably all from the buffer
+            int rdVal = stream.read(forChar); // for a buffered stream, these are probably all from the buffer
 
-            // for speed one could use a switch on the values of 0-9 & \n and throw errors otw
-            // but this is fine for now.
-            String newChar = new String(forChar);
+            if (rdVal == -1 || rdVal > 1)
+                throw new RuntimeException("Stream read value: "+rdVal);
 
-            if (newChar.equals("\n"))
-                break;
+            if (rdVal == 1) {
+                String newChar = new String(forChar);
 
-            sb.append(newChar);
+                if (newChar.equals("\n"))
+                    return Integer.parseInt(sb.toString());
+
+                if (sb.length() == 0 && !newChar.matches("[-0-9]")
+                 || sb.length() >  0 && !newChar.matches("[0-9]"))
+                    throw new RuntimeException("non-digit found in stream");
+
+                sb.append(newChar);
+            }
+
+            if (rdVal == 0)
+                System.out.println("No data read from stream");
         }
-        return Integer.parseInt(sb.toString());
     }
 }

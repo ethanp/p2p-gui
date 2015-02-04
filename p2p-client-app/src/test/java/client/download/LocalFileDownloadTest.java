@@ -1,29 +1,36 @@
 package client.download;
 
+import client.LocalDownloadTest;
 import client.peer.RemotePeer;
-import client.state.ClientState;
-import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
+import javafx.collections.ObservableSet;
 import org.junit.Test;
+import p2p.exceptions.ConnectToPeerException;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2PFile;
 
-import java.io.File;
+import java.io.IOException;
 
-public class LocalFileDownloadTest {
-    @Test public void testCreateFileDownload() throws Exception {
-        FileDownload fileDownload = makeFileDownload();
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+public class LocalFileDownloadTest extends LocalDownloadTest {
+
+    @Test public void testGetChunkAvailability() throws CreateP2PFileException, ConnectToPeerException, IOException, InterruptedException {
+        FileDownload fileDownload = makeSequenceFileDownload(sequenceMeta);
+        ObservableSet<ClientSwarm> clientSwarms = fileDownload.getClientSwarms();
+        ClientSwarm relevantSwarm = (ClientSwarm) clientSwarms.toArray()[0];
+        RemotePeer myselfAsPeer = relevantSwarm.getSeeders().get(0);
+
+        assertFalse(myselfAsPeer.hasChunk(0, sequenceMeta));
+
+        fileDownload.updateAllChunkAvailabilities();
+        synchronized (clientSwarms) { clientSwarms.wait(); }
+
+        assertTrue(myselfAsPeer.hasChunk(0, sequenceMeta));
     }
 
-    // TODO maybe I should use this in the PeerDownload tests
-    public FileDownload makeFileDownload() throws CreateP2PFileException {
-        RemoteTracker stubTracker = null;
-        MetaP2PFile mFile = new MetaP2PFile("filename", 9, "file hash");
-        ClientSwarm clientSwarm = new ClientSwarm(mFile, stubTracker);
-        RemotePeer myselfAsPeer = new RemotePeer(ClientState.getExternalSocketAddr());
-        clientSwarm.getSeeders().add(myselfAsPeer);
-        FileDownload fileDownload = new FileDownload(new File("parentDir"), clientSwarm);
-        return fileDownload;
+    @Test public void testCreateFileDownload() throws Exception {
+        FileDownload fileDownload = makeSequenceFileDownload(sequenceMeta);
+
     }
 }

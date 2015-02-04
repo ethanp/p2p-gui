@@ -1,24 +1,25 @@
 package client.peer;
 
-import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
-import client.download.ChunkDownload;
-import client.p2pFile.P2PFile;
+import Exceptions.SocketCouldntConnectException;
+import client.download.FileDownload;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
-import p2p.exceptions.ConnectToPeerException;
 import p2p.file.meta.MetaP2PFile;
 import p2p.peer.ChunksForService;
 import p2p.peer.Peer;
 import p2p.protocol.fileTransfer.PeerTalk;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import util.Common;
 import util.ServersCommon;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Ethan Petuchowski 1/18/15
@@ -26,12 +27,39 @@ import java.net.Socket;
  * This is the Client's understanding of live peers
  * including what chunks they have of which files
  */
-public class RemotePeer extends Peer {
+public class RemotePeer extends Peer implements Runnable {
 
-    protected final MapProperty<MetaP2PFile, ChunksForService> chunksOfFiles;
+    private static final long DOWNLOAD_TIMEOUT = Common.secondsToNanoseconds(3);
+    private static final int ERRORS_THRESHOLD = 3;
 
-    public RemotePeer(InetSocketAddress socketAddr) { super(socketAddr);
+    Socket socket;
+    PrintWriter writerToPeer;
+    BufferedInputStream streamFromPeer;
+
+    MapProperty<MetaP2PFile, ChunksForService> chunksOfFiles;
+    List<FileDownload> downloadsImPartOf;
+
+    FileDownload fileCurrentlyDownloading;
+
+    long nanosecsDownloading;
+    long bytesDownloaded;
+
+    int countDownloadDataErrors;
+    int countTimeouts;
+
+    public RemotePeer(InetSocketAddress peerListenAddr) {
+        super(peerListenAddr);
         chunksOfFiles = new SimpleMapProperty<>();
+        try {
+            socket = ServersCommon.socketAtAddr(peerListenAddr);
+            writerToPeer = ServersCommon.printWriter(socket);
+            streamFromPeer = ServersCommon.buffIStream(socket);
+        }
+        catch (SocketCouldntConnectException | ServersIOException e) {
+            e.printStackTrace();
+            // if this happens in normal operation, there should be a retry count
+            // and if that gets hit, it gives up on creating a PeerDownload instance at all
+        }
     }
 
     public boolean hasChunk(int chunkIdx, MetaP2PFile mFile) {
@@ -39,70 +67,136 @@ public class RemotePeer extends Peer {
             && chunksOfFiles.get(mFile).hasIdx(chunkIdx);
     }
 
-    public class ChunkAvblUpdater implements Runnable {
-        MetaP2PFile metaFile;
 
-        public ChunkAvblUpdater(MetaP2PFile mFile) { metaFile = mFile; }
 
-        @Override public void run() {
-            updateAvailabilities();
-        }
+    double secondsSpentDownloading() { return nanosecsDownloading / 1E3; }
+    double getAverageDownloadSpeed() { return bytesDownloaded / secondsSpentDownloading(); }
+    void   addFileDownload(FileDownload fileDownload) { downloadsImPartOf.add(fileDownload); }
 
-        protected void updateAvailabilities() {
-            try (Socket             peerConn = connectToPeer();
-                 ObjectOutputStream objOut   = ServersCommon.objectOStream(peerConn);
-                 ObjectInputStream  objIn    = ServersCommon.objectIStream(peerConn);
-                 PrintWriter        cmdPrt   = ServersCommon.printWriter(peerConn))
-            {
-                cmdPrt.println(PeerTalk.ToPeer.GET_AVAILABILITIES);
-                cmdPrt.flush();
-                objOut.writeObject(metaFile);
-                try {
-                    ChunksForService cfs = (ChunksForService) objIn.readObject();
-                    synchronized (chunksOfFiles) { chunksOfFiles.put(metaFile, cfs); }
-                }
-                catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            catch (IOException | ConnectToPeerException | ServersIOException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override public void run() {
+        requestChunk();
     }
 
-    public ChunkAvblUpdater avblUpdater(MetaP2PFile mFile) {
-        return new ChunkAvblUpdater(mFile);
+    private void requestChunk() {
+        fileCurrentlyDownloading = figureOutFileToDownloadFor();
+        int chunkIdx = fileCurrentlyDownloading.getChunkIdxToDownload();
+        MetaP2PFile mFile = fileCurrentlyDownloading.getMFile();
+        requestChunk(mFile, chunkIdx);
     }
 
-    protected Socket connectToPeer() throws ConnectToPeerException {
+    private FileDownload figureOutFileToDownloadFor() {
+        // TODO implement PeerDownload figureOutFileToDownloadFor
+        throw new NotImplementedException();
+    }
+
+    /* ACCORDING TO PROTOCOL */
+    void requestChunk(MetaP2PFile mFile, int chunkIdx) {
+
+        /* SEND REQUEST */
+        writerToPeer.println(PeerTalk.ToPeer.GET_CHUNK);
+        writerToPeer.println(mFile.serializeToString());
+        writerToPeer.println(chunkIdx);
+        writerToPeer.flush();
+
+        /* READ RESPONSE */
+        @SuppressWarnings("UnusedAssignment") // the IDE is confused
+        int responseSize = PeerTalk.FromPeer.DEFAULT_VALUE;
         try {
-            return ServersCommon.connectToInetSocketAddr(getServingAddr());
+            responseSize = Common.readIntLineFromStream(streamFromPeer);
         }
-        catch (FailedToFindServerException e) {
+        catch (IOException e) {
             e.printStackTrace();
-            throw new ConnectToPeerException("Couldn't connect to peer at "+
-                                             ServersCommon.ipPortToString(getServingAddr()));
+            // TODO implement PeerDownload IOException
+            throw new NotImplementedException();
         }
+        /* check for errors */
+        switch (responseSize) {
+            case PeerTalk.FromPeer.DEFAULT_VALUE:
+                System.err.println("received PeerTalk.FromPeer.DEFAULT_VALUE");
+                /* deal with this when it happens */
+                break;
+            case PeerTalk.FromPeer.FILE_NOT_AVAILABLE:
+                System.err.println("received PeerTalk.FromPeer.FILE_NOT_AVAILABLE");
+                removeCurrentFileFromDownloads();
+                break;
+            case PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE:
+                System.err.println("received PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE");
+                /* TODO update BitMap */
+                break;
+            case PeerTalk.FromPeer.OUT_OF_BOUNDS:
+                System.err.println("received PeerTalk.FromPeer.OUT_OF_BOUNDS");
+                /* deal with this when it happens */
+                break;
+        }
+        downloadChunk(chunkIdx, responseSize);
     }
 
-    /* TODO this will be called by a FileDownload object (it is not called at all currently) */
-    public void requestChunk(P2PFile pFile, int chunkIdx) throws ConnectToPeerException, IOException, ServersIOException {
+    private void removeCurrentFileFromDownloads() {
+        downloadsImPartOf.remove(fileCurrentlyDownloading);
+        fileCurrentlyDownloading = null;
+    }
 
-        /* just a logic-check to make sure that at least this client THINKS the peer
-         * has the desired Chunk available for download
-         */
-        assert chunksOfFiles.get(pFile.getMetaPFile())
-                            .hasIdx(chunkIdx);
+    void downloadChunk(int chunkIdx, int responseSize) {
+        long startTime = System.nanoTime();
+        byte[] response = new byte[responseSize];
+        int bytesRcvd = 0;
+        while (bytesRcvd < responseSize) {
+            int rcv;
+            try {
+                rcv = streamFromPeer.read(response, bytesRcvd, responseSize-bytesRcvd);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Retrying");
+                downloadError();
+                return;
+            }
+            if (rcv >= 0) {
+                bytesRcvd += rcv;
+                bytesDownloaded += rcv;
+            } else {
+                downloadError();
+                return;
+            }
+            if (didTimeout(startTime)) {
+                downloadTimeout();
+                return;
+            }
+        }
+        long endTime = System.nanoTime();
+        nanosecsDownloading += endTime - startTime;
+        try {
+            RandomAccessFile fileOutput = new RandomAccessFile(fileCurrentlyDownloading.getPFile().getLocalFile(), "rw");
+            fileOutput.seek(fileCurrentlyDownloading.getPFile().getBytesPerChunk()*chunkIdx);
+            fileOutput.write(response);
+            fileOutput.close();
+        }
+        catch (IOException e) {
+            // this would most-likely mean a bug
+            // it is not part of the logic for this to ever occur
+            e.printStackTrace();
+        }
+        fileCurrentlyDownloading.markChunkAsAvbl(chunkIdx);
+        fileCurrentlyDownloading = null;
+    }
 
-        // TODO create the appropriate ChunkDownload and x.start() it
-        Socket peerConn = connectToPeer();
-        ChunkDownload chunkDownloadObject = new ChunkDownload(chunkIdx, peerConn, pFile);
+    private boolean didTimeout(long time) {
+        return (System.nanoTime() - time) > DOWNLOAD_TIMEOUT;
+    }
 
-        /* TODO probably instead of just start()ing it in here, it should be added
-         * to a field somewhere on the Client (i.e. Current User) containing a
-         * "ThreadPool<ChunkDownloads>
-         */
-        new Thread(chunkDownloadObject).start();
+    private void downloadTimeout() {
+        if (++countTimeouts > ERRORS_THRESHOLD) {
+            System.err.println("Passed timeout threshold");
+            // disconnect from peer and don't reconnect for a little while?
+        }
+        fileCurrentlyDownloading = null;
+    }
+
+    private void downloadError() {
+        if (++countDownloadDataErrors > ERRORS_THRESHOLD) {
+            System.err.println("Passed download errors threshold");
+            // disconnect from peer and don't reconnect for a little while?
+        }
+        fileCurrentlyDownloading = null;
     }
 }
