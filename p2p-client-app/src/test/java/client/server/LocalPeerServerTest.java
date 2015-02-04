@@ -46,7 +46,7 @@ public class LocalPeerServerTest {
         simpleFile = new File(serveDir, "local-1");
         simpleFileBytes = fillWithNumberSequence(simpleFile);
         serveFile(simpleFile);
-        simpleMeta = ClientState.getLocalP2PFile(simpleFile).getMetaP2PFile();
+        simpleMeta = ClientState.getLocalP2PFile(simpleFile).getMetaPFile();
         connectToMyOwnPeerServer();
     }
 
@@ -120,7 +120,7 @@ public class LocalPeerServerTest {
     private void requestChunk(MetaP2PFile meta, int chunkIdx) {
         writer.println(PeerTalk.ToPeer.GET_CHUNK);
         writer.println(meta.serializeToString());
-        writer.println(Integer.toString(chunkIdx));
+        writer.println(chunkIdx);
         writer.flush();
     }
 
@@ -132,8 +132,8 @@ public class LocalPeerServerTest {
 
         byte[] response = new byte[simpleFileBytes.length];
         int bytesRcvd = 0;
-        while (bytesRcvd < simpleFileBytes.length) {
-            int rcv = inputStream.read(response, bytesRcvd, simpleFileBytes.length-bytesRcvd);
+        while (bytesRcvd < responseSize) {
+            int rcv = inputStream.read(response, bytesRcvd, responseSize-bytesRcvd);
             if (rcv >= 0) {
                 bytesRcvd += rcv;
             } else {
@@ -147,14 +147,14 @@ public class LocalPeerServerTest {
         final int OOB_CHUNK_INDEX = 1;
         requestChunk(simpleMeta, OOB_CHUNK_INDEX);
         int responseSize = Common.readIntLineFromStream(inputStream);
-        assertEquals(PeerTalk.ToPeer.OUT_OF_BOUNDS, responseSize);
+        assertEquals(PeerTalk.FromPeer.OUT_OF_BOUNDS, responseSize);
     }
 
     @Test public void testRequestUnknownFile() throws Exception {
         MetaP2PFile unknownMeta = new MetaP2PFile("LaLaLand", 234234, "HEXADECIMAL_JOKE");
         requestChunk(unknownMeta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);
-        assertEquals(PeerTalk.ToPeer.FILE_NOT_AVAILABLE, responseSize);
+        assertEquals(PeerTalk.FromPeer.FILE_NOT_AVAILABLE, responseSize);
     }
 
     @Test public void testRequestNotOwnedChunk() throws Exception {
@@ -162,17 +162,17 @@ public class LocalPeerServerTest {
         fillFileWithRandomData(unknownFile, Common.NUM_CHUNK_BYTES * 3);
         P2PFile pFile = serveFile(unknownFile);
         pFile.getAvailableChunks().setChunkAvailable(1, false);
-        MetaP2PFile meta = pFile.getMetaP2PFile();
+        MetaP2PFile meta = pFile.getMetaPFile();
         requestChunk(meta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);
-        assertEquals(PeerTalk.ToPeer.CHUNK_NOT_AVAILABLE, responseSize);
+        assertEquals(PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE, responseSize);
     }
 
     @Test public void testRequestSmallerThanNormalChunk() throws Exception {
         File weirdShapeFile = new File(serveDir, "small-last-chunk");
         fillFileWithRandomData(weirdShapeFile, Common.NUM_CHUNK_BYTES*3-200);
         P2PFile pFile = serveFile(weirdShapeFile);
-        MetaP2PFile meta = pFile.getMetaP2PFile();
+        MetaP2PFile meta = pFile.getMetaPFile();
         requestChunk(meta, 2);
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(Common.NUM_CHUNK_BYTES - 200, responseSize);

@@ -10,6 +10,39 @@ latex input:    mmd-natbib-plain
 latex input:    mmd-article-begin-doc
 latex footer:   mmd-memoir-footer
 
+Note that the *variable file chunk sizes* feature is not currently implemented
+because it really doesn't need to be in any sort of 1.0 version and it is one
+more thing to keep track of. So chunk sizes are assumed to be
+`Common.NUM_CHUNK_BYTES` (currently 8KB for nor reason). If the functionality
+were to be added, it would need to go into the `MetaP2PFile` and (if desired)
+added to the `serializeToString()` method.
+
+## New Download Process (Based on Greg)
+
+* The key point is to maintain a persistent connection to peers, and *not*
+  close it after downloading each chunk.
+* I'm not *entirely sure* the connection is being closed after each chunk right
+  now, but I think it is.
+* This doesn't really affect the ease of figure out which Peers are faster to
+  download from, but it is one method of making it so that more Chunks are
+  downloaded from the faster Peers.
+* One thing Greg was pushing was being able to simultaneously request multiple
+  chunks, esp. contiguous ones. To my mind, it remains to be seen whether after
+  making sure the connection remains open, this really makes it a big
+  difference, but it certainly *could*.
+
+### So here it is
+
+1. Use all the File's known Trackers to figure out who all the Peers are
+   (seeders and leechers)
+2. Ask each peer (regardless of whether it is a seeder or leacher) for its
+   BitMap
+    * This doubles as a way of checking whether the Peer is online 
+3. Each `PeerConnection` gets its own socket, and access to a queue of chunks
+   that should be downloaded, organized (approximately) by [lack of]
+   replication, and keeps dequeing it and downloading that chunk from its
+   connection.
+
 ## TODOs
 
 1. The Peer-server's *serving* of `Chunk`s
@@ -162,6 +195,3 @@ This happens as the beginning of the process of a User downloading a file.
             return clientSwarm;
         }
     }
-
-### Mechanism
-1. 

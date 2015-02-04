@@ -61,7 +61,7 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             /*
             MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
             for (P2PFile pFile : ClientState.getLocalFiles()) {
-                if (pFile.getMetaP2PFile().equals(mFile)) {
+                if (pFile.getMetaPFile().equals(mFile)) {
                     objOut.writeObject(pFile.getAvailableChunks());
                 }
             }
@@ -76,7 +76,7 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             /* make sure I have that file */
             P2PFile pFile = null;
             for (P2PFile localFile : ClientState.getLocalFiles()) {
-                if (meta.equals(localFile.getMetaP2PFile())) {
+                if (meta.equals(localFile.getMetaPFile())) {
                     pFile = localFile;
                     break;
                 }
@@ -88,11 +88,11 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
             /* report errors if something is the matter */
             if (pFile == null)
-                sendIntLine(PeerTalk.ToPeer.FILE_NOT_AVAILABLE);
+                sendIntLine(PeerTalk.FromPeer.FILE_NOT_AVAILABLE);
             else if (chunkIdx < 0 || chunkIdx >= pFile.getNumChunks())
-                sendIntLine(PeerTalk.ToPeer.OUT_OF_BOUNDS);
+                sendIntLine(PeerTalk.FromPeer.OUT_OF_BOUNDS);
             else if (!pFile.hasChunk(chunkIdx))
-                sendIntLine(PeerTalk.ToPeer.CHUNK_NOT_AVAILABLE);
+                sendIntLine(PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE);
 
             /* send the data to the requester */
             else {

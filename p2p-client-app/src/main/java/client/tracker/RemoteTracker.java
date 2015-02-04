@@ -43,7 +43,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
     }
 
     public void createSwarmForFile(P2PFile pFile) {
-        createSwarmForMetaFile(pFile.getMetaP2PFile());
+        createSwarmForMetaFile(pFile.getMetaPFile());
     }
 
     public void connect() throws ConnectToTrackerException, IOException, ServersIOException {

@@ -32,10 +32,10 @@ public class P2PFile {
     protected final IntegerProperty                     numChunks;
     protected final ObjectProperty<ChunksForService>    availableChunks;
 
-    protected final MetaP2PFile metaP2PFile;
+    protected final MetaP2PFile metaPFile;
 
     public P2PFile(File localFile, MetaP2PFile metaP2PFile) {
-        this.metaP2PFile = metaP2PFile;
+        this.metaPFile = metaP2PFile;
         this.localFile   = new SimpleObjectProperty<>(localFile);
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
         bytesPerChunk    = new SimpleIntegerProperty(Common.NUM_CHUNK_BYTES);
@@ -69,7 +69,7 @@ public class P2PFile {
     }
 
     public P2PFile addTracker(RemoteTracker tracker) {
-        swarms.add(new ClientSwarm(metaP2PFile, tracker));
+        swarms.add(new ClientSwarm(metaPFile, tracker));
 
         /* should probably listFiles() on the tracker
          * while adding the tracker itself to the ClientState
@@ -91,7 +91,7 @@ public class P2PFile {
                                                "but you wanted number "+index);
 
         RandomAccessFile file = new RandomAccessFile(getLocalFile(), "r");
-        file.seek(index * Common.NUM_CHUNK_BYTES);
+        file.seek(index * getBytesPerChunk());
 
         byte[] buff;
         if (index == getNumChunks()-1) {
@@ -113,16 +113,14 @@ public class P2PFile {
         return new Chunk(buff);
     }
 
-    public String getCompletenessString() {
-        return String.format("%.2f%%",getAvailableChunks().getProportionAvailable());
-    }
-
-    public String           getFilename()           { return metaP2PFile.getFilename(); }
-    public String           formattedFileSizeStr()  { return metaP2PFile.formattedFilesizeStr(); }
-    public int              getBytesPerChunk()      { return bytesPerChunk.get();   }
-    public int              getNumChunks()          { return numChunks.get();       }
-    public File             getLocalFile()          { return localFile.get();       }
-    public MetaP2PFile      getMetaP2PFile()        { return metaP2PFile;           }
-    public ChunksForService getAvailableChunks()    { return availableChunks.get(); }
-    public long             getFilesizeBytes()      { return metaP2PFile.getFilesizeBytes(); }
+    public File             getLocalFile()          { return localFile.get();                   }
+    public MetaP2PFile      getMetaPFile()          { return metaPFile;                         }
+    public String           getFilename()           { return metaPFile.getFilename();           }
+    public String           formattedFileSizeStr()  { return metaPFile.formattedFilesizeStr();  }
+    public long             getFilesizeBytes()      { return metaPFile.getFilesizeBytes();      }
+    public int              getBytesPerChunk()      { return bytesPerChunk.get();               }
+    public int              getNumChunks()          { return numChunks.get();                   }
+    public String           getCompletenessString() { return String.format("%.2f%%",getAvailableChunks().getProportionAvailable()); }
+    public ChunksForService getAvailableChunks()    { return availableChunks.get();             }
+    public void             markChunkAsAvbl(int idx) { getAvailableChunks().setChunkAvailable(idx, true); }
 }

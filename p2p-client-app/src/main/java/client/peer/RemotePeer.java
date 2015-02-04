@@ -30,7 +30,7 @@ public class RemotePeer extends Peer {
 
     protected final MapProperty<MetaP2PFile, ChunksForService> chunksOfFiles;
 
-    protected RemotePeer(InetSocketAddress socketAddr) { super(socketAddr);
+    public RemotePeer(InetSocketAddress socketAddr) { super(socketAddr);
         chunksOfFiles = new SimpleMapProperty<>();
     }
 
@@ -92,7 +92,7 @@ public class RemotePeer extends Peer {
         /* just a logic-check to make sure that at least this client THINKS the peer
          * has the desired Chunk available for download
          */
-        assert chunksOfFiles.get(pFile.getMetaP2PFile())
+        assert chunksOfFiles.get(pFile.getMetaPFile())
                             .hasIdx(chunkIdx);
 
         // TODO create the appropriate ChunkDownload and x.start() it

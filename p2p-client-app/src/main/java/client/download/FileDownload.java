@@ -6,12 +6,12 @@ import client.tracker.swarm.ClientSwarm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import p2p.exceptions.ConnectToPeerException;
+import p2p.file.meta.MetaP2PFile;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class FileDownload implements Runnable {
 
-    protected final ObservableSet<ClientSwarm> clientSwarms;
-    protected final P2PFile     pFile;
-    protected final File        localFile;
+    private final ObservableSet<ClientSwarm> clientSwarms;
+    private final P2PFile     pFile;
+    private final File        localFile;
 
-    protected static final ExecutorService threadPool
+    private static final ExecutorService threadPool
             = Executors.newFixedThreadPool(Common.CHUNK_AVAILABILITY_POOL_SIZE);
 
-    public FileDownload(File parentDir, ClientSwarm swarm, Collection<P2PFile> localFiles) {
+    public FileDownload(File parentDir, ClientSwarm swarm) {
         clientSwarms = FXCollections.observableSet(swarm);
         // TODO implement FileDownload FileDownload
         throw new NotImplementedException();
@@ -39,7 +39,7 @@ public class FileDownload implements Runnable {
 //        localFile = pFile.getLocalFile();
     }
 
-    protected Set<RemotePeer> getPeersFromSwarms() {
+    private Set<RemotePeer> getPeersFromSwarms() {
         Set<RemotePeer> peers = new HashSet<>();
         for (ClientSwarm clientSwarm : clientSwarms)
             for (RemotePeer peer : clientSwarm.getAllPeers())
@@ -66,7 +66,7 @@ public class FileDownload implements Runnable {
     private void updateAllChunkAvailabilities() throws ConnectToPeerException, IOException {
 
         for (RemotePeer peer : getPeersFromSwarms()) {
-            threadPool.submit(peer.avblUpdater(pFile.getMetaP2PFile()));
+            threadPool.submit(peer.avblUpdater(pFile.getMetaPFile()));
         }
 
         try {
@@ -85,7 +85,7 @@ public class FileDownload implements Runnable {
         int[] avb = new int[pFile.getNumChunks()];
         for (int i = 0; i < pFile.getNumChunks(); i++) {
             for (RemotePeer peer : getPeersFromSwarms()) {
-                if (peer.hasChunk(i, pFile.getMetaP2PFile())) {
+                if (peer.hasChunk(i, pFile.getMetaPFile())) {
                     avb[i]++;
                 }
             }
@@ -93,4 +93,12 @@ public class FileDownload implements Runnable {
         return avb;
     }
 
+    public int getChunkIdxToDownload() {
+        // TODO implement FileDownload getChunkIdxToDownload
+        throw new NotImplementedException();
+    }
+
+    public void markChunkAsAvbl(int idx) { pFile.markChunkAsAvbl(idx); }
+    public P2PFile getPFile() { return pFile;}
+    public MetaP2PFile getMFile() { return pFile.getMetaPFile(); }
 }

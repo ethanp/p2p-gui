@@ -9,8 +9,8 @@ import java.util.Random;
  */
 public class Common {
 
-    public enum ExitCodes {
-        SERVER_FAILURE
+    public static long secondsToNanoseconds(int i) {
+        return i * 1_000_000_000; // en.wikipedia.org/wiki/Nano- says 1E-9,
     }
 
     public static Random r = new Random();
