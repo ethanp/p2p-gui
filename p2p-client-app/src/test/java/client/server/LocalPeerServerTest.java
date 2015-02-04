@@ -67,4 +67,10 @@ public class LocalPeerServerTest extends LocalDownloadTest {
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(Common.NUM_CHUNK_BYTES - 200, responseSize);
     }
+
+    @Test
+    public void testUpdateAvbl() throws Exception {
+
+
+    }
 }

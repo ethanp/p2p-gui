@@ -65,8 +65,10 @@ public class FileDownload implements Runnable {
 
     public void updateAllChunkAvailabilities() throws ConnectToPeerException, IOException {
 
+        /* TODO this should be using the thread pool but I would like it to still
+         * be possible to run it synchronously */
         for (RemotePeer peer : allKnownPeers()) {
-            threadPool.submit(peer.avblUpdater(pFile.getMetaPFile()));
+            peer.updateAvblForSync(pFile.getMetaPFile());
         }
 
         try {

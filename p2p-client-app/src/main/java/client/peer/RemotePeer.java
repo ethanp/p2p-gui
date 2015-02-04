@@ -67,14 +67,16 @@ public class RemotePeer extends Peer implements Runnable {
             && chunksOfFiles.get(mFile).hasIdx(chunkIdx);
     }
 
-
-
     double secondsSpentDownloading() { return nanosecsDownloading / 1E3; }
     double getAverageDownloadSpeed() { return bytesDownloaded / secondsSpentDownloading(); }
     void   addFileDownload(FileDownload fileDownload) { downloadsImPartOf.add(fileDownload); }
 
     @Override public void run() {
         requestChunk();
+    }
+
+    public void syncUpdateAvbl() {
+
     }
 
     private void requestChunk() {
@@ -198,5 +200,9 @@ public class RemotePeer extends Peer implements Runnable {
             // disconnect from peer and don't reconnect for a little while?
         }
         fileCurrentlyDownloading = null;
+    }
+
+    public void updateAvblForSync(MetaP2PFile file) {
+
     }
 }

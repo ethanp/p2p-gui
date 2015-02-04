@@ -8,6 +8,6 @@ import java.io.IOException;
  * Ethan Petuchowski 1/20/15
  */
 public interface ServerSideChunkProtocol {
-    public void serveAvailabilities();
+    public void serveAvbl();
     public void serveChunk() throws IOException, CreateP2PFileException;
 }

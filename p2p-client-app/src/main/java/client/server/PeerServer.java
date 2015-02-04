@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.chunk.Chunk;
 import p2p.file.meta.MetaP2PFile;
+import p2p.peer.ChunksForService;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import servers.MultiThreadedServer;
@@ -56,16 +57,24 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             reader = ServersCommon.bufferedReader(socket);
         }
 
-        @Override public void serveAvailabilities() {
+        @Override public void serveAvbl() {
             System.out.println("serving availabilities");
-            /*
-            MetaP2PFile mFile = (MetaP2PFile) objIn.readObject();
-            for (P2PFile pFile : ClientState.getLocalFiles()) {
-                if (pFile.getMetaPFile().equals(mFile)) {
-                    objOut.writeObject(pFile.getAvailableChunks());
-                }
+
+            /* listen for which file we're talking about */
+            MetaP2PFile mFile = null;
+            try {
+                mFile = MetaP2PFile.deserializeFromReader(reader);
             }
-            */
+            catch (IOException | CreateP2PFileException e) {
+                // just burying my head, hoping this doesn't happen
+                e.printStackTrace();
+            }
+
+            /* from the mFile, they already know the size of the BitSet */
+            /* so we just need to send the receiver the BitSet itself */
+            P2PFile pFile = ClientState.getLocalP2PFile(mFile);
+            ChunksForService c = pFile.getAvailableChunks();
+
         }
 
         /* from ServerSideChunkProtocol */
@@ -88,25 +97,22 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
             /* report errors if something is the matter */
             if (pFile == null)
-                sendIntLine(PeerTalk.FromPeer.FILE_NOT_AVAILABLE);
+                ServersCommon.streamIntLine(outputStream, PeerTalk.FromPeer.FILE_NOT_AVAILABLE);
             else if (chunkIdx < 0 || chunkIdx >= pFile.getNumChunks())
-                sendIntLine(PeerTalk.FromPeer.OUT_OF_BOUNDS);
+                ServersCommon.streamIntLine(outputStream, PeerTalk.FromPeer.OUT_OF_BOUNDS);
             else if (!pFile.hasChunk(chunkIdx))
-                sendIntLine(PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE);
+                ServersCommon.streamIntLine(outputStream, PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE);
 
             /* send the data to the requester */
             else {
                 Chunk chunk = pFile.getChunk(chunkIdx);
-                sendIntLine(chunk.size());              // inform downloader of size
-                outputStream.write(chunk.getData());    // serve
+                ServersCommon.streamIntLine(outputStream, chunk.size()); // inform downloader of size
+                outputStream.write(chunk.getData());                     // serve
             }
             outputStream.flush();
         }
 
-        private void sendIntLine(int intToSend) throws IOException {
-            String intStr = intToSend+"\n";
-            outputStream.write(intStr.getBytes());
-        }
+
 
         @Override public void run() {
             try {
@@ -124,18 +130,16 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
                             e.printStackTrace();
                         }
                         break;
-                    case PeerTalk.ToPeer.GET_AVAILABILITIES:
-                        serveAvailabilities();
+                    case PeerTalk.ToPeer.GET_AVBL:
+                        serveAvbl();
                         break;
                     default:
                         throw new UnknownServiceException("PeerServer can't handle a "+command);
                 }
-
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -205,5 +206,10 @@ public class ServersCommon {
 
     public static InetSocketAddress randomSocketAddr() {
         return stringToIPPort(randomIPPortString());
+    }
+
+    public static void streamIntLine(OutputStream outStream, int intToSend) throws IOException {
+        String intStr = intToSend+"\n";
+        outStream.write(intStr.getBytes());
     }
 }
