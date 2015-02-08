@@ -3,7 +3,7 @@ package client.server;
 import client.LocalDownloadTest;
 import client.p2pFile.P2PFile;
 import org.junit.Test;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import util.Common;
 
@@ -41,7 +41,7 @@ public class LocalPeerServerTest extends LocalDownloadTest {
     }
 
     @Test public void testRequestUnknownFile() throws Exception {
-        MetaP2PFile unknownMeta = new MetaP2PFile("LaLaLand", 234234, "HEXADECIMAL_JOKE");
+        MetaP2P unknownMeta = new MetaP2P("LaLaLand", 234234, "HEXADECIMAL_JOKE");
         requestChunk(unknownMeta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(PeerTalk.FromPeer.FILE_NOT_AVAILABLE, responseSize);
@@ -52,7 +52,7 @@ public class LocalPeerServerTest extends LocalDownloadTest {
         fillWithRandomData(unknownFile, Common.NUM_CHUNK_BYTES*3);
         P2PFile pFile = serveFile(unknownFile);
         pFile.getAvailableChunks().setChunkAvailable(1, false);
-        MetaP2PFile meta = pFile.getMetaPFile();
+        MetaP2P meta = pFile.getMetaPFile();
         requestChunk(meta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE, responseSize);
@@ -62,7 +62,7 @@ public class LocalPeerServerTest extends LocalDownloadTest {
         File weirdShapeFile = new File(serveDir, "small-last-chunk");
         fillWithRandomData(weirdShapeFile, Common.NUM_CHUNK_BYTES*3-200);
         P2PFile pFile = serveFile(weirdShapeFile);
-        MetaP2PFile meta = pFile.getMetaPFile();
+        MetaP2P meta = pFile.getMetaPFile();
         requestChunk(meta, 2);
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(Common.NUM_CHUNK_BYTES - 200, responseSize);

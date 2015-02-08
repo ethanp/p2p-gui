@@ -8,7 +8,7 @@ import p2p.exceptions.CreateP2PFileException;
  */
 public interface TrackerSideTrackerProtocol {
     /**
-     * TrackerServer receives MetaP2PFile from Peer.
+     * TrackerServer receives MetaP2P from Peer.
      * If no corresponding TrackerSwarm exists, create one.
      * Add TrackerPeer to the TrackerSwarm.
      */

@@ -3,6 +3,7 @@ package p2p.peer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ChunksForServiceTest {
     @Test public void testSerializeTrivial() throws Exception {
@@ -30,13 +31,23 @@ public class ChunksForServiceTest {
 
     @Test public void testSerializeTrickier() throws Exception {
         ChunksForService chunksForService = new ChunksForService(18);
-        for (int i = 15; i <= 17; i++)
+        for (int i = 14; i <= 17; i++)
             chunksForService.setChunkAvailable(i, true);
-        byte a = (byte) 0;
-        byte b = (byte) 0x80;
-        byte c = (byte) 3;
+        byte c = (byte) 0b11;
+        byte b = (byte) 0b1100_0000;
+        byte a = (byte) 0b0;
         assertArrayEquals(new byte[]{a, b, c}, chunksForService.serializeToBytes());
     }
 
+    @Test public void testCreateFromBytesTrivial() {
+        ChunksForService trivialChunk = new ChunksForService(1);
+        ChunksForService deserialized = ChunksForService.createFromBytes(1, new byte[1]);
+        assertEquals(trivialChunk, deserialized);
+    }
 
+    @Test public void testCreateFromBytesTrivialLonger() {
+        ChunksForService trivialChunk = new ChunksForService(20);
+        ChunksForService deserialized = ChunksForService.createFromBytes(20, new byte[3]);
+        assertEquals(trivialChunk, deserialized);
+    }
 }

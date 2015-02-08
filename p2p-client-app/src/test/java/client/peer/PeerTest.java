@@ -4,9 +4,9 @@ import client.LocalDownloadTest;
 import org.junit.Test;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class RemotePeerTest extends LocalDownloadTest {
+public class PeerTest extends LocalDownloadTest {
     @Test public void testUpdateAvbl() throws Exception {
-        // TODO implement RemotePeerTest testUpdateAvbl
+        // TODO implement PeerTest testUpdateAvbl
         throw new NotImplementedException();
     }
 }

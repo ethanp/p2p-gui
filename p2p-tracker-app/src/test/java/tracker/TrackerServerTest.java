@@ -7,7 +7,7 @@ import Exceptions.ServersIOException;
 import org.junit.Before;
 import org.junit.Test;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;
@@ -69,7 +69,7 @@ public class TrackerServerTest {
 
     @Test public void testAddNewFileRequest() throws IOException, ServersIOException, InterruptedException, ConnectToTrackerException {
 
-        MetaP2PFile meta = MetaP2PFile.genFake();
+        MetaP2P meta = MetaP2P.genFake();
         InetSocketAddress addr = ServersCommon.randomSocketAddr();
         addFileRequest(meta, addr);
         assertEquals(1, trackerServer.getTracker().getSwarms().size());
@@ -86,7 +86,7 @@ public class TrackerServerTest {
     }
 
     @Test public void testNewPeerForExistingFileRequest() throws FailedToFindServerException, IOException, ServersIOException, ConnectToTrackerException {
-        MetaP2PFile meta = MetaP2PFile.genFake();
+        MetaP2P meta = MetaP2P.genFake();
         InetSocketAddress addr1 = ServersCommon.randomSocketAddr();
         InetSocketAddress addr2 = ServersCommon.randomSocketAddr();
 
@@ -102,8 +102,8 @@ public class TrackerServerTest {
     }
 
     @Test public void testSecondFileRequest() throws ServersIOException, ConnectToTrackerException, IOException, FailedToFindServerException {
-        MetaP2PFile meta1 = MetaP2PFile.genFake();
-        MetaP2PFile meta2 = MetaP2PFile.genFake();
+        MetaP2P meta1 = MetaP2P.genFake();
+        MetaP2P meta2 = MetaP2P.genFake();
         InetSocketAddress addr = ServersCommon.randomSocketAddr();
         addFileRequest(meta1, addr);
         reconnectToTrackerServer();
@@ -120,8 +120,8 @@ public class TrackerServerTest {
     }
 
     @Test public void testSecondFileGetsSecondSeeder() throws ServersIOException, ConnectToTrackerException, IOException, FailedToFindServerException {
-        MetaP2PFile meta1 = MetaP2PFile.genFake();
-        MetaP2PFile meta2 = MetaP2PFile.genFake();
+        MetaP2P meta1 = MetaP2P.genFake();
+        MetaP2P meta2 = MetaP2P.genFake();
         InetSocketAddress addr1 = ServersCommon.randomSocketAddr();
         InetSocketAddress addr2 = ServersCommon.randomSocketAddr();
 
@@ -151,7 +151,7 @@ public class TrackerServerTest {
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
+    public void addFileRequest(MetaP2P meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException {
 
         /* Command */
         printWriter.println(PeerTalk.ToTracker.ADD_FILE_REQUEST);
@@ -177,7 +177,7 @@ public class TrackerServerTest {
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
      */
-    public void updateSwarmInfo(MetaP2PFile meta) throws IOException, ConnectToTrackerException, ServersIOException {
+    public void updateSwarmInfo(MetaP2P meta) throws IOException, ConnectToTrackerException, ServersIOException {
         // TODO implement TrackerServerTest updateSwarmInfo
         throw new NotImplementedException();
     }

@@ -5,9 +5,9 @@ import Exceptions.SocketCouldntConnectException;
 import client.download.FileDownload;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
-import p2p.peer.Peer;
+import p2p.peer.PeerAddr;
 import p2p.protocol.fileTransfer.PeerTalk;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
@@ -27,7 +27,7 @@ import java.util.List;
  * This is the Client's understanding of live peers
  * including what chunks they have of which files
  */
-public class RemotePeer extends Peer implements Runnable {
+public class Peer extends PeerAddr implements Runnable {
 
     private static final long DOWNLOAD_TIMEOUT = Common.secondsToNanoseconds(3);
     private static final int ERRORS_THRESHOLD = 3;
@@ -36,7 +36,7 @@ public class RemotePeer extends Peer implements Runnable {
     PrintWriter writerToPeer;
     BufferedInputStream streamFromPeer;
 
-    MapProperty<MetaP2PFile, ChunksForService> chunksOfFiles;
+    MapProperty<MetaP2P, ChunksForService> chunksOfFiles;
     List<FileDownload> downloadsImPartOf;
 
     FileDownload fileCurrentlyDownloading;
@@ -47,7 +47,7 @@ public class RemotePeer extends Peer implements Runnable {
     int countDownloadDataErrors;
     int countTimeouts;
 
-    public RemotePeer(InetSocketAddress peerListenAddr) {
+    public Peer(InetSocketAddress peerListenAddr) {
         super(peerListenAddr);
         chunksOfFiles = new SimpleMapProperty<>();
         try {
@@ -62,7 +62,7 @@ public class RemotePeer extends Peer implements Runnable {
         }
     }
 
-    public boolean hasChunk(int chunkIdx, MetaP2PFile mFile) {
+    public boolean hasChunk(int chunkIdx, MetaP2P mFile) {
         return chunksOfFiles.containsKey(mFile)
             && chunksOfFiles.get(mFile).hasIdx(chunkIdx);
     }
@@ -82,7 +82,7 @@ public class RemotePeer extends Peer implements Runnable {
     private void requestChunk() {
         fileCurrentlyDownloading = figureOutFileToDownloadFor();
         int chunkIdx = fileCurrentlyDownloading.getChunkIdxToDownload();
-        MetaP2PFile mFile = fileCurrentlyDownloading.getMFile();
+        MetaP2P mFile = fileCurrentlyDownloading.getMFile();
         requestChunk(mFile, chunkIdx);
     }
 
@@ -92,7 +92,7 @@ public class RemotePeer extends Peer implements Runnable {
     }
 
     /* ACCORDING TO PROTOCOL */
-    void requestChunk(MetaP2PFile mFile, int chunkIdx) {
+    void requestChunk(MetaP2P mFile, int chunkIdx) {
 
         /* SEND REQUEST */
         writerToPeer.println(PeerTalk.ToPeer.GET_CHUNK);
@@ -202,7 +202,7 @@ public class RemotePeer extends Peer implements Runnable {
         fileCurrentlyDownloading = null;
     }
 
-    public void updateAvblForSync(MetaP2PFile file) {
+    public void updateAvblForSync(MetaP2P file) {
 
     }
 }

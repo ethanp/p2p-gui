@@ -34,9 +34,31 @@ public class ChunksForService {
         return bytes;
     }
 
+    public static ChunksForService createFromBytes(int numChunks, byte[] bytes) {
+        ChunksForService toRet = new ChunksForService(numChunks);
+        for (int i = 0; i < numChunks; i++)
+            if ((bytes[i/8] & (1 << (i%8))) == 1)
+                toRet.setChunkAvailable(i, true);
+        return toRet;
+    }
+
     public boolean hasIdx(int chunkIdx)     { return bitSet.get(chunkIdx); }
     public int     numChunks()              { return numChunks; }
     public void    setAllAsAvailable()      { bitSet.set(0, numChunks, true); }
     public double  getProportionAvailable() { return ((double) bitSet.cardinality()) / numChunks; }
     public void    setChunkAvailable(int index, boolean available) { bitSet.set(index, available); }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChunksForService)) return false;
+        ChunksForService that = (ChunksForService) o;
+        if (numChunks != that.numChunks) return false;
+        if (!bitSet.equals(that.bitSet)) return false;
+        return true;
+    }
+    @Override public int hashCode() {
+        int result = numChunks;
+        result = 31*result+bitSet.hashCode();
+        return result;
+    }
 }

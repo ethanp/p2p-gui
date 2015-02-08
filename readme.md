@@ -10,7 +10,59 @@ latex input:    mmd-natbib-plain
 latex input:    mmd-article-begin-doc
 latex footer:   mmd-memoir-footer
 
-Note that the *variable file chunk sizes* feature is not currently implemented
+## Rethink
+
+### Better separation of concerns
+
+* `Main` should be an object that gets instantiated, instead of relying on
+  everything to be `static`
+    * This will make the subcomponents more directly testable
+    * The main change is that `ClientState`'s components be simply made non-
+      static, and `Main` gets a non-static instance of `ClientState`
+* Instead of the the User directly creating an instance of `FileDownload` using
+  the GUI, there should be a **small API** with which the GUI layer interacts
+  with the layer underneath (which I've called "`app`" in the module hierarchy,
+  but I think the GUI is technically called the "application layer").
+* This so-called `app` layer should be composed of `____Manager`s that export
+  high-level capabilities to the GUI layer, e.g.
+    * `filesManager`
+        * `.downloadFile(MetaP2P, Collection<Tracker>)`
+        * `.uploadFile(File)`
+    * `trackersManager`
+        * `.addTracker(ipAddr:String)`
+        * `.refreshTracker(Tracker)` (we have the instance due to having
+          rendered it in the UI)
+
+### FilesManager
+
+* `Collection<Peer>`
+
+### Peer
+
+* `InetSocketAddr`
+* `Socket`
+* Metadata about connection history (e.g. avg dl/upl speed)
+
+### A MetaP2PFile is-a .torrent file
+
+* An instance of `MetaP2PFile` should be able to map itself to and from `JSON`
+* The `MetaP2PFile` should contain a hash for *each* `Chunk` like it is in
+  BitTorrent, because if you get a bad `Chunk`, you don't want to have to
+  redownload *all* the `Chunk`s
+
+
+## TODOs
+
+1. Change `Main` into an instance, and all static members into instances
+2. See what's good about the whole `ConnectionManager`, `PeerManager`,
+   `EtcManager` approach
+3. `ChunksForService` serialization
+4. `PeerDownload.getAvbl()`
+5. `FileDownload.run()`
+
+## Note
+
+The *variable file chunk sizes* feature is not currently implemented
 because it really doesn't need to be in any sort of 1.0 version and it is one
 more thing to keep track of. So chunk sizes are assumed to be
 `Common.NUM_CHUNK_BYTES` (currently 8KB for nor reason). If the functionality
@@ -42,10 +94,6 @@ added to the `serializeToString()` method.
    that should be downloaded, organized (approximately) by [lack of]
    replication, and keeps dequeing it and downloading that chunk from its
    connection.
-
-## TODOs
-
-1. The Peer-server's *serving* of `Chunk`s
 
 ## How a Client downloads a File
 

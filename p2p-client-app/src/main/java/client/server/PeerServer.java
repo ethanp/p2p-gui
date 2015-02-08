@@ -9,7 +9,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.chunk.Chunk;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
@@ -61,9 +61,9 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             System.out.println("serving availabilities");
 
             /* listen for which file we're talking about */
-            MetaP2PFile mFile = null;
+            MetaP2P mFile = null;
             try {
-                mFile = MetaP2PFile.deserializeFromReader(reader);
+                mFile = MetaP2P.deserializeFromReader(reader);
             }
             catch (IOException | CreateP2PFileException e) {
                 // just burying my head, hoping this doesn't happen
@@ -80,7 +80,7 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
         /* from ServerSideChunkProtocol */
         @Override public void serveChunk() throws IOException, CreateP2PFileException {
             /* determine which file we're talking about */
-            MetaP2PFile meta = MetaP2PFile.deserializeFromReader(reader);
+            MetaP2P meta = MetaP2P.deserializeFromReader(reader);
 
             /* make sure I have that file */
             P2PFile pFile = null;

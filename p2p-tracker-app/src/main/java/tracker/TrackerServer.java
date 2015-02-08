@@ -8,7 +8,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
 import servers.SingleThreadedServer;
@@ -35,17 +35,17 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
     }
 
     /**
-     * TrackerServer receives MetaP2PFile from Peer.
+     * TrackerServer receives MetaP2P from Peer.
      * If no corresponding TrackerSwarm exists, create one.
      * Add TrackerPeer to the TrackerSwarm.
      */
     @Override public void addFileRequest() throws ServersIOException, CreateP2PFileException {
-        MetaP2PFile meta;
+        MetaP2P meta;
         InetSocketAddress addr;
         try {
             String[] components = bufferedReader.readLine().split(":");
             addr = new InetSocketAddress(components[0], Integer.parseInt(components[1]));
-            meta = MetaP2PFile.deserializeFromReader(bufferedReader);
+            meta = MetaP2P.deserializeFromReader(bufferedReader);
         }
         catch (IOException e) {
             throw new ServersIOException(e);

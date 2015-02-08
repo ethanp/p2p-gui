@@ -1,7 +1,7 @@
 package client.download;
 
 import client.LocalDownloadTest;
-import client.peer.RemotePeer;
+import client.peer.Peer;
 import client.tracker.swarm.ClientSwarm;
 import javafx.collections.ObservableSet;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class LocalFileDownloadTest extends LocalDownloadTest {
         FileDownload fileDownload = makeSequenceFileDownload(sequenceMeta);
         ObservableSet<ClientSwarm> clientSwarms = fileDownload.getClientSwarms();
         ClientSwarm relevantSwarm = (ClientSwarm) clientSwarms.toArray()[0];
-        RemotePeer myselfAsPeer = relevantSwarm.getSeeders().get(0);
+        Peer myselfAsPeer = relevantSwarm.getSeeders().get(0);
 
         assertFalse(myselfAsPeer.hasChunk(0, sequenceMeta));
 

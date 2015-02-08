@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Ethan Petuchowski 1/7/15
  */
-public class MetaP2PFile {
+public class MetaP2P {
 
     protected final StringProperty filename;
     protected final IntegerProperty filesizeBytes;
@@ -29,7 +29,7 @@ public class MetaP2PFile {
              + getDigest()          +"\n";
     }
 
-    public MetaP2PFile(String filename, int filesize, String sha2digest)
+    public MetaP2P(String filename, int filesize, String sha2digest)
             throws CreateP2PFileException
     {
         if (filesize < 0)
@@ -50,12 +50,12 @@ public class MetaP2PFile {
     public IntegerProperty filesizeBytesProperty() { return filesizeBytes; }
     public String getDigest() { return digest.get(); }
 
-    public static MetaP2PFile genFake() {
+    public static MetaP2P genFake() {
         final String name = "file-"+Common.randInt(1000);
         final int size = Common.randInt(Common.MAX_FILESIZE);
         final String digest = "DEADBEEF";
         try {
-            return new MetaP2PFile(name, size, digest);
+            return new MetaP2P(name, size, digest);
         }
         catch (CreateP2PFileException e) {
             /* this should never occur (bc the file is FAKE) */
@@ -67,8 +67,8 @@ public class MetaP2PFile {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MetaP2PFile)) return false;
-        MetaP2PFile file = (MetaP2PFile) o;
+        if (!(o instanceof MetaP2P)) return false;
+        MetaP2P file = (MetaP2P) o;
         if (!getDigest().equals(file.getDigest())) return false;
         if (!getFilename().equals(file.getFilename())) return false;
         if (getFilesizeBytes() != file.getFilesizeBytes()) return false;
@@ -83,7 +83,7 @@ public class MetaP2PFile {
         return result;
     }
 
-    public static MetaP2PFile deserializeFromReader(BufferedReader reader)
+    public static MetaP2P deserializeFromReader(BufferedReader reader)
             throws IOException, CreateP2PFileException
     {
         String filename = reader.readLine();
@@ -91,6 +91,6 @@ public class MetaP2PFile {
         String digest = reader.readLine();
         int filebytes = Integer.parseInt(filesize);
         reader.readLine(); // bc as it stands, we send it with 2 trailing newlines
-        return new MetaP2PFile(filename, filebytes, digest);
+        return new MetaP2P(filename, filebytes, digest);
     }
 }

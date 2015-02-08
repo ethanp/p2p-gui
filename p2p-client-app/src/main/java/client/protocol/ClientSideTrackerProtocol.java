@@ -3,7 +3,7 @@ package client.protocol;
 import Exceptions.ServersIOException;
 import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,7 +17,7 @@ public interface ClientSideTrackerProtocol {
      * If it exists, add Peer to Swarm
      * Otherwise create a new Swarm for it
      */
-    public void addFileRequest(MetaP2PFile meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException;
+    public void addFileRequest(MetaP2P meta, InetSocketAddress addr) throws IOException, ConnectToTrackerException, ServersIOException;
 
     /**
      * Tracker tells a Peer who wants to download a P2PFile
@@ -25,7 +25,7 @@ public interface ClientSideTrackerProtocol {
      * so that the Peer can update its internal view of the Swarm
      * @param meta
      */
-    public ClientSwarm updateSwarmInfo(MetaP2PFile meta) throws IOException, ConnectToTrackerException, ServersIOException;
+    public ClientSwarm updateSwarmInfo(MetaP2P meta) throws IOException, ConnectToTrackerException, ServersIOException;
 
     /**
      * Tracker sends Peer its full list of Swarms

@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.chunk.Chunk;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
@@ -32,14 +32,14 @@ public class P2PFile {
     protected final IntegerProperty                     numChunks;
     protected final ObjectProperty<ChunksForService>    availableChunks;
 
-    protected final MetaP2PFile metaPFile;
+    protected final MetaP2P metaPFile;
 
-    public P2PFile(File localFile, MetaP2PFile metaP2PFile) {
-        this.metaPFile = metaP2PFile;
+    public P2PFile(File localFile, MetaP2P metaP2P) {
+        this.metaPFile = metaP2P;
         this.localFile   = new SimpleObjectProperty<>(localFile);
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
         bytesPerChunk    = new SimpleIntegerProperty(Common.NUM_CHUNK_BYTES);
-        int iChunks      = (int) Math.ceil((double)metaP2PFile.getFilesizeBytes()/Common.NUM_CHUNK_BYTES);
+        int iChunks      = (int) Math.ceil((double) metaP2P.getFilesizeBytes()/Common.NUM_CHUNK_BYTES);
         numChunks        = new SimpleIntegerProperty(iChunks);
         availableChunks  = new SimpleObjectProperty<>(new ChunksForService(iChunks));
     }
@@ -55,7 +55,7 @@ public class P2PFile {
 
         P2PFile toRet = new P2PFile(
                 fsFile,
-                new MetaP2PFile(
+                new MetaP2P(
                         fsFile.getName(),
                         (int) fsFile.length(),
                         SHA2Digest.createDigest(fsFile)
@@ -114,7 +114,7 @@ public class P2PFile {
     }
 
     public File             getLocalFile()          { return localFile.get();                   }
-    public MetaP2PFile      getMetaPFile()          { return metaPFile;                         }
+    public MetaP2P getMetaPFile()          { return metaPFile;                         }
     public String           getFilename()           { return metaPFile.getFilename();           }
     public String           formattedFileSizeStr()  { return metaPFile.formattedFilesizeStr();  }
     public long             getFilesizeBytes()      { return metaPFile.getFilesizeBytes();      }

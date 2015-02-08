@@ -6,8 +6,8 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import p2p.file.meta.MetaP2PFile;
-import p2p.peer.Peer;
+import p2p.file.meta.MetaP2P;
+import p2p.peer.PeerAddr;
 import p2p.tracker.Tracker;
 
 import java.util.ArrayList;
@@ -27,15 +27,15 @@ import java.util.List;
  *      2.) ClientSwarm: the type of Swarm held by a Client allowing it to
  *                       decide from whom to download which chunk
  */
-public abstract class Swarm<T extends Tracker, P extends Peer> {
+public abstract class Swarm<T extends Tracker, P extends PeerAddr> {
     /* CODE */
     protected final ListProperty<P> seeders;
     protected final ListProperty<P> leechers;
-    protected final ObjectProperty<MetaP2PFile> metaP2P;
+    protected final ObjectProperty<MetaP2P> metaP2P;
     protected final ObjectProperty<T> tracker;
 
-    public Swarm(MetaP2PFile baseMetaP2PFile, T trkr) {
-        metaP2P = new SimpleObjectProperty<>(baseMetaP2PFile);
+    public Swarm(MetaP2P baseMetaP2P, T trkr) {
+        metaP2P = new SimpleObjectProperty<>(baseMetaP2P);
         seeders = new SimpleListProperty<>(FXCollections.observableArrayList());
         leechers = new SimpleListProperty<>(FXCollections.observableArrayList());
         tracker = new SimpleObjectProperty<>(trkr);
@@ -60,9 +60,9 @@ public abstract class Swarm<T extends Tracker, P extends Peer> {
     public void setLeechers(ObservableList<P> leechers) { this.leechers.set(leechers); }
     public void addLeecher(P leecher) { seeders.get().add(leecher); }
 
-    public MetaP2PFile getMetaP2P() { return metaP2P.get(); }
-    public ObjectProperty<MetaP2PFile> metaP2PProperty() { return metaP2P; }
-    public void setMetaP2P(MetaP2PFile metaP2PFile) { this.metaP2P.set(metaP2PFile); }
+    public MetaP2P getMetaP2P() { return metaP2P.get(); }
+    public ObjectProperty<MetaP2P> metaP2PProperty() { return metaP2P; }
+    public void setMetaP2P(MetaP2P metaP2P) { this.metaP2P.set(metaP2P); }
 
     public T getTracker() { return tracker.get(); }
     public ObjectProperty<T> trackerProperty() { return tracker; }

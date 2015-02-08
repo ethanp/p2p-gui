@@ -6,7 +6,7 @@ import client.p2pFile.P2PFile;
 import client.protocol.ClientSideTrackerProtocol;
 import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.tracker.TrackerTalk;
 import p2p.tracker.Tracker;
@@ -37,7 +37,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         listFiles();
     }
 
-    public void createSwarmForMetaFile(MetaP2PFile mFile) {
+    public void createSwarmForMetaFile(MetaP2P mFile) {
         ClientSwarm s = new ClientSwarm(mFile, this);
         getSwarms().add(s);
     }
@@ -69,7 +69,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         }
     }
 
-    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta) {
+    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2P meta) {
         // TODO implement RemoteTracker addAddrToSwarmFor
         throw new NotImplementedException();
     }
@@ -78,7 +78,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
+    @Override public void addFileRequest(MetaP2P meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
         out.println(PeerTalk.ToTracker.ADD_FILE_REQUEST);
         out.println(ServersCommon.ipPortToString(peerListenAddr));
@@ -92,7 +92,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
      */
-    @Override public ClientSwarm updateSwarmInfo(MetaP2PFile meta)
+    @Override public ClientSwarm updateSwarmInfo(MetaP2P meta)
             throws IOException, ConnectToTrackerException, ServersIOException
     {
         ClientSwarm clientSwarm = new ClientSwarm(meta, this);
@@ -114,7 +114,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         for (int i = 0; i < numSdrs; i++) {
             String sAddr = in.readLine();
             InetSocketAddress addr = ServersCommon.addrFromString(sAddr);
-//            TODO new RemotePeer(addr);
+//            TODO new Peer(addr);
         }
 
         /* Rcv Leechers and add them to Swarm */

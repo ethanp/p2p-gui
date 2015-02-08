@@ -1,6 +1,6 @@
 package tracker;
 
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.tracker.swarm.Swarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -13,8 +13,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  *      b) find peers from whom to download a desired file
  */
 public class TrackerSwarm extends Swarm<LocalTracker, TrackerPeer> {
-    public TrackerSwarm(MetaP2PFile baseMetaP2PFile, LocalTracker trkr) {
-        super(baseMetaP2PFile, trkr);
+    public TrackerSwarm(MetaP2P baseMetaP2P, LocalTracker trkr) {
+        super(baseMetaP2P, trkr);
     }
 
     @Override public Swarm<LocalTracker, TrackerPeer> addFakePeers() {
@@ -23,7 +23,7 @@ public class TrackerSwarm extends Swarm<LocalTracker, TrackerPeer> {
     }
 
     public static TrackerSwarm createLoadedSwarm(LocalTracker trkr) {
-        TrackerSwarm swarm = new TrackerSwarm(MetaP2PFile.genFake(), trkr);
+        TrackerSwarm swarm = new TrackerSwarm(MetaP2P.genFake(), trkr);
         swarm.addFakePeers();
         return swarm;
     }

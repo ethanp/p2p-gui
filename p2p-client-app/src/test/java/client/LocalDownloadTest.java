@@ -4,13 +4,13 @@ import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import client.download.FileDownload;
 import client.p2pFile.P2PFile;
-import client.peer.RemotePeer;
+import client.peer.Peer;
 import client.state.ClientState;
 import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
 import org.junit.Before;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import util.Common;
 import util.ServersCommon;
@@ -41,7 +41,7 @@ public class LocalDownloadTest {
     protected Socket socket;
     protected PrintWriter writer;
     protected BufferedInputStream inputStream;
-    protected MetaP2PFile sequenceMeta;
+    protected MetaP2P sequenceMeta;
 
     @Before
     public void setUp() throws Exception {
@@ -59,10 +59,10 @@ public class LocalDownloadTest {
         inputStream = ServersCommon.buffIStream(socket);
     }
 
-    public FileDownload makeSequenceFileDownload(MetaP2PFile meta) throws CreateP2PFileException {
+    public FileDownload makeSequenceFileDownload(MetaP2P meta) throws CreateP2PFileException {
         RemoteTracker stubTracker = null;
         ClientSwarm clientSwarm = new ClientSwarm(meta, stubTracker);
-        RemotePeer myselfAsPeer = new RemotePeer(myAddress());
+        Peer myselfAsPeer = new Peer(myAddress());
         clientSwarm.addSeeder(myselfAsPeer);
         FileDownload fileDownload = new FileDownload(downloadDir, clientSwarm);
         return fileDownload;
@@ -129,7 +129,7 @@ public class LocalDownloadTest {
         return serveDir;
     }
 
-    protected void requestChunk(MetaP2PFile meta, int chunkIdx) {
+    protected void requestChunk(MetaP2P meta, int chunkIdx) {
         writer.println(PeerTalk.ToPeer.GET_CHUNK);
         writer.println(meta.serializeToString());
         writer.println(chunkIdx);

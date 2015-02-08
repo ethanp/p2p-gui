@@ -4,7 +4,7 @@ import Exceptions.ServersIOException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import client.tracker.swarm.ClientSwarm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
@@ -43,7 +43,7 @@ public class FakeRemoteTracker extends RemoteTracker {
         ObservableList<ClientSwarm> swarms = FXCollections.observableArrayList();
         int N = Common.randInt(6);
         for (int i = 0; i < N; i++)
-            swarms.add(new ClientSwarm(MetaP2PFile.genFake(), t));
+            swarms.add(new ClientSwarm(MetaP2P.genFake(), t));
         assert t != null;
         t.setSwarms(swarms);
         return t;
@@ -57,7 +57,7 @@ public class FakeRemoteTracker extends RemoteTracker {
 
     @Override public String getIpPortString() { return ipPortString; }
 
-    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2PFile meta) {
+    @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2P meta) {
         // TODO implement FakeRemoteTracker addAddrToSwarmFor
         throw new NotImplementedException();
     }
@@ -66,7 +66,7 @@ public class FakeRemoteTracker extends RemoteTracker {
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest(MetaP2PFile meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
+    @Override public void addFileRequest(MetaP2P meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
 
     }
 
@@ -75,7 +75,7 @@ public class FakeRemoteTracker extends RemoteTracker {
      * in an existing Swarm so that the Peer can update its internal view of the Swarm
      * @param meta
      */
-    @Override public ClientSwarm updateSwarmInfo(MetaP2PFile meta) {
+    @Override public ClientSwarm updateSwarmInfo(MetaP2P meta) {
         ClientSwarm cs = getSwarmForFile(meta);
         cs.addFakePeers();
         return cs;
@@ -87,8 +87,8 @@ public class FakeRemoteTracker extends RemoteTracker {
      * Stick them in the fake remote tracker's swarms list
      */
     @Override public void listFiles() {
-        final ClientSwarm swarm1 = new ClientSwarm(MetaP2PFile.genFake(), defaultFakeRemoteTracker);
-        final ClientSwarm swarm2 = new ClientSwarm(MetaP2PFile.genFake(), defaultFakeRemoteTracker);
+        final ClientSwarm swarm1 = new ClientSwarm(MetaP2P.genFake(), defaultFakeRemoteTracker);
+        final ClientSwarm swarm2 = new ClientSwarm(MetaP2P.genFake(), defaultFakeRemoteTracker);
         swarm1.addFakePeers();
         swarm2.addFakePeers();
         setSwarms(FXCollections.observableArrayList(swarm1,swarm2));

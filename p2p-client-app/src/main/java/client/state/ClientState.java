@@ -13,7 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2PFile;
+import p2p.file.meta.MetaP2P;
 import util.Common;
 
 import java.io.File;
@@ -57,7 +57,7 @@ public class ClientState {
         return null;
     }
 
-    public static P2PFile getLocalP2PFile(MetaP2PFile mFile) {
+    public static P2PFile getLocalP2PFile(MetaP2P mFile) {
         for (P2PFile pFile : localFiles)
             if (pFile.getMetaPFile().equals(mFile))
                 return pFile;

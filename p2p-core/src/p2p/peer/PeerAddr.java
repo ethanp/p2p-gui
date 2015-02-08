@@ -28,7 +28,7 @@ import java.net.InetSocketAddress;
  *                  namely which Chunks it has of which files
  *                          via (roughly) a Map<Meta, BitMap>
  */
-public abstract class Peer {
+public abstract class PeerAddr {
 
     @Override public String toString() {
         return ServersCommon.ipPortToString(servingAddr.get());
@@ -36,7 +36,7 @@ public abstract class Peer {
 
     protected final ObjectProperty<InetSocketAddress> servingAddr;
 
-    protected Peer(InetSocketAddress socketAddr) {
+    protected PeerAddr(InetSocketAddress socketAddr) {
         servingAddr = new SimpleObjectProperty<>(socketAddr);
     }
 

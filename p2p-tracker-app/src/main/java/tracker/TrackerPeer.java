@@ -1,6 +1,6 @@
 package tracker;
 
-import p2p.peer.Peer;
+import p2p.peer.PeerAddr;
 
 import java.net.InetSocketAddress;
 
@@ -11,7 +11,7 @@ import java.net.InetSocketAddress;
  * to keep track of, namely the ServerSocket address at which it is
  * servicing requests for Chunks.
  */
-public class TrackerPeer extends Peer {
+public class TrackerPeer extends PeerAddr {
     protected TrackerPeer(InetSocketAddress socketAddr) {
         super(socketAddr);
     }
