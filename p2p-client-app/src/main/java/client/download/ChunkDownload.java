@@ -35,7 +35,6 @@ public class ChunkDownload implements Runnable, ClientSideChunkProtocol {
         peerIn = ServersCommon.bufferedReader(peerConn);
     }
 
-    // TODO implement ChunkDownload.run()
     @Override public void run() {
         /* TODO the file should have been already created closer to when
          *      the user clicked that she wanted to download it

@@ -95,4 +95,7 @@ public class ClientState {
     public static ObservableList<P2PFile> getLocalFiles() { return localFiles; }
 
 
+    public ClientState init() {
+        return null;
+    }
 }

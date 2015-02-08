@@ -2,19 +2,24 @@ package client.managers;
 
 import client.download.FileDownload;
 import client.peer.Peer;
-import javafx.collections.ObservableList;
 import p2p.file.meta.MetaP2P;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
 
 /**
  * Ethan Petuchowski 2/8/15
  */
 public class DownloadsManager {
 
-    ObservableList<FileDownload> fileDownloads;
-    ObservableList<Peer> connectedPeers;
+    Collection<FileDownload> fileDownloads;
+    Collection<Peer> connectedPeers;
 
+    /**
+     * This is called by the UI layer when the User chooses to download a file.
+     * It creates a `FileDownload` object which in turn uses the existing
+     * `connectedPeers` creates new ones, from whom `Chunk`s are solicited.
+     */
     public void downloadFile(MetaP2P mFile) {
         /* if we already have this file, don't download it */
         /* get trackers who know about this file */
