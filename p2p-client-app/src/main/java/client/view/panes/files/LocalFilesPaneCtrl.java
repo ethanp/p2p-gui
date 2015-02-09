@@ -1,7 +1,6 @@
 package client.view.panes.files;
 
 import client.p2pFile.P2PFile;
-import client.state.ClientState;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -54,8 +53,8 @@ public class LocalFilesPaneCtrl {
 
     @FXML private void initialize() {
         localFileTable.setEditable(false);
-        localFileTable.getItems().addAll(ClientState.getLocalFiles());
-        ClientState.getLocalFiles().addListener(localFilesListener);
+//        localFileTable.getItems().addAll(ClientState.getLocalFiles());
+//        ClientState.getLocalFiles().addListener(localFilesListener);
         tableColumns = Arrays.asList(nameCol, sizeCol, percentCol);
         tableColumns.stream().forEach(c -> c.setCellValueFactory(valueFactory));
 

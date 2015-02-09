@@ -35,7 +35,7 @@ public class Main extends Application {
         Main.primaryStage = primaryStage;
         Main.primaryStage.setTitle("p2p-gui");
         loadTheWindow();
-        ClientState.addFakeContent();
+//        ClientState.addFakeContent();
     }
 
     private void loadTheWindow() {

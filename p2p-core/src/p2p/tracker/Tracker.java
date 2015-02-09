@@ -33,18 +33,19 @@ public abstract class Tracker<S extends Swarm> {
     }
 
     public ObservableList<S> getSwarms() { return swarms.get(); }
-    public ListProperty<S> swarmsProperty() { return swarms; }
-    public void setSwarms(ObservableList<S> swarms) { this.swarms.set(swarms); }
+    public int               numSwarms() { return getSwarms().size(); }
+    public void              setSwarms(ObservableList<S> swarms) { this.swarms.set(swarms); }
     public InetSocketAddress getTrkrListenAddr() { return trkrListenAddr.get(); }
-    public ObjectProperty<InetSocketAddress> trkrListenAddrProperty(){return trkrListenAddr;}
-    public void setTrkrListenAddr(InetSocketAddress addr) { this.trkrListenAddr.set(addr); }
-    public String getIpPortString() { return ServersCommon.ipPortToString(getTrkrListenAddr()); }
+    public String            getIpPortString() { return ServersCommon.ipPortToString(getTrkrListenAddr()); }
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Tracker)) return false;
         Tracker tracker = (Tracker) o;
-        if (!trkrListenAddr.equals(tracker.trkrListenAddr)) return false;
+        String thisAddr = ServersCommon.ipPortToString(trkrListenAddr.get());
+        String thatAddr = ServersCommon.ipPortToString((InetSocketAddress) tracker.trkrListenAddr.get());
+
+        if (!thisAddr.equals(thatAddr)) return false;
         if (!swarms.equals(tracker.swarms)) return false;
         return true;
     }

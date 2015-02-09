@@ -4,13 +4,11 @@ import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import client.p2pFile.P2PFile;
-import client.state.ClientState;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.chunk.Chunk;
 import p2p.file.meta.MetaP2P;
-import p2p.peer.ChunksForService;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import servers.MultiThreadedServer;
@@ -72,8 +70,8 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
             /* from the mFile, they already know the size of the BitSet */
             /* so we just need to send the receiver the BitSet itself */
-            P2PFile pFile = ClientState.getLocalP2PFile(mFile);
-            ChunksForService c = pFile.getAvailableChunks();
+//            P2PFile pFile = ClientState.getLocalP2PFile(mFile);
+//            ChunksForService c = pFile.getAvailableChunks();
 
         }
 
@@ -84,12 +82,12 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
 
             /* make sure I have that file */
             P2PFile pFile = null;
-            for (P2PFile localFile : ClientState.getLocalFiles()) {
-                if (meta.equals(localFile.getMetaPFile())) {
-                    pFile = localFile;
-                    break;
-                }
-            }
+//            for (P2PFile localFile : ClientState.getLocalFiles()) {
+//                if (meta.equals(localFile.getMetaPFile())) {
+//                    pFile = localFile;
+//                    break;
+//                }
+//            }
 
             /* determine which chunk we're talking about */
             String chkIdxStr = reader.readLine();

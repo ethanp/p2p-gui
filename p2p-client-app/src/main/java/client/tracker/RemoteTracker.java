@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Ethan Petuchowski 1/15/15
@@ -34,7 +35,10 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
     public RemoteTracker(InetSocketAddress addr)
             throws IOException, ConnectToTrackerException, ServersIOException {
         super(addr);
-        listFiles();
+    }
+
+    public RemoteTracker(String addrStr) throws UnknownHostException {
+        super(ServersCommon.addrFromString(addrStr));
     }
 
     public void createSwarmForMetaFile(MetaP2P mFile) {

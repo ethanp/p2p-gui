@@ -5,7 +5,6 @@ import Exceptions.ServersIOException;
 import client.download.FileDownload;
 import client.p2pFile.P2PFile;
 import client.peer.Peer;
-import client.state.ClientState;
 import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
 import org.junit.Before;
@@ -49,7 +48,7 @@ public class LocalDownloadTest {
         sequenceServedFile = new File(serveDir, "local-1");
         sequenceFileBytes = LocalDownloadTest.fillWithNumberSequence(sequenceServedFile);
         LocalDownloadTest.serveFile(sequenceServedFile);
-        sequenceMeta = ClientState.getLocalP2PFile(sequenceServedFile).getMetaPFile();
+//        sequenceMeta = ClientState.getLocalP2PFile(sequenceServedFile).getMetaPFile();
         connectToMyOwnPeerServer();
     }
 
@@ -71,12 +70,13 @@ public class LocalDownloadTest {
     public void createCleanServeAndDownloadDirectories() throws FileNotFoundException {
         serveDir = LocalDownloadTest.makeCleanDir("p2p-gui serve");
         downloadDir = LocalDownloadTest.makeCleanDir("p2p-gui DL");
-        ClientState.setUserDownloadDirectory(downloadDir);
+//        ClientState.setUserDownloadDirectory(downloadDir);
     }
 
     public static P2PFile serveFile(File file) throws CreateP2PFileException, IOException {
-        ClientState.addLocalFile(file);
-        return ClientState.getLocalP2PFile(file);
+//        ClientState.addLocalFile(file);
+//        return ClientState.getLocalP2PFile(file);
+        return null;
     }
 
     public static byte[] fillWithNumberSequence(File localFIle) throws IOException, CreateP2PFileException {
@@ -137,6 +137,7 @@ public class LocalDownloadTest {
     }
 
     private InetSocketAddress myAddress() {
-        return ClientState.getExternalSocketAddr();
+//        return ClientState.getExternalSocketAddr();
+        return null;
     }
 }

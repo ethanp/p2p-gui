@@ -1,7 +1,6 @@
 package client.view.panes.trackers;
 
 import Exceptions.ServersIOException;
-import client.state.ClientState;
 import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
 import javafx.beans.property.ObjectProperty;
@@ -58,7 +57,7 @@ public class Celery {
     }
 
     public String getName() {
-        if (isRoot()) return ClientState.getKnownTrackers().size() + " trackers";
+//        if (isRoot()) return ClientState.getKnownTrackers().size() + " trackers";
         if (isTracker()) return tracker.getIpPortString();
         else return swarm.getMetaP2P().getFilename();
     }

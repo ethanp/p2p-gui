@@ -3,11 +3,10 @@ package client.state;
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
+import client.managers.TrackersManager;
 import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
 import client.server.PeerServer;
-import client.tracker.FakeRemoteTracker;
-import client.tracker.RemoteTracker;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -19,6 +18,7 @@ import util.Common;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,15 +28,15 @@ import java.util.concurrent.Executors;
 public class ClientState {
 
     // singletons...is that a "BAD THING"?
-    private static PeerServer peerServer;
-    private static ObjectProperty<File> userDownloadDirectory
+    private PeerServer peerServer;
+    private ObjectProperty<File> userDownloadDirectory
             = new SimpleObjectProperty<>(new File("/Users/Ethan/Desktop/P2PDownloadDir"));
-    private static ObservableList<RemoteTracker> knownTrackers = FXCollections.observableArrayList();
-    private static ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
-    private static ExecutorService fileDownloadPool
+    private TrackersManager trackersManager = new TrackersManager();
+    private ObservableList<P2PFile> localFiles = FXCollections.observableArrayList();
+    private ExecutorService fileDownloadPool
             = Executors.newFixedThreadPool(Common.FILE_DOWNLOADS_POOL_SIZE);
 
-    static {
+     {
         try {
             peerServer = new PeerServer();
             new Thread(peerServer).start();
@@ -46,33 +46,33 @@ public class ClientState {
         }
     }
 
-    public static void addLocalFile(File file) throws CreateP2PFileException, IOException {
+    public void addLocalFile(File file) throws CreateP2PFileException, IOException {
         localFiles.add(P2PFile.importLocalFile(file));
     }
 
-    public static P2PFile getLocalP2PFile(File file) {
+    public P2PFile getLocalP2PFile(File file) {
         for (P2PFile pFile : localFiles)
             if (pFile.getLocalFile().equals(file))
                 return pFile;
         return null;
     }
 
-    public static P2PFile getLocalP2PFile(MetaP2P mFile) {
+    public P2PFile getLocalP2PFile(MetaP2P mFile) {
         for (P2PFile pFile : localFiles)
             if (pFile.getMetaPFile().equals(mFile))
                 return pFile;
         return null;
     }
 
-    public static void addLocalFiles(File... files) throws CreateP2PFileException, IOException {
+    public void addLocalFiles(File... files) throws CreateP2PFileException, IOException {
         for (File file:files) addLocalFile(file);
     }
 
-    public static void addLocalFiles(P2PFile... files) {
+    public void addLocalFiles(P2PFile... files) {
         localFiles.addAll(files);
     }
 
-    public static void addFakeContent() {
+    public void addFakeContent() {
         try {
             LocalFakeFile pFile1 = LocalFakeFile.genFakeFile();
             LocalFakeFile pFile2 = LocalFakeFile.genFakeFile();
@@ -82,20 +82,23 @@ public class ClientState {
         catch (CreateP2PFileException e) {
             e.printStackTrace();
         }
-        knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
+//        knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 
     /* getters & setters */
-    public static PeerServer getPeerServer() { return peerServer; }
-    public static InetSocketAddress getExternalSocketAddr() { return peerServer.getExternalSocketAddr(); }
-    public static void setUserDownloadDirectory(File file) { userDownloadDirectory.setValue(file); }
-    public static File getUserDownloadDirectory() { return userDownloadDirectory.get(); }
-    public static ObjectProperty<File> userDownloadDirectoryProperty() { return userDownloadDirectory; }
-    public static ObservableList<RemoteTracker> getKnownTrackers() { return knownTrackers; }
-    public static ObservableList<P2PFile> getLocalFiles() { return localFiles; }
+    public PeerServer getPeerServer() { return peerServer; }
+    public InetSocketAddress getExternalSocketAddr() { return peerServer.getExternalSocketAddr(); }
+    public void setUserDownloadDirectory(File file) { userDownloadDirectory.setValue(file); }
+    public File getUserDownloadDirectory() { return userDownloadDirectory.get(); }
+    public ObjectProperty<File> userDownloadDirectoryProperty() { return userDownloadDirectory; }
+    public ObservableList<P2PFile> getLocalFiles() { return localFiles; }
 
 
     public ClientState init() {
-        return null;
+        return this;
+    }
+
+    public void addTrackerByAddrStr(String addrStr) throws UnknownHostException {
+        trackersManager.addTrackerByAddrStr(addrStr);
     }
 }

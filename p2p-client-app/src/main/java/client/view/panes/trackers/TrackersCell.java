@@ -2,7 +2,6 @@ package client.view.panes.trackers;
 
 import Exceptions.ServersIOException;
 import client.Main;
-import client.state.ClientState;
 import client.tracker.RemoteTracker;
 import client.util.ClientStateUtil;
 import client.util.ViewUtil;
@@ -58,7 +57,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
         }
         if (getItem().isTracker()) {
             addOpt("Add fake tracker", e -> ClientStateUtil.addFakeTracker());
-            addOpt("Remove tracker", e -> ClientState.getKnownTrackers().remove(getItem().getTracker()));
+//            addOpt("Remove tracker", e -> ClientState.getKnownTrackers().remove(getItem().getTracker()));
             addOpt("Refresh swarms", e -> {
                 try {
                     getItem().getTracker().listFiles();
@@ -110,8 +109,8 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 RemoteTracker newTracker;
                 try {
                     newTracker = new RemoteTracker(isa);
-                    ClientState.getKnownTrackers().add(newTracker);
-                    newTracker.listFiles();
+//                    ClientState.getKnownTrackers().add(newTracker);
+//                    newTracker.listFiles();
                 }
                 catch (ServersIOException e) {
                     e.printStackTrace();
