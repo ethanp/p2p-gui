@@ -50,6 +50,9 @@ latex footer:   mmd-memoir-footer
   BitTorrent, because if you get a bad `Chunk`, you don't want to have to
   redownload *all* the `Chunk`s
 
+### FileDownload
+
+* Use memory-mapped files instead of file-seeks
 
 ## TODOs
 

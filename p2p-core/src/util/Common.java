@@ -9,7 +9,9 @@ import java.util.Random;
  */
 public class Common {
 
-    public static long secondsToNanoseconds(int i) {
+    public static final String SYS_LINE_SEP = System.getProperty("line.separator");
+
+    public static long secToNano(int i) {
         return i * 1_000_000_000; // en.wikipedia.org/wiki/Nano- says 1E-9,
     }
 

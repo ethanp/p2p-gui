@@ -46,6 +46,7 @@ public class ClientCLI extends BaseCLI {
     /** the args aren't used for anything at this point */
     public static void main(String[] args) { new ClientCLI(); }
 
+
     ClientState state = new ClientState();
 
     ClientCLI() {
@@ -72,6 +73,8 @@ public class ClientCLI extends BaseCLI {
                 case "info":
                     infoCommand(inputComponents);
                     break;
+                case "exit":
+                    return;
                 default:
                     System.out.println("Unrecognized command: "+
                                        Arrays.toString(inputComponents).replace(",", ""));

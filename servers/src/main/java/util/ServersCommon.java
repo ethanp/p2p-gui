@@ -30,6 +30,12 @@ import java.util.Random;
  */
 public class ServersCommon {
 
+    static final String IP4_SEG = "\\d{1,3}";
+    static final String IP4_PRE = IP4_SEG+"\\.";
+    public static final String IP_PORT_REG = "\\d{1,5}";
+    public static final String IP4_REG = IP4_PRE+IP4_PRE+IP4_PRE+IP4_SEG;
+    public static final String IP4_wPORT_REG = IP4_REG+":"+IP_PORT_REG;
+
     public static Random r = new Random();
     public static int randInt(int bound) { return r.nextInt(bound); }
 

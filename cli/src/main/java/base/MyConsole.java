@@ -14,9 +14,6 @@ public class MyConsole {
 
     public String prompt(String promptString) {
         System.out.print(promptString+" ");
-        String userInputLine = scanner.nextLine();
-        while (userInputLine.isEmpty())
-            userInputLine = scanner.nextLine();
-        return userInputLine;
+        return scanner.nextLine();
     }
 }

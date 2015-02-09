@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class Peer extends PeerAddr implements Runnable {
 
-    private static final long DOWNLOAD_TIMEOUT = Common.secondsToNanoseconds(3);
+    private static final long DOWNLOAD_TIMEOUT = Common.secToNano(3);
     private static final int ERRORS_THRESHOLD = 3;
 
     Socket socket;
