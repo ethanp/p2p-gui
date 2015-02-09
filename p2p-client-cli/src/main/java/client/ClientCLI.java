@@ -40,13 +40,13 @@ import java.util.Arrays;
  *
  *      $#> info
  *      known trackers:
- *      123.123.123.123:123   3 files   Avg avbl: 4.1
+ *      1.) 123.123.123.123:123   3 files   Avg avbl: 4.1
  */
 public class ClientCLI extends BaseCLI {
     /** the args aren't used for anything at this point */
     public static void main(String[] args) { new ClientCLI(); }
 
-    ClientState state = new ClientState().init();
+    ClientState state = new ClientState();
 
     ClientCLI() {
         commandLoop();
@@ -66,17 +66,10 @@ public class ClientCLI extends BaseCLI {
                 case "upload":
                     uploadCommand(inputComponents);
                     break;
-                case "list":
-                    listCommand(inputComponents);
-                    break;
                 case "ps":
-                    /* display info about current downloads */
                     psCommand(inputComponents);
                     break;
                 case "info":
-                    /* display state info:
-                     *   number of known trackers
-                     */
                     infoCommand(inputComponents);
                     break;
                 default:
@@ -87,27 +80,6 @@ public class ClientCLI extends BaseCLI {
         }
     }
 
-    /**
-     * $#> info
-     * known trackers:
-     * 123.123.123.123:123   3 files   Avg avbl: 4.1
-     *      ...
-     */
-    private void infoCommand(String[] arguments) {
-//        if (state.getKnownTrackers().isEmpty()) {
-//            System.out.println("no trackers have been added yet");
-//            return;
-//        }
-//        for (RemoteTracker tracker : state.getKnownTrackers()) {
-//            System.out.format("%25s %d files\n", tracker.getIpPortString(), tracker.numSwarms());
-//        }
-    }
-
-    private void psCommand(String[] arguments) {}
-
-    private void listCommand(String[] arguments) {}
-
-    private void uploadCommand(String[] arguments) {}
 
     /**
      *  $#> download 2
@@ -146,8 +118,15 @@ public class ClientCLI extends BaseCLI {
             e.printStackTrace();
         }
     }
-}
 
-class MyConsole {
 
+    /**
+     * $#> info
+     * known trackers:
+     * 1.) 123.123.123.123:123   3 files   Avg avbl: 4.1
+     *      ...
+     */
+    private void infoCommand(String[] arguments) {}
+    private void psCommand(String[] arguments) {}
+    private void uploadCommand(String[] arguments) {}
 }
