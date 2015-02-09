@@ -35,6 +35,7 @@ public class ServersCommon {
     public static final String IP_PORT_REG = "\\d{1,5}";
     public static final String IP4_REG = IP4_PRE+IP4_PRE+IP4_PRE+IP4_SEG;
     public static final String IP4_wPORT_REG = IP4_REG+":"+IP_PORT_REG;
+    public static final int asMilli = 1000;
 
     public static Random r = new Random();
     public static int randInt(int bound) { return r.nextInt(bound); }
@@ -185,10 +186,10 @@ public class ServersCommon {
 
     public static Socket connectToInetSocketAddr(InetSocketAddress inetSocketAddr) throws FailedToFindServerException
     {
-        InetAddress ipAddr = inetSocketAddr.getAddress();
-        int port = inetSocketAddr.getPort();
         try {
-            return new Socket(ipAddr, port);
+            Socket s = new Socket();
+            s.connect(inetSocketAddr, 2*asMilli);
+            return s;
         }
         catch (IOException e) {
             throw new FailedToFindServerException(e);

@@ -1,10 +1,14 @@
 package client;
 
+import Exceptions.ServersIOException;
 import base.BaseCLI;
 import client.state.ClientState;
+import p2p.exceptions.ConnectToTrackerException;
+import util.ServersCommon;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Ethan Petuchowski 1/29/15
@@ -109,7 +113,7 @@ public class ClientCLI extends BaseCLI {
      *  3.) MnoP 3fSe   (23, 132)
      */
     private void trackerCommand(String[] arguments) {
-        if (arguments.length != 2) {
+        if (arguments.length != 2 || !Pattern.matches(ServersCommon.IP4_wPORT_REG, arguments[1])) {
             System.out.println("That 'tracker' command was improperly formatted!\n"
                              + "It should look like: tracker 123.123.123.123:1234");
             return;
@@ -117,8 +121,8 @@ public class ClientCLI extends BaseCLI {
         try {
             state.addTrackerByAddrStr(arguments[1]);
         }
-        catch (UnknownHostException e) {
-            e.printStackTrace();
+        catch (ServersIOException | ConnectToTrackerException | IOException e) {
+            System.out.println("Tracker not found!");
         }
     }
 
