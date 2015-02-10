@@ -110,7 +110,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 try {
                     newTracker = new RemoteTracker(isa);
 //                    ClientState.getKnownTrackers().add(newTracker);
-//                    newTracker.listFiles();
+//                    newTracker.listSwarms();
                 }
                 catch (ServersIOException e) {
                     e.printStackTrace();

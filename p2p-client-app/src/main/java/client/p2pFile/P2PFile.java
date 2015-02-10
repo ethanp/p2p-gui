@@ -71,7 +71,7 @@ public class P2PFile {
     public P2PFile addTracker(RemoteTracker tracker) {
         swarms.add(new ClientSwarm(metaPFile, tracker));
 
-        /* should probably listFiles() on the tracker
+        /* should probably listSwarms() on the tracker
          * while adding the tracker itself to the ClientState
          */
 

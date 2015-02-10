@@ -3,6 +3,7 @@ package client.tracker;
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import client.p2pFile.P2PFile;
+import client.peer.Peer;
 import client.protocol.ClientSideTrackerProtocol;
 import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
@@ -18,6 +19,8 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Ethan Petuchowski 1/15/15
@@ -134,16 +137,40 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    @Override public void listFiles() throws IOException, ConnectToTrackerException, ServersIOException {
+    @Override public Collection<ClientSwarm> listFiles() throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
+
         out.println(PeerTalk.ToTracker.LIST_FILES);
         out.flush();
-        int numFiles = Integer.parseInt(in.readLine());
-        for (int i = 0; i < numFiles; i++) {
-            // TODO implement RemoteTracker listFiles
-            throw new NotImplementedException();
+
+        int numSwarms = Integer.parseInt(in.readLine());
+        Collection<ClientSwarm> clientSwarms = new HashSet<>(numSwarms);
+        for (int i = 0; i < numSwarms; i++) {
+            MetaP2P mFile = MetaP2P.deserializeFromReader(in);
+            if (mFile == null) continue;
+            ClientSwarm rcvdSwarm = new ClientSwarm(mFile, this);
+
+            int numSeeders = Integer.parseInt(in.readLine());
+            for (int j = 0; j < numSeeders; j++)
+                rcvdSwarm.addSeeder(retrievePeer(mFile));
+
+            int numLeechers = Integer.parseInt(in.readLine());
+            for (int j = 0; j < numLeechers; j++)
+                rcvdSwarm.addLeecher(retrievePeer(mFile));
+
+            clientSwarms.add(rcvdSwarm);
         }
         disconnect();
+
+        return clientSwarms;
+    }
+
+    private Peer retrievePeer(MetaP2P mFile) throws IOException {
+        String addrStr = in.readLine();
+        InetSocketAddress socketAddr = ServersCommon.addrFromString(addrStr);
+        Peer peer = new Peer(socketAddr);
+        peer.addFile(mFile);
+        return peer;
     }
 
     public void simpleEcho() throws IOException, ServersIOException, ConnectToTrackerException {

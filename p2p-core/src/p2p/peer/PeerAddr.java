@@ -1,7 +1,5 @@
 package p2p.peer;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import util.ServersCommon;
 
 import java.net.InetSocketAddress;
@@ -30,17 +28,29 @@ import java.net.InetSocketAddress;
  */
 public abstract class PeerAddr {
 
-    @Override public String toString() {
-        return ServersCommon.ipPortToString(servingAddr.get());
-    }
-
-    protected final ObjectProperty<InetSocketAddress> servingAddr;
+    protected final InetSocketAddress servingAddr;
 
     protected PeerAddr(InetSocketAddress socketAddr) {
-        servingAddr = new SimpleObjectProperty<>(socketAddr);
+        servingAddr = socketAddr;
     }
 
-    public InetSocketAddress getServingAddr() { return servingAddr.get(); }
-    public ObjectProperty<InetSocketAddress> servingAddrProperty() { return servingAddr; }
-    public void setServingAddr(InetSocketAddress servingAddr) { this.servingAddr.set(servingAddr); }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PeerAddr)) return false;
+        PeerAddr addr = (PeerAddr) o;
+        if (!servingAddr.equals(addr.servingAddr)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return servingAddr.hashCode();
+    }
+
+    @Override public String toString() {
+        return ServersCommon.ipPortToString(getServingAddr());
+    }
+
+    public InetSocketAddress getServingAddr() { return servingAddr; }
 }

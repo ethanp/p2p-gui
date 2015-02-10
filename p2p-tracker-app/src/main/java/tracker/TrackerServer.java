@@ -66,8 +66,16 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
      * TODO  Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    @Override public void listFiles() {
+    @Override public void listSwarms() {
         System.out.println("List files is not implemented in the Tracker");
+        try (PrintWriter printWriter = ServersCommon.printWriter(socket)) {
+            printWriter.println();
+            bufferedReader.readLine();
+
+        }
+        catch (ServersIOException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override protected void beforeAllListenLoops() {
@@ -106,7 +114,7 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
                 }
                 break;
             case PeerTalk.ToTracker.LIST_FILES:
-                listFiles();
+                listSwarms();
                 break;
             default: System.err.println("ERROR: There is no case to handle that command.");
         }

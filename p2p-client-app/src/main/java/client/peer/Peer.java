@@ -202,7 +202,13 @@ public class Peer extends PeerAddr implements Runnable {
         fileCurrentlyDownloading = null;
     }
 
-    public void updateAvblForSync(MetaP2P file) {
+    public void updateAvblForSync(MetaP2P file) {}
 
+    public boolean addFile(MetaP2P metaP2P) {
+        if (!chunksOfFiles.containsKey(metaP2P)) {
+            chunksOfFiles.put(metaP2P, new ChunksForService(metaP2P.getNumChunks()));
+            return true;
+        }
+        return false;
     }
 }

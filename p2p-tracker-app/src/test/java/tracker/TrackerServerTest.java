@@ -119,16 +119,7 @@ public class TrackerServerTest {
     }
 
     @Test public void testSecondFileGetsSecondSeeder() throws ServersIOException, ConnectToTrackerException, IOException, FailedToFindServerException {
-        MetaP2P meta1 = MetaP2P.genFake();
-        MetaP2P meta2 = MetaP2P.genFake();
-        InetSocketAddress addr1 = ServersCommon.randomSocketAddr();
-        InetSocketAddress addr2 = ServersCommon.randomSocketAddr();
-
-        addFileRequest(meta1, addr1);
-        reconnectToTrackerServer();
-        addFileRequest(meta2, addr1);
-        reconnectToTrackerServer();
-        addFileRequest(meta2, addr2);
+        uploadTwoFiles();
 
         List<TrackerSwarm> swarms = trackerServer.getTracker().getSwarms();
         List seeders1 = swarms.get(0).getSeeders();
@@ -139,10 +130,35 @@ public class TrackerServerTest {
         assertEquals(2, seeders2.size());
     }
 
+    private void uploadTwoFiles() throws IOException, ConnectToTrackerException, ServersIOException, FailedToFindServerException {
+        MetaP2P meta1 = MetaP2P.genFake();
+        MetaP2P meta2 = MetaP2P.genFake();
+        InetSocketAddress addr1 = ServersCommon.randomSocketAddr();
+        InetSocketAddress addr2 = ServersCommon.randomSocketAddr();
+
+        addFileRequest(meta1, addr1);
+        reconnectToTrackerServer();
+        addFileRequest(meta2, addr1);
+        reconnectToTrackerServer();
+        addFileRequest(meta2, addr2);
+    }
+
+    @Test public void testListFiles() throws ServersIOException, ConnectToTrackerException, FailedToFindServerException, IOException {
+        uploadTwoFiles();
+
+        List<TrackerSwarm> swarms = trackerServer.getTracker().getSwarms();
+        List seeders1 = swarms.get(0).getSeeders();
+        List seeders2 = swarms.get(1).getSeeders();
+
+//        Set<ClientSwarm> rcvdSwarms = listFiles();
+//        assertEquals(2, rcvdSwarms.size());
+    }
+
     private void reconnectToTrackerServer() throws IOException, FailedToFindServerException, ServersIOException {
         socket.close();
         socket = trackerServer.connectToLoopbackAddr();
         printWriter = ServersCommon.printWriter(socket);
+        bufferedReader = ServersCommon.bufferedReader(socket);
     }
 
     /** Based on ClientSideTrackerProtocol which isn't accessible in this module
@@ -177,7 +193,6 @@ public class TrackerServerTest {
      * so that the Peer can update its internal view of the Swarm
      */
     public void updateSwarmInfo(MetaP2P meta) throws IOException, ConnectToTrackerException, ServersIOException {
-        // TODO implement TrackerServerTest updateSwarmInfo
         throw new NotImplementedException();
     }
 
@@ -185,7 +200,4 @@ public class TrackerServerTest {
      *
      * Tracker sends Peer its full list of Swarms INCLUDING specific IP Addresses of Swarm members
      */
-    public void listFiles() throws IOException, ConnectToTrackerException, ServersIOException {
-
-    }
 }

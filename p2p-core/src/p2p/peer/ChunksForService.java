@@ -15,6 +15,7 @@ public class ChunksForService {
     public ChunksForService(int numChunks) {
         this.numChunks = numChunks;
         bitSet = new BitSet(numChunks);
+        setAllAsAvailable();
     }
 
     public byte[] serializeToBytes() {

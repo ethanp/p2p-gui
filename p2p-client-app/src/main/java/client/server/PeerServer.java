@@ -63,7 +63,7 @@ public class PeerServer extends MultiThreadedServer<PeerServer.ConnectionHandler
             try {
                 mFile = MetaP2P.deserializeFromReader(reader);
             }
-            catch (IOException | CreateP2PFileException e) {
+            catch (IOException e) {
                 // just burying my head, hoping this doesn't happen
                 e.printStackTrace();
             }

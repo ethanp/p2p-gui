@@ -25,5 +25,5 @@ public interface TrackerSideTrackerProtocol {
      * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    public void listFiles();
+    public void listSwarms();
 }

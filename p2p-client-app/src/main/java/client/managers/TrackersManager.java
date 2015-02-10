@@ -31,6 +31,11 @@ public class TrackersManager {
             knownTrackers.remove(tracker);
             throw e;
         }
+
+        /* TODO this should be happening in the ClientCLI,
+         * building a String to show to the user
+         * has nothing to do with the role of the TrackersManager
+         */
         StringBuilder s = new StringBuilder("File list:\n");
         int i = 1;
         for (ClientSwarm swarm : tracker.getSwarms()) {

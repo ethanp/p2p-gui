@@ -1,14 +1,14 @@
 package tracker.view;
 
+import client.peer.Peer;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import p2p.peer.Peer;
-import p2p.tracker.swarm.TrackerSwarm;
 import tracker.Main;
+import tracker.TrackerSwarm;
 
 /**
  * Ethan Petuchowski 1/14/15
@@ -33,7 +33,7 @@ public class TrackerViewCtrl {
     }
 
     public void initializeBasedOnServer() {
-        Main.getTracker().getSwarms().addListener(swarmChgListener);
+//        Main.getTracker().getSwarms().addListener(swarmChgListener);
 
         /* update the displayed "received request count"
          * in the lower-left of the screen
@@ -42,9 +42,9 @@ public class TrackerViewCtrl {
                 (obsVal, oldCt, newCt) -> setReqCtLabel(newCt.intValue()));
 
         /* make the "Add fake swarm" menu item add fake swarms to the listing */
-        addFakeSwarm.setOnAction(
-                e -> Main.getTracker().getSwarms().add(
-                        TrackerSwarm.createLoadedSwarm(Main.getTracker())));
+//        addFakeSwarm.setOnAction(
+//                e -> Main.getTracker().getSwarms().add(
+//                        TrackerSwarm.createLoadedSwarm(Main.getTracker())));
     }
 
     private final ListChangeListener<TrackerSwarm> swarmChgListener
@@ -99,9 +99,9 @@ public class TrackerViewCtrl {
 
     private void fillOtherColumnsBasedOn(TrackerSwarm swarm) {
         seederList.getItems().clear();
-        seederList.getItems().addAll(swarm.getSeeders());
+//        seederList.getItems().addAll(swarm.getSeeders());
         leecherList.getItems().clear();
-        leecherList.getItems().addAll(swarm.getLeechers());
+//        leecherList.getItems().addAll(swarm.getLeechers());
     }
 
     static class SwarmNameCell extends ListCell<TrackerSwarm> {

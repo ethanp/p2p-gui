@@ -4,6 +4,7 @@ import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import client.managers.FilesManager;
+import client.managers.PeersManager;
 import client.managers.TrackersManager;
 import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
@@ -21,11 +22,13 @@ import java.io.IOException;
  */
 public class ClientState {
 
-    private PeerServer peerServer;
     private TrackersManager trackersManager = new TrackersManager();
     private FilesManager filesManager = new FilesManager();
+    private PeersManager peersManager = new PeersManager();
 
-     {
+    /* when a ClientState is created, start its PeerServer */
+    private PeerServer peerServer;
+    {
         try {
             peerServer = new PeerServer();
             new Thread(peerServer).start();

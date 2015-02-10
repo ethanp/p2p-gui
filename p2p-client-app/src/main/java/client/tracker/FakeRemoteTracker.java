@@ -12,6 +12,7 @@ import util.ServersCommon;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 
 /**
  * Ethan Petuchowski 1/8/15
@@ -51,7 +52,7 @@ public class FakeRemoteTracker extends RemoteTracker {
 
     public FakeRemoteTracker(String fakeIPAddrAndPort)
             throws IOException, ConnectToTrackerException, ServersIOException {
-        super(null);
+        super("null");
         ipPortString = fakeIPAddrAndPort;
     }
 
@@ -86,7 +87,7 @@ public class FakeRemoteTracker extends RemoteTracker {
      * Give them random peer addresses
      * Stick them in the fake remote tracker's swarms list
      */
-    @Override public void listFiles() {
+    @Override public Collection<ClientSwarm> listFiles() {
         final ClientSwarm swarm1 = new ClientSwarm(MetaP2P.genFake(), defaultFakeRemoteTracker);
         final ClientSwarm swarm2 = new ClientSwarm(MetaP2P.genFake(), defaultFakeRemoteTracker);
         swarm1.addFakePeers();

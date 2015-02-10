@@ -7,6 +7,7 @@ import p2p.file.meta.MetaP2P;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 
 /**
  * Ethan Petuchowski 1/16/15
@@ -31,5 +32,5 @@ public interface ClientSideTrackerProtocol {
      * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    public void listFiles() throws IOException, ConnectToTrackerException, ServersIOException;
+    public Collection<ClientSwarm> listFiles() throws IOException, ConnectToTrackerException, ServersIOException;
 }

@@ -1,7 +1,5 @@
 package client;
 
-import client.download.FileDownload;
-import client.state.ClientState;
 import client.view.TheWindowCtrl;
 import client.view.panes.files.LocalFilesPaneCtrl;
 import client.view.panes.trackers.TrackersPaneCtrl;
@@ -13,12 +11,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import util.Common;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Main extends Application {
     public Main() { /* I could put stuff in here, but at this point there is no need */ }

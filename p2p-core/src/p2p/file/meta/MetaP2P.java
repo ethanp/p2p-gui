@@ -19,6 +19,9 @@ public class MetaP2P {
     protected final IntegerProperty filesizeBytes;
     protected final StringProperty digest; /* only req'd bc we use 'tracker' as 'index' */
 
+
+    protected final int numChunks;
+
     public String formattedFilesizeStr() {
         return Common.formatByteCountToString(getFilesizeBytes());
     }
@@ -42,13 +45,13 @@ public class MetaP2P {
         this.filename = new SimpleStringProperty(filename);
         filesizeBytes = new SimpleIntegerProperty(filesize);
         digest = new SimpleStringProperty(sha2digest);
+        numChunks = (int) Math.ceil(((double)filesize)/Common.NUM_CHUNK_BYTES);
     }
 
     public String getFilename() { return filename.get(); }
-    public StringProperty filenameProperty() { return filename; }
     public long getFilesizeBytes() { return filesizeBytes.get(); }
-    public IntegerProperty filesizeBytesProperty() { return filesizeBytes; }
     public String getDigest() { return digest.get(); }
+    public int getNumChunks() { return numChunks; }
 
     public static MetaP2P genFake() {
         final String name = "file-"+Common.randInt(1000);
@@ -84,13 +87,23 @@ public class MetaP2P {
     }
 
     public static MetaP2P deserializeFromReader(BufferedReader reader)
-            throws IOException, CreateP2PFileException
+            throws IOException
     {
         String filename = reader.readLine();
         String filesize = reader.readLine();
         String digest = reader.readLine();
         int filebytes = Integer.parseInt(filesize);
         reader.readLine(); // bc as it stands, we send it with 2 trailing newlines
-        return new MetaP2P(filename, filebytes, digest);
+        try {
+            return new MetaP2P(filename, filebytes, digest);
+        }
+        catch (CreateP2PFileException e) {
+            System.err.println("Could not create MetaP2P with");
+            System.err.println("filename: "+filename);
+            System.err.println("filesize: "+filesize);
+            System.err.println("digest: "+digest);
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
 }
