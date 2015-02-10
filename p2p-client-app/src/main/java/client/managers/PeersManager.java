@@ -1,7 +1,6 @@
 package client.managers;
 
 import client.peer.Peer;
-import p2p.file.meta.MetaP2P;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -20,12 +19,11 @@ public class PeersManager {
         return knownPeers.values();
     }
 
-    /* this is for adding a peer that we know nothing about except that they have a particular file */
-    public void addMetaToPeer(InetSocketAddress sAddr, MetaP2P metaP2P) {
-        Peer existing = knownPeers.get(sAddr);
-        if (existing == null) {
-            Peer newPeer = new Peer(sAddr);
-            newPeer.addFile(metaP2P);
-        }
+    public void mergePeerIn(Peer peer) {
+        Peer existing = knownPeers.get(peer.getServingAddr());
+        if (existing != null)
+            existing.addFiles(peer.getFiles());
+        else
+            knownPeers.put(peer.getServingAddr(), peer);
     }
 }

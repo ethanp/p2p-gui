@@ -1,6 +1,7 @@
 package tracker;
 
 import p2p.peer.PeerAddr;
+import util.ServersCommon;
 
 import java.net.InetSocketAddress;
 
@@ -14,5 +15,8 @@ import java.net.InetSocketAddress;
 public class TrackerPeer extends PeerAddr {
     protected TrackerPeer(InetSocketAddress socketAddr) {
         super(socketAddr);
+    }
+    public static TrackerPeer genFake() {
+        return new TrackerPeer(ServersCommon.randomSocketAddr());
     }
 }

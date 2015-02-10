@@ -23,12 +23,12 @@ public class MetaP2P {
     protected final int numChunks;
 
     public String formattedFilesizeStr() {
-        return Common.formatByteCountToString(getFilesizeBytes());
+        return Common.formatByteCount(getFilesize());
     }
 
     public String serializeToString() {
         return getFilename()        +"\n"
-             + getFilesizeBytes()   +"\n"
+             + getFilesize()   +"\n"
              + getDigest()          +"\n";
     }
 
@@ -49,7 +49,7 @@ public class MetaP2P {
     }
 
     public String getFilename() { return filename.get(); }
-    public long getFilesizeBytes() { return filesizeBytes.get(); }
+    public long getFilesize() { return filesizeBytes.get(); }
     public String getDigest() { return digest.get(); }
     public int getNumChunks() { return numChunks; }
 
@@ -74,7 +74,7 @@ public class MetaP2P {
         MetaP2P file = (MetaP2P) o;
         if (!getDigest().equals(file.getDigest())) return false;
         if (!getFilename().equals(file.getFilename())) return false;
-        if (getFilesizeBytes() != file.getFilesizeBytes()) return false;
+        if (getFilesize() != file.getFilesize()) return false;
         return true;
     }
 

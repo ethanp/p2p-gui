@@ -93,5 +93,6 @@ public class FakeRemoteTracker extends RemoteTracker {
         swarm1.addFakePeers();
         swarm2.addFakePeers();
         setSwarms(FXCollections.observableArrayList(swarm1,swarm2));
+        return getSwarms();
     }
 }

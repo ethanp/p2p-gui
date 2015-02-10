@@ -35,7 +35,7 @@ public class Common {
     public static final int CHUNK_SERVE_POOL_SIZE = 20;
     public static final int FILE_DOWNLOADS_POOL_SIZE = 4; // uTorrent's is user-configurable
 
-    public static String formatByteCountToString(long numBytes) {
+    public static String formatByteCount(long numBytes) {
         assert numBytes >= 0 : "can't have negative number of bytes: "+numBytes;
         if (numBytes < 1E3) return String.format("%d B", numBytes);
         if (numBytes < 1E6) return String.format("%.2f KB", numBytes/1E3);

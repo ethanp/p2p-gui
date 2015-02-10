@@ -20,6 +20,7 @@ import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Ethan Petuchowski 1/18/15
@@ -211,4 +212,14 @@ public class Peer extends PeerAddr implements Runnable {
         }
         return false;
     }
+
+    public Set<MetaP2P> getFiles() {
+        return chunksOfFiles.keySet();
+    }
+
+    public void addFiles(Set<MetaP2P> files) {
+        for (MetaP2P file : files)
+            addFile(file);
+    }
+
 }

@@ -39,7 +39,7 @@ public class P2PFile {
         this.localFile   = new SimpleObjectProperty<>(localFile);
         swarms           = new SimpleListProperty<>(FXCollections.observableArrayList());
         bytesPerChunk    = new SimpleIntegerProperty(Common.NUM_CHUNK_BYTES);
-        int iChunks      = (int) Math.ceil((double) metaP2P.getFilesizeBytes()/Common.NUM_CHUNK_BYTES);
+        int iChunks      = (int) Math.ceil((double) metaP2P.getFilesize()/Common.NUM_CHUNK_BYTES);
         numChunks        = new SimpleIntegerProperty(iChunks);
         availableChunks  = new SimpleObjectProperty<>(new ChunksForService(iChunks));
     }
@@ -51,7 +51,7 @@ public class P2PFile {
             throw new CreateP2PFileException("you can't import a directory");
         if (fsFile.length() > (long) Common.MAX_FILESIZE)
             throw new CreateP2PFileException("file is too big, max size is "+
-                                             Common.formatByteCountToString(Common.MAX_FILESIZE));
+                                             Common.formatByteCount(Common.MAX_FILESIZE));
 
         P2PFile toRet = new P2PFile(
                 fsFile,
@@ -117,7 +117,7 @@ public class P2PFile {
     public MetaP2P getMetaPFile()          { return metaPFile;                         }
     public String           getFilename()           { return metaPFile.getFilename();           }
     public String           formattedFileSizeStr()  { return metaPFile.formattedFilesizeStr();  }
-    public long             getFilesizeBytes()      { return metaPFile.getFilesizeBytes();      }
+    public long             getFilesizeBytes()      { return metaPFile.getFilesize();      }
     public int              getBytesPerChunk()      { return bytesPerChunk.get();               }
     public int              getNumChunks()          { return numChunks.get();                   }
     public String           getCompletenessString() { return String.format("%.2f%%",getAvailableChunks().getProportionAvailable()); }

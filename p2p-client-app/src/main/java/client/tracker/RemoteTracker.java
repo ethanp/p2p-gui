@@ -19,8 +19,8 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Ethan Petuchowski 1/15/15
@@ -144,7 +144,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         out.flush();
 
         int numSwarms = Integer.parseInt(in.readLine());
-        Collection<ClientSwarm> clientSwarms = new HashSet<>(numSwarms);
+        Collection<ClientSwarm> clientSwarms = new ArrayList<>(numSwarms);
         for (int i = 0; i < numSwarms; i++) {
             MetaP2P mFile = MetaP2P.deserializeFromReader(in);
             if (mFile == null) continue;

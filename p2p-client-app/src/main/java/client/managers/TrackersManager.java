@@ -8,6 +8,7 @@ import javafx.collections.ObservableSet;
 import p2p.exceptions.ConnectToTrackerException;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Ethan Petuchowski 2/9/15
@@ -25,7 +26,7 @@ public class TrackersManager {
 
     public String listTracker(RemoteTracker tracker) throws ServersIOException, ConnectToTrackerException, IOException {
         try {
-            tracker.listFiles();
+            Collection<ClientSwarm> clientSwarms = tracker.listFiles();
         }
         catch (IOException | ConnectToTrackerException | ServersIOException e) {
             knownTrackers.remove(tracker);
@@ -39,13 +40,8 @@ public class TrackersManager {
         StringBuilder s = new StringBuilder("File list:\n");
         int i = 1;
         for (ClientSwarm swarm : tracker.getSwarms()) {
-            s.append(i++ + ".)");
-            s.append("   ");
-            s.append(swarm.getFilename()+',');
-            s.append("   ");
-            s.append(swarm.numSeeders()+" seeders,");
-            s.append("   ");
-            s.append(swarm.numLeechers()+" leechers\n");
+            s.append(i++ + ".) ");
+            s.append(swarm.toCLIString()+"\n");
         }
         if (i == 1)
             s.append("Tracker has no files\n");

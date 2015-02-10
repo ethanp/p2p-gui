@@ -1,16 +1,12 @@
 package p2p.tracker.swarm;
 
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import p2p.file.meta.MetaP2P;
 import p2p.peer.PeerAddr;
 import p2p.tracker.Tracker;
+import util.Common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,16 +25,16 @@ import java.util.List;
  */
 public abstract class Swarm<T extends Tracker, P extends PeerAddr> {
     /* CODE */
-    protected final ListProperty<P> seeders;
-    protected final ListProperty<P> leechers;
-    protected final ObjectProperty<MetaP2P> metaP2P;
-    protected final ObjectProperty<T> tracker;
+    protected final List<P> seeders;
+    protected final List<P> leechers;
+    protected final MetaP2P metaP2P;
+    protected T tracker;
 
     public Swarm(MetaP2P baseMetaP2P, T trkr) {
-        metaP2P = new SimpleObjectProperty<>(baseMetaP2P);
-        seeders = new SimpleListProperty<>(FXCollections.observableArrayList());
-        leechers = new SimpleListProperty<>(FXCollections.observableArrayList());
-        tracker = new SimpleObjectProperty<>(trkr);
+        metaP2P = baseMetaP2P;
+        seeders = new ArrayList<>();
+        leechers = new ArrayList<>();
+        tracker = trkr;
     }
 
     public abstract Swarm<T, P> addFakePeers();
@@ -50,18 +46,20 @@ public abstract class Swarm<T extends Tracker, P extends PeerAddr> {
     }
 
     /* GARBAGE */
-    public ObservableList<P> getSeeders() { return seeders.get(); }
-    public void addSeeder(P seeder) { seeders.get().add(seeder); }
+    public List<P> getSeeders() { return seeders; }
+    public void addSeeders(P... seeders) { this.seeders.addAll(Arrays.asList(seeders)); }
+    public void addSeeder(P seeder) { seeders.add(seeder); }
     public int numSeeders() { return getSeeders().size(); }
 
-    public ObservableList<P> getLeechers() { return leechers.get(); }
-    public void addLeecher(P leecher) { seeders.get().add(leecher); }
-    public int numLeechers() { return getSeeders().size(); }
+    public List<P> getLeechers() { return leechers; }
+    public void addLeechers(P... leechers) { this.leechers.addAll(Arrays.asList(leechers)); }
+    public void addLeecher(P leecher) { leechers.add(leecher); }
+    public int numLeechers() { return getLeechers().size(); }
 
-    public MetaP2P getMetaP2P() { return metaP2P.get(); }
+    public MetaP2P getMetaP2P() { return metaP2P; }
 
-    public T getTracker() { return tracker.get(); }
-    public void setTracker(T tracker) { this.tracker.set(tracker); }
+    public T getTracker() { return tracker; }
+    public void setTracker(T tracker) { this.tracker = tracker; }
 
     public String getFilename() { return getMetaP2P().getFilename(); }
 
@@ -82,5 +80,13 @@ public abstract class Swarm<T extends Tracker, P extends PeerAddr> {
         result = 31*result+metaP2P.hashCode();
         result = 31*result+tracker.hashCode();
         return result;
+    }
+
+    public String toCLIString() {
+        String formattedSize = Common.formatByteCount(metaP2P.getFilesize());
+        return metaP2P.getFilename()+"  "
+             + numSeeders()+" seeders  "
+             + numLeechers()+" leechers  "
+             + formattedSize;
     }
 }
