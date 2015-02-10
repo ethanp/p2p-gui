@@ -53,7 +53,7 @@ public class LocalFileCell extends TableCell<P2PFile, P2PFile> {
         ViewUtil.showOnRightClick(this, menu);
     }
 
-    // TODO not finished
+    // not finished
     private ContextMenu getSendToTrackerMenu() {
         ContextMenu contextMenu = new ContextMenu();
 //        for (RemoteTracker tracker : ClientState.getKnownTrackers()) {

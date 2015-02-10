@@ -74,8 +74,6 @@ public class P2PFile {
         /* should probably listSwarms() on the tracker
          * while adding the tracker itself to the ClientState
          */
-
-        // TODO implement P2PFile addTracker
         throw new NotImplementedException();
     }
 

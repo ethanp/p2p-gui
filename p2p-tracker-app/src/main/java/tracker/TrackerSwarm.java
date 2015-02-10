@@ -18,7 +18,6 @@ public class TrackerSwarm extends Swarm<TrackerState, TrackerPeer> {
     }
 
     @Override public Swarm<TrackerState, TrackerPeer> addFakePeers() {
-        // TODO implement TrackerSwarm addFakePeers
         throw new NotImplementedException();
     }
 

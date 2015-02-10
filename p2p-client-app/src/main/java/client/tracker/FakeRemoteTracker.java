@@ -59,7 +59,6 @@ public class FakeRemoteTracker extends RemoteTracker {
     @Override public String getIpPortString() { return ipPortString; }
 
     @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2P meta) {
-        // TODO implement FakeRemoteTracker addAddrToSwarmFor
         throw new NotImplementedException();
     }
 

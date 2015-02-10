@@ -10,12 +10,14 @@ import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
 import client.server.PeerServer;
 import client.tracker.RemoteTracker;
+import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2P;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Ethan Petuchowski 1/31/15
@@ -78,11 +80,12 @@ public class ClientState {
 //        knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 
-    public String addTrackerAndListSwarms(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
-        return trackersManager.addTrackerByAddrStr(addrStr);
+    public Collection<ClientSwarm> addTrackerAndListSwarms(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
+        RemoteTracker tracker = trackersManager.addTracker(addrStr);
+        return listTracker(tracker);
     }
 
-    public String listTracker(RemoteTracker tracker) throws IOException, ConnectToTrackerException, ServersIOException {
+    public Collection<ClientSwarm> listTracker(RemoteTracker tracker) throws IOException, ConnectToTrackerException, ServersIOException {
         return trackersManager.listTracker(tracker);
     }
 }

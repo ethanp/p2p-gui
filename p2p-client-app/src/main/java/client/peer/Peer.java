@@ -88,7 +88,6 @@ public class Peer extends PeerAddr implements Runnable {
     }
 
     private FileDownload figureOutFileToDownloadFor() {
-        // TODO implement PeerDownload figureOutFileToDownloadFor
         throw new NotImplementedException();
     }
 
@@ -109,7 +108,6 @@ public class Peer extends PeerAddr implements Runnable {
         }
         catch (IOException e) {
             e.printStackTrace();
-            // TODO implement PeerDownload IOException
             throw new NotImplementedException();
         }
         /* check for errors */

@@ -43,14 +43,8 @@ public abstract class PeerAddr {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        return servingAddr.hashCode();
-    }
-
-    @Override public String toString() {
-        return ServersCommon.ipPortToString(getServingAddr());
-    }
+    @Override public int hashCode() { return servingAddr.hashCode(); }
 
     public InetSocketAddress getServingAddr() { return servingAddr; }
+    public String addrStr() { return ServersCommon.ipPortToString(getServingAddr()); }
 }

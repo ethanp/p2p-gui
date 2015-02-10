@@ -36,8 +36,8 @@ public class ChunkDownload implements Runnable, ClientSideChunkProtocol {
     }
 
     @Override public void run() {
-        /* TODO the file should have been already created closer to when
-         *      the user clicked that she wanted to download it
+        /* NOTE: the file should have been already created closer to when
+         *       the user clicked that she wanted to download it
          */
         assert localFile.exists() && !localFile.isDirectory();
 
@@ -52,10 +52,9 @@ public class ChunkDownload implements Runnable, ClientSideChunkProtocol {
                      new BufferedOutputStream(
                              new FileOutputStream(localFile)))
         {
-            /* TODO use the ClientSideChunkProtocol (i.e. requestChunk() below) */
+            /* perhaps use the ClientSideChunkProtocol (i.e. requestChunk() below) */
         }
         catch (IOException e) { e.printStackTrace(); }
-        // TODO implement ChunkDownload run
         throw new NotImplementedException();
     }
 

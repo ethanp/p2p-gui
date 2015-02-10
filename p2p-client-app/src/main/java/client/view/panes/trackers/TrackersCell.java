@@ -11,6 +11,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeTableCell;
 import org.controlsfx.dialog.Dialogs;
 import p2p.exceptions.ConnectToTrackerException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;
 
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
     }
 
     private void downloadFile() {
-        /* TODO I'm not sure how I'm going to actually implement the file download process yet */
+        /* I'm not sure how I'm going to actually implement the file download process yet */
 //        Main.startFileDownload(
 //                new FileDownload(
 //                        ClientState.getUserDownloadDirectory(),
@@ -114,7 +115,7 @@ public class TrackersCell extends TreeTableCell<Celery, Celery> {
                 }
                 catch (ServersIOException e) {
                     e.printStackTrace();
-                    // TODO implement TrackersCell addRealTrackerDialog
+                    throw new NotImplementedException();
                 }
             } catch (IOException | ConnectToTrackerException e) {
                 catchTrackerConnectionIssue(e);

@@ -27,9 +27,9 @@ public class MetaP2P {
     }
 
     public String serializeToString() {
-        return getFilename()        +"\n"
-             + getFilesize()   +"\n"
-             + getDigest()          +"\n";
+        return getFilename() +"\n"
+             + getFilesize() +"\n"
+             + getDigest()   +"\n";
     }
 
     public MetaP2P(String filename, int filesize, String sha2digest)

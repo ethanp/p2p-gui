@@ -13,6 +13,7 @@ import java.util.Arrays;
  */
 public class TrackerCLI extends BaseCLI {
     public static void main(String[] args) { new Thread(new TrackerCLI()).start(); }
+    @Override public void run() { commandLoop(); }
 
     {
         try {
@@ -55,9 +56,5 @@ public class TrackerCLI extends BaseCLI {
         if (sb.length() == 0)
             return "this tracker is not listing any files";
         return sb.toString();
-    }
-
-    @Override public void run() {
-        commandLoop();
     }
 }

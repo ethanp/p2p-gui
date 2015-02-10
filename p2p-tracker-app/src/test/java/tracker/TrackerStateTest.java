@@ -18,6 +18,6 @@ public class TrackerStateTest {
     public void testCreateConnects() {
         System.out.println("Listening at: "+
                            ServersCommon.ipPortToString(
-                                   trackerState.getExternalSocketAddr()));
+                                   trackerState.getExternalAddr()));
     }
 }

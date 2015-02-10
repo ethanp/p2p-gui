@@ -33,18 +33,18 @@ public class TheWindowCtrl {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(Main.getPrimaryStage());
         if (file != null) {
-            // TODO turn into P2PFile and add file to TableView<P2PFile> fileList
+            // turn into P2PFile and add file to TableView<P2PFile> fileList
             // or maybe add it to the ObservableList<P2PFile> localFiles
             // and the table view will "listen" for it
         }
     }
     @FXML private void addTracker() {
-        // TODO make a Dialogs for entering in an IPAddress + Port
+        // make a Dialogs for entering in an IPAddress + Port
         // and turn that into a Tracker object and add it to
         // ObservableList<Tracker> knownTrackers
     }
     @FXML private void aboutDialog() {
-        // TODO put a real link to the source in the dialog
+        // put a real link to the source in the dialog
         // I saw a class somewhere called Hyperlink which may be useful
         Dialogs.create()
                .title("p2p-gui")

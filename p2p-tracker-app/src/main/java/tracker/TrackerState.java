@@ -56,7 +56,7 @@ public class TrackerState extends Tracker<TrackerSwarm> implements Runnable {
         this.trackerServer = trackerServer;
     }
 
-    public InetSocketAddress getExternalSocketAddr() {
+    public InetSocketAddress getExternalAddr() {
         return trackerServer.getExternalSocketAddr();
     }
 }

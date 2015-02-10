@@ -3,7 +3,6 @@ package client.tracker;
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import client.p2pFile.P2PFile;
-import client.peer.Peer;
 import client.protocol.ClientSideTrackerProtocol;
 import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
@@ -76,7 +75,6 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
     }
 
     @Override public void addAddrToSwarmFor(InetSocketAddress addr, MetaP2P meta) {
-        // TODO implement RemoteTracker addAddrToSwarmFor
         throw new NotImplementedException();
     }
 
@@ -120,7 +118,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         for (int i = 0; i < numSdrs; i++) {
             String sAddr = in.readLine();
             InetSocketAddress addr = ServersCommon.addrFromString(sAddr);
-//            TODO new Peer(addr);
+//            E.g. new Peer(addr);
         }
 
         /* Rcv Leechers and add them to Swarm */
@@ -129,7 +127,6 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         }
 
         disconnect();
-        // TODO implement RemoteTracker updateSwarmInfo
         throw new NotImplementedException();
     }
 
@@ -146,31 +143,17 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         int numSwarms = Integer.parseInt(in.readLine());
         Collection<ClientSwarm> clientSwarms = new ArrayList<>(numSwarms);
         for (int i = 0; i < numSwarms; i++) {
-            MetaP2P mFile = MetaP2P.deserializeFromReader(in);
-            if (mFile == null) continue;
-            ClientSwarm rcvdSwarm = new ClientSwarm(mFile, this);
-
-            int numSeeders = Integer.parseInt(in.readLine());
-            for (int j = 0; j < numSeeders; j++)
-                rcvdSwarm.addSeeder(retrievePeer(mFile));
-
-            int numLeechers = Integer.parseInt(in.readLine());
-            for (int j = 0; j < numLeechers; j++)
-                rcvdSwarm.addLeecher(retrievePeer(mFile));
-
-            clientSwarms.add(rcvdSwarm);
+            try {
+                clientSwarms.add(ClientSwarm.deserializeFromTracker(in, this));
+            }
+            catch (ConnectToTrackerException e) {
+                System.err.println(e.getMessage());
+            }
         }
+
         disconnect();
 
         return clientSwarms;
-    }
-
-    private Peer retrievePeer(MetaP2P mFile) throws IOException {
-        String addrStr = in.readLine();
-        InetSocketAddress socketAddr = ServersCommon.addrFromString(addrStr);
-        Peer peer = new Peer(socketAddr);
-        peer.addFile(mFile);
-        return peer;
     }
 
     public void simpleEcho() throws IOException, ServersIOException, ConnectToTrackerException {

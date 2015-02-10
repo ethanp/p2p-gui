@@ -11,6 +11,7 @@ import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
+import p2p.tracker.swarm.Swarm;
 import servers.SingleThreadedServer;
 import util.ServersCommon;
 
@@ -50,30 +51,28 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
         catch (IOException e) {
             throw new ServersIOException(e);
         }
-        getTracker().addAddrToSwarmFor(addr, meta);
+        getState().addAddrToSwarmFor(addr, meta);
 
         synchronized (this) { this.notifyAll(); } // for unit test
     }
 
     /**
-     * TODO  Tracker tells a Peer who wants to download a P2PFile about the
+     * Tracker tells a Peer who wants to download a P2PFile about the
      * specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
      */
     @Override public void sendSwarmInfo() {}
 
     /**
-     * TODO  Tracker sends Peer its full list of Swarms
+     * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
     @Override public void listSwarms() {
-        System.out.println("List files is not implemented in the Tracker");
         try (PrintWriter printWriter = ServersCommon.printWriter(socket)) {
-            printWriter.println();
-            bufferedReader.readLine();
-
+            for (Swarm swarm : getState().getSwarms())
+                printWriter.println(swarm.serialize());
         }
-        catch (ServersIOException | IOException e) {
+        catch (ServersIOException e) {
             e.printStackTrace();
         }
     }
@@ -137,7 +136,7 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
     public int getRcvReqCt() { return rcvReqCt.get(); }
     public IntegerProperty rcvReqCtProperty() { return rcvReqCt; }
     public void setRcvReqCt(int newRcvReqCt) { rcvReqCt.set(newRcvReqCt); }
-    public TrackerState getTracker() { return tracker.get(); }
+    public TrackerState getState() { return tracker.get(); }
     public ObjectProperty<TrackerState> trackerProperty() { return tracker; }
     public void setTracker(TrackerState tracker) { this.tracker.set(tracker); }
 }

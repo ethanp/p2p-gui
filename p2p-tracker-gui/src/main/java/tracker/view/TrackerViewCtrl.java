@@ -33,18 +33,18 @@ public class TrackerViewCtrl {
     }
 
     public void initializeBasedOnServer() {
-//        Main.getTracker().getSwarms().addListener(swarmChgListener);
+//        Main.getState().getSwarms().addListener(swarmChgListener);
 
         /* update the displayed "received request count"
          * in the lower-left of the screen
-         * TODO this is not working */
+         * NOTE: this is not working */
         Main.getServer().rcvReqCtProperty().addListener(
                 (obsVal, oldCt, newCt) -> setReqCtLabel(newCt.intValue()));
 
         /* make the "Add fake swarm" menu item add fake swarms to the listing */
 //        addFakeSwarm.setOnAction(
-//                e -> Main.getTracker().getSwarms().add(
-//                        TrackerSwarm.createLoadedSwarm(Main.getTracker())));
+//                e -> Main.getState().getSwarms().add(
+//                        TrackerSwarm.createLoadedSwarm(Main.getState())));
     }
 
     private final ListChangeListener<TrackerSwarm> swarmChgListener
@@ -81,10 +81,10 @@ public class TrackerViewCtrl {
      * Use initializeBasedOnServer() instead.
      */
     @FXML private void initialize() {
-        // TODO FIX THIS
+        // Please: FIX THIS
 //        realFileAddFromEphemeralPeer.setOnAction(
 //                e -> PeerServer.sendEphemeralRequest(
-//                        Main.getTracker().asRemote()));
+//                        Main.getState().asRemote()));
 
         /* make file list display the filename of tracked swarms */
         pFileList.setCellFactory(p -> new SwarmNameCell());
@@ -123,7 +123,7 @@ public class TrackerViewCtrl {
                 setText(null);
                 setGraphic(null);
             } else {
-                setText(item.toString());
+                setText(item.addrStr());
             }
         }
     }

@@ -65,7 +65,7 @@ public class FileDownload implements Runnable {
 
     public void updateAllChunkAvailabilities() throws ConnectToPeerException, IOException {
 
-        /* TODO this should be using the thread pool
+        /* NOTE: this should be using the thread pool
          * but I would like it to still be possible to run it synchronously
          */
         for (Peer peer : allKnownPeers()) {
@@ -98,7 +98,6 @@ public class FileDownload implements Runnable {
     }
 
     public int getChunkIdxToDownload() {
-        // TODO implement FileDownload getChunkIdxToDownload
         throw new NotImplementedException();
     }
 

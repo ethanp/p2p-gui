@@ -89,4 +89,24 @@ public abstract class Swarm<T extends Tracker, P extends PeerAddr> {
              + numLeechers()+" leechers  "
              + formattedSize;
     }
+
+    /**
+     * Format:
+     * 1) meta,
+     * 2) #seeders,
+     * 3) seeder addrs,
+     * 4) #leechers,
+     * 5) leecher addrs
+     */
+    public String serialize() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getMetaP2P().serializeToString() +"\n");
+        sb.append(numSeeders()+"\n");
+        for (PeerAddr peer : getSeeders())
+            sb.append(peer.addrStr()+"\n");
+        sb.append(numLeechers()+"\n");
+        for (PeerAddr peer : getLeechers())
+            sb.append(peer.addrStr()+"\n");
+        return sb.toString();
+    }
 }

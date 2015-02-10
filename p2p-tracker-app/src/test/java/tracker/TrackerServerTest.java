@@ -71,9 +71,9 @@ public class TrackerServerTest {
         MetaP2P meta = MetaP2P.genFake();
         InetSocketAddress addr = ServersCommon.randomSocketAddr();
         addFileRequest(meta, addr);
-        assertEquals(1, trackerServer.getTracker().getSwarms().size());
+        assertEquals(1, trackerServer.getState().getSwarms().size());
 
-        TrackerSwarm trackerSwarm = trackerServer.getTracker().getSwarms().get(0);
+        TrackerSwarm trackerSwarm = trackerServer.getState().getSwarms().get(0);
 
         assertEquals(meta, trackerSwarm.getMetaP2P());
         assertEquals(meta.getFilename(), trackerSwarm.getMetaP2P().getFilename());
@@ -93,9 +93,9 @@ public class TrackerServerTest {
         reconnectToTrackerServer();
         addFileRequest(meta, addr2);
 
-        final TrackerSwarm trackerSwarm = trackerServer.getTracker().getSwarms().get(0);
+        final TrackerSwarm trackerSwarm = trackerServer.getState().getSwarms().get(0);
 
-        assertEquals(1, trackerServer.getTracker().getSwarms().size());
+        assertEquals(1, trackerServer.getState().getSwarms().size());
         assertEquals(2, trackerSwarm.getSeeders().size());
         assertEquals(0, trackerSwarm.getLeechers().size());
     }
@@ -107,10 +107,10 @@ public class TrackerServerTest {
         addFileRequest(meta1, addr);
         reconnectToTrackerServer();
         addFileRequest(meta2, addr);
-        assertEquals(2, trackerServer.getTracker().getSwarms().size());
+        assertEquals(2, trackerServer.getState().getSwarms().size());
 
-        TrackerSwarm trackerSwarm1 = trackerServer.getTracker().getSwarms().get(0);
-        TrackerSwarm trackerSwarm2 = trackerServer.getTracker().getSwarms().get(1);
+        TrackerSwarm trackerSwarm1 = trackerServer.getState().getSwarms().get(0);
+        TrackerSwarm trackerSwarm2 = trackerServer.getState().getSwarms().get(1);
 
         assertEquals(meta1, trackerSwarm1.getMetaP2P());
         assertEquals(meta2, trackerSwarm2.getMetaP2P());
@@ -121,7 +121,7 @@ public class TrackerServerTest {
     @Test public void testSecondFileGetsSecondSeeder() throws ServersIOException, ConnectToTrackerException, IOException, FailedToFindServerException {
         uploadTwoFiles();
 
-        List<TrackerSwarm> swarms = trackerServer.getTracker().getSwarms();
+        List<TrackerSwarm> swarms = trackerServer.getState().getSwarms();
         List seeders1 = swarms.get(0).getSeeders();
         List seeders2 = swarms.get(1).getSeeders();
 
@@ -146,7 +146,7 @@ public class TrackerServerTest {
     @Test public void testListFiles() throws ServersIOException, ConnectToTrackerException, FailedToFindServerException, IOException {
         uploadTwoFiles();
 
-        List<TrackerSwarm> swarms = trackerServer.getTracker().getSwarms();
+        List<TrackerSwarm> swarms = trackerServer.getState().getSwarms();
         List seeders1 = swarms.get(0).getSeeders();
         List seeders2 = swarms.get(1).getSeeders();
 

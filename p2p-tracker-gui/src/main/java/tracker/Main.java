@@ -22,7 +22,7 @@ public class Main extends Application {
     private VBox rootLayout;
     private static TrackerServer server;
     public static TrackerServer getServer() { return server; }
-    public static LocalTracker getTracker() { return getServer().getTracker(); }
+    public static LocalTracker getTracker() { return getServer().getState(); }
 
     @Override public void start(Stage primaryStage) throws Exception {
 
