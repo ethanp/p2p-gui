@@ -75,7 +75,7 @@ public class ClientState {
 //        knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 
-    public RemoteTracker addTrackerByAddrStr(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
+    public String addTrackerAndListSwarms(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
         return trackersManager.addTrackerByAddrStr(addrStr);
     }
 

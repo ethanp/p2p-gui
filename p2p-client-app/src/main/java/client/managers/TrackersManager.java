@@ -17,19 +17,20 @@ public class TrackersManager {
 
     public ObservableSet<RemoteTracker> getKnownTrackers() { return knownTrackers; }
 
-    public RemoteTracker addTrackerByAddrStr(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
+    public String addTrackerByAddrStr(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
         RemoteTracker tracker = new RemoteTracker(addrStr);
-        tracker.connect();
-        tracker.disconnect();
         knownTrackers.add(tracker);
-        return tracker;
+        return listTracker(tracker);
     }
 
     public String listTracker(RemoteTracker tracker) throws ServersIOException, ConnectToTrackerException, IOException {
-        if (!knownTrackers.contains(tracker)) {
-            return "Tracker unknown";
+        try {
+            tracker.listFiles();
         }
-        tracker.listFiles();
+        catch (IOException | ConnectToTrackerException | ServersIOException e) {
+            knownTrackers.remove(tracker);
+            throw e;
+        }
         StringBuilder s = new StringBuilder("File list:\n");
         int i = 1;
         for (ClientSwarm swarm : tracker.getSwarms()) {

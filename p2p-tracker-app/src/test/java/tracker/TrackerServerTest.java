@@ -33,8 +33,7 @@ public class TrackerServerTest {
     @Before public void setUp() throws Exception {
         trackerState = TrackerState.create();
         trackerServer = trackerState.getTrackerServer();
-        new Thread(trackerServer).start();
-        socket = trackerServer.connectToLoopbackAddr();
+        socket = trackerServer.connectToExternalAddr();
         printWriter = ServersCommon.printWriter(socket);
         bufferedReader = ServersCommon.bufferedReader(socket);
     }

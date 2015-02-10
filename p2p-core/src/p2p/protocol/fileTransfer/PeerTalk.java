@@ -11,6 +11,8 @@ public abstract class PeerTalk {
     public abstract class ToTracker {
         public static final String ADD_FILE_REQUEST = "ADD";
         public static final String ECHO = "ECHO";
+        public static final String LIST_FILES = "LIST";
+        public static final String SWARM_UPDATE = "SWARMS";
     }
     public abstract class ToPeer {
         public static final String GET_CHUNK = "CHUNK";

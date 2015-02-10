@@ -3,7 +3,6 @@ package client;
 import Exceptions.ServersIOException;
 import base.BaseCLI;
 import client.state.ClientState;
-import client.tracker.RemoteTracker;
 import p2p.exceptions.ConnectToTrackerException;
 import util.ServersCommon;
 
@@ -102,9 +101,8 @@ public class ClientCLI extends BaseCLI {
             return;
         }
         try {
-            RemoteTracker tracker = state.addTrackerByAddrStr(arguments[1]);
-            System.out.println("connected, downloading file list");
-            String trackerListing = state.listTracker(tracker);
+            System.out.println("downloading file list");
+            String trackerListing = state.addTrackerAndListSwarms(arguments[1]);
             System.out.println(trackerListing);
         }
         catch (ServersIOException | ConnectToTrackerException | IOException e) {

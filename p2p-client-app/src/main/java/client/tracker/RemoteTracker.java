@@ -8,7 +8,6 @@ import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.file.meta.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
-import p2p.protocol.tracker.TrackerTalk;
 import p2p.tracker.Tracker;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;
@@ -61,8 +60,8 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
                     "tried to connect to " + ServersCommon.ipPortToString(getTrkrListenAddr())+
                     " but received "       + e.getMessage());
         }
-        out = ServersCommon.printWriter(connToTracker);
         in = ServersCommon.bufferedReader(connToTracker);
+        out = ServersCommon.printWriter(connToTracker);
     }
 
     public void disconnect() throws IOException {
@@ -103,7 +102,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
         connect();
 
         /* Send Command */
-        out.println(TrackerTalk.SWARM_UPDATE);
+        out.println(PeerTalk.ToTracker.SWARM_UPDATE);
 
         /* Tell Tracker which File we're talking about */
         out.println(meta.serializeToString());
@@ -137,11 +136,34 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      */
     @Override public void listFiles() throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
-        out.println(TrackerTalk.LIST_FILES);
+        out.println(PeerTalk.ToTracker.LIST_FILES);
+        out.flush();
         int numFiles = Integer.parseInt(in.readLine());
         for (int i = 0; i < numFiles; i++) {
             // TODO implement RemoteTracker listFiles
             throw new NotImplementedException();
+        }
+        disconnect();
+    }
+
+    public void simpleEcho() throws IOException, ServersIOException, ConnectToTrackerException {
+        connect();
+        final String sentString = "tell me this\n"+
+                                  "I got somethin' to tell ya\n";
+
+        out.println(PeerTalk.ToTracker.ECHO);
+        out.println(sentString);
+        out.flush();
+        StringBuilder response = new StringBuilder();
+        String line;
+        while (true) {
+            line = in.readLine();
+            if (line == null || line.length() == 0)
+                break;
+            response.append(line+"\n");
+        }
+        if (!response.toString().equals(sentString)) {
+            throw new ConnectToTrackerException("incorrect connection verification string");
         }
         disconnect();
     }

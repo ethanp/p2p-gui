@@ -49,6 +49,15 @@ public class ServersCommon {
         }
     }
 
+    public static InputStreamReader inReader(Socket s) throws ServersIOException {
+        try {
+            return new InputStreamReader(s.getInputStream());
+        }
+        catch (IOException e) {
+            throw new ServersIOException(e);
+        }
+    }
+
     public static BufferedWriter bufferedWriter(Socket s) throws ServersIOException {
         try {
             return new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
