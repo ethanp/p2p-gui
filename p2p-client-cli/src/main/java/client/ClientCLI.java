@@ -3,6 +3,7 @@ package client;
 import Exceptions.ServersIOException;
 import base.BaseCLI;
 import client.state.ClientState;
+import client.tracker.RemoteTracker;
 import p2p.exceptions.ConnectToTrackerException;
 import util.ServersCommon;
 
@@ -48,11 +49,8 @@ import java.util.regex.Pattern;
  */
 public class ClientCLI extends BaseCLI {
 
-    /** the args aren't used for anything at this point */
     public static void main(String[] args) { new ClientCLI(); }
-
     public ClientCLI() { commandLoop(); }
-
     ClientState state = new ClientState();
 
     @Override protected void commandLoop() {
@@ -60,27 +58,14 @@ public class ClientCLI extends BaseCLI {
             String[] inputComponents = console.prompt().split(" ");
             String userCommand = inputComponents[0];
             switch (userCommand) {
-                case "tracker":
-                    trackerCommand(inputComponents);
-                    break;
-                case "download":
-                    downloadCommand(inputComponents);
-                    break;
-                case "upload":
-                    uploadCommand(inputComponents);
-                    break;
-                case "ps":
-                    psCommand(inputComponents);
-                    break;
-                case "info":
-                    infoCommand(inputComponents);
-                    break;
-                case "exit":
-                    return;
-                default:
-                    System.out.println("Unrecognized command: "+
-                                       Arrays.toString(inputComponents).replace(",", ""));
-                    break;
+                case "tracker":   trackerCommand(inputComponents);  break;
+                case "download":  downloadCommand(inputComponents); break;
+                case "upload":    uploadCommand(inputComponents);   break;
+                case "ps":        psCommand(inputComponents);       break;
+                case "info":      infoCommand(inputComponents);     break;
+                case "exit":      return;
+                default:          System.out.println("Unrecognized command: "+
+                                        Arrays.toString(inputComponents).replace(",", "")); break;
             }
         }
     }
@@ -117,7 +102,10 @@ public class ClientCLI extends BaseCLI {
             return;
         }
         try {
-            state.addTrackerByAddrStr(arguments[1]);
+            RemoteTracker tracker = state.addTrackerByAddrStr(arguments[1]);
+            System.out.println("connected, downloading file list");
+            String trackerListing = state.listTracker(tracker);
+            System.out.println(trackerListing);
         }
         catch (ServersIOException | ConnectToTrackerException | IOException e) {
             System.out.println("Tracker not found!");

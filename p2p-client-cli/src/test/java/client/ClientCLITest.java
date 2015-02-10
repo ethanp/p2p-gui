@@ -1,46 +1,15 @@
 package client;
 
+import base.BaseCLITest;
 import org.junit.Test;
+import tracker.TrackerState;
 import util.ServersCommon;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.regex.Pattern;
+import java.net.InetSocketAddress;
 
-import static org.junit.Assert.assertTrue;
-
-public class ClientCLITest {
-    ClientCLI cli;
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    InputStream in;
-    static final String STAR = ".*";
-    static final String END_IN = "\nexit\n";
-
-    private void assertContains(String pattern, String text) {
-
-        /* DOTALL means the dot applies to newline chars too
-         * so that we can search for the pattern
-         * anywhere inside a multiline text
-         */
-        Pattern p = Pattern.compile(STAR+pattern+STAR, Pattern.DOTALL);
-        assertTrue(p.matcher(text).matches());
-    }
-
-    /**
-     * @param input  will be passed to the ClientCLI
-     * @return the (multiple lines of) output printed by the CLI
-     */
-    private String captureOutputOfInput(String input) throws IOException {
-        System.setOut(new PrintStream(out));
-        in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        cli = new ClientCLI();
-        out.flush();
-        return new String(out.toByteArray());
-    }
+public class ClientCLITest extends BaseCLITest<ClientCLI> {
+    @Override protected ClientCLI create() { return new ClientCLI(); }
 
     @Test public void testPrintsServeAddrFirst() throws IOException {
         String output = captureOutputOfInput("exit\n");
@@ -54,11 +23,23 @@ public class ClientCLITest {
     }
 
     /**
-     * TODO requires the existence of a running tracker...
+     * requires the existence of a running tracker
      * which is why I added the tracker-app to the client-cli's test-dependencies
      */
     @Test public void testConnectToTracker() throws Exception {
-
+        TrackerState trackerState = TrackerState.create();
+        InetSocketAddress trackerAddr = trackerState.getExternalSocketAddr();
+        String tAddrStr = ServersCommon.ipPortToString(trackerAddr);
+        String output = captureOutputOfInput("tracker "+tAddrStr+END_IN);
+        assertContains("connected", output);
     }
 
+    @Test public void testListTrackerFiles() throws Exception {
+        TrackerState trackerState = TrackerState.create();
+        InetSocketAddress trackerAddr = trackerState.getExternalSocketAddr();
+        String tAddrStr = ServersCommon.ipPortToString(trackerAddr);
+        String output = captureOutputOfInput("tracker "+tAddrStr+END_IN);
+        assertContains("File list", output);
+
+    }
 }

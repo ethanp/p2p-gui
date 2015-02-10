@@ -51,22 +51,19 @@ public abstract class Swarm<T extends Tracker, P extends PeerAddr> {
 
     /* GARBAGE */
     public ObservableList<P> getSeeders() { return seeders.get(); }
-    public ListProperty<P> seedersProperty() { return seeders; }
-    public void setSeeders(ObservableList<P> seeders) { this.seeders.set(seeders); }
     public void addSeeder(P seeder) { seeders.get().add(seeder); }
+    public int numSeeders() { return getSeeders().size(); }
 
     public ObservableList<P> getLeechers() { return leechers.get(); }
-    public ListProperty<P> leechersProperty() { return leechers; }
-    public void setLeechers(ObservableList<P> leechers) { this.leechers.set(leechers); }
     public void addLeecher(P leecher) { seeders.get().add(leecher); }
+    public int numLeechers() { return getSeeders().size(); }
 
     public MetaP2P getMetaP2P() { return metaP2P.get(); }
-    public ObjectProperty<MetaP2P> metaP2PProperty() { return metaP2P; }
-    public void setMetaP2P(MetaP2P metaP2P) { this.metaP2P.set(metaP2P); }
 
     public T getTracker() { return tracker.get(); }
-    public ObjectProperty<T> trackerProperty() { return tracker; }
     public void setTracker(T tracker) { this.tracker.set(tracker); }
+
+    public String getFilename() { return getMetaP2P().getFilename(); }
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;

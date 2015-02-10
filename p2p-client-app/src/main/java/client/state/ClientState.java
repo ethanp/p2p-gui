@@ -8,6 +8,7 @@ import client.managers.TrackersManager;
 import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
 import client.server.PeerServer;
+import client.tracker.RemoteTracker;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2P;
@@ -74,7 +75,11 @@ public class ClientState {
 //        knownTrackers.add(FakeRemoteTracker.getDefaultFakeRemoteTracker());
     }
 
-    public void addTrackerByAddrStr(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
-        trackersManager.addTrackerByAddrStr(addrStr);
+    public RemoteTracker addTrackerByAddrStr(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
+        return trackersManager.addTrackerByAddrStr(addrStr);
+    }
+
+    public String listTracker(RemoteTracker tracker) throws IOException, ConnectToTrackerException, ServersIOException {
+        return trackersManager.listTracker(tracker);
     }
 }

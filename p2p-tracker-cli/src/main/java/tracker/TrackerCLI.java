@@ -11,8 +11,6 @@ import java.util.Arrays;
  * Ethan Petuchowski 2/9/15
  */
 public class TrackerCLI extends BaseCLI {
-    TrackerState state;
-
     public static void main(String[] args) { new TrackerCLI(); }
 
     public TrackerCLI() {
@@ -25,20 +23,17 @@ public class TrackerCLI extends BaseCLI {
         commandLoop();
     }
 
+    TrackerState state;
+
     @Override protected void commandLoop() {
         while (true) {
             String[] inputComponents = console.prompt().split(" ");
             String userCommand = inputComponents[0];
             switch (userCommand) {
-                case "info":
-                    infoCommand(inputComponents);
-                    break;
-                case "exit":
-                    return;
-                default:
-                    System.out.println("Unrecognized command: "+
-                                       Arrays.toString(inputComponents).replace(",", ""));
-                    break;
+                case "info": infoCommand(inputComponents); break;
+                case "exit": return;
+                default: System.out.println("Unrecognized command: "+
+                                       Arrays.toString(inputComponents).replace(",", "")); break;
             }
         }
     }

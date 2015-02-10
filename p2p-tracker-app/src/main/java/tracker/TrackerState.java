@@ -38,9 +38,11 @@ public class TrackerState extends Tracker<TrackerSwarm> implements Runnable {
             throws ListenerCouldntConnectException, NoInternetConnectionException, ServersIOException
     {
         TrackerServer trkSrv = new TrackerServer(3000, 3500);
+        new Thread(trkSrv).start();
         TrackerState trackerState = new TrackerState(trkSrv.getExternalSocketAddr());
         trkSrv.setTracker(trackerState);
         trackerState.setTrackerServer(trkSrv);
+
         return trackerState;
     }
 

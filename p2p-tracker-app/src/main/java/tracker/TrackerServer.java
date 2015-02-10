@@ -68,6 +68,11 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
      */
     @Override public void listFiles() {}
 
+    @Override protected void beforeAllListenLoops() {
+        super.beforeAllListenLoops();
+        System.out.println("tracker server starting run loop");
+    }
+
     @Override protected void dealWithSocket(Socket socket) throws ServersIOException {
         this.socket = socket;
 
