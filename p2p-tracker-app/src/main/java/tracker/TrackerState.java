@@ -2,6 +2,7 @@ package tracker;
 
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
+import Exceptions.ServersIOException;
 import p2p.file.meta.MetaP2P;
 import p2p.tracker.Tracker;
 
@@ -15,10 +16,10 @@ import java.net.InetSocketAddress;
  *
  * It has a list of swarms and a running server.
  */
-public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
+public class TrackerState extends Tracker<TrackerSwarm> implements Runnable {
     TrackerServer trackerServer;
 
-    public LocalTracker(InetSocketAddress addr)
+    public TrackerState(InetSocketAddress addr)
             throws ListenerCouldntConnectException, NoInternetConnectionException
     {
         super(addr);
@@ -33,14 +34,14 @@ public class LocalTracker extends Tracker<TrackerSwarm> implements Runnable {
         swarm.getSeeders().add(new TrackerPeer(addr));
     }
 
-    public static LocalTracker create()
-            throws ListenerCouldntConnectException, NoInternetConnectionException
+    public static TrackerState create()
+            throws ListenerCouldntConnectException, NoInternetConnectionException, ServersIOException
     {
-        TrackerServer trkSrv = new TrackerServer();
-        LocalTracker localTracker = new LocalTracker(trkSrv.getExternalSocketAddr());
-        trkSrv.setTracker(localTracker);
-        localTracker.setTrackerServer(trkSrv);
-        return localTracker;
+        TrackerServer trkSrv = new TrackerServer(3000, 3500);
+        TrackerState trackerState = new TrackerState(trkSrv.getExternalSocketAddr());
+        trkSrv.setTracker(trackerState);
+        trackerState.setTrackerServer(trkSrv);
+        return trackerState;
     }
 
     @Override public void run() {}

@@ -12,17 +12,17 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  *      a) find files to download
  *      b) find peers from whom to download a desired file
  */
-public class TrackerSwarm extends Swarm<LocalTracker, TrackerPeer> {
-    public TrackerSwarm(MetaP2P baseMetaP2P, LocalTracker trkr) {
+public class TrackerSwarm extends Swarm<TrackerState, TrackerPeer> {
+    public TrackerSwarm(MetaP2P baseMetaP2P, TrackerState trkr) {
         super(baseMetaP2P, trkr);
     }
 
-    @Override public Swarm<LocalTracker, TrackerPeer> addFakePeers() {
+    @Override public Swarm<TrackerState, TrackerPeer> addFakePeers() {
         // TODO implement TrackerSwarm addFakePeers
         throw new NotImplementedException();
     }
 
-    public static TrackerSwarm createLoadedSwarm(LocalTracker trkr) {
+    public static TrackerSwarm createLoadedSwarm(TrackerState trkr) {
         TrackerSwarm swarm = new TrackerSwarm(MetaP2P.genFake(), trkr);
         swarm.addFakePeers();
         return swarm;

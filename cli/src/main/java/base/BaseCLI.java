@@ -3,11 +3,10 @@ package base;
 /**
  * Ethan Petuchowski 2/8/15
  */
-public class BaseCLI {
+public abstract class BaseCLI {
 
-    protected MyConsole console;
+    protected MyConsole console = new MyConsole();
 
-    public BaseCLI() {
-        console = new MyConsole();
-    }
+    protected abstract void commandLoop();
+
 }

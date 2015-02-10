@@ -58,7 +58,7 @@ public class ClientCLITest {
      * which is why I added the tracker-app to the client-cli's test-dependencies
      */
     @Test public void testConnectToTracker() throws Exception {
-        
+
     }
 
 }

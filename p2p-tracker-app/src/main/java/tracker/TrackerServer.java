@@ -25,13 +25,13 @@ import java.net.Socket;
  */
 public class TrackerServer extends SingleThreadedServer implements TrackerSideTrackerProtocol {
 
-    protected final ObjectProperty<LocalTracker> tracker = new SimpleObjectProperty<>(null);
+    protected final ObjectProperty<TrackerState> tracker = new SimpleObjectProperty<>(null);
     protected final IntegerProperty rcvReqCt = new SimpleIntegerProperty(0);
     protected BufferedReader bufferedReader;
     protected String command;
 
-    public TrackerServer() throws ListenerCouldntConnectException, NoInternetConnectionException {
-        super();
+    public TrackerServer(int i, int i1) throws ListenerCouldntConnectException, NoInternetConnectionException, ServersIOException {
+        super(i, i1);
     }
 
     /**
@@ -119,7 +119,7 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
     public int getRcvReqCt() { return rcvReqCt.get(); }
     public IntegerProperty rcvReqCtProperty() { return rcvReqCt; }
     public void setRcvReqCt(int newRcvReqCt) { rcvReqCt.set(newRcvReqCt); }
-    public LocalTracker getTracker() { return tracker.get(); }
-    public ObjectProperty<LocalTracker> trackerProperty() { return tracker; }
-    public void setTracker(LocalTracker tracker) { this.tracker.set(tracker); }
+    public TrackerState getTracker() { return tracker.get(); }
+    public ObjectProperty<TrackerState> trackerProperty() { return tracker; }
+    public void setTracker(TrackerState tracker) { this.tracker.set(tracker); }
 }

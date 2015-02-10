@@ -28,11 +28,11 @@ public class TrackerServerTest {
     PrintWriter     printWriter;
     BufferedReader  bufferedReader;
     Socket          socket;
-    LocalTracker    localTracker;
+    TrackerState trackerState;
 
     @Before public void setUp() throws Exception {
-        localTracker = LocalTracker.create();
-        trackerServer = localTracker.getTrackerServer();
+        trackerState = TrackerState.create();
+        trackerServer = trackerState.getTrackerServer();
         new Thread(trackerServer).start();
         socket = trackerServer.connectToLoopbackAddr();
         printWriter = ServersCommon.printWriter(socket);

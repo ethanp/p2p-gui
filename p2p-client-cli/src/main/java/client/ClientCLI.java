@@ -47,17 +47,15 @@ import java.util.regex.Pattern;
  *      1.) 123.123.123.123:123   3 files   Avg avbl: 4.1
  */
 public class ClientCLI extends BaseCLI {
+
     /** the args aren't used for anything at this point */
     public static void main(String[] args) { new ClientCLI(); }
 
+    public ClientCLI() { commandLoop(); }
 
     ClientState state = new ClientState();
 
-    ClientCLI() {
-        commandLoop();
-    }
-
-    private void commandLoop() {
+    @Override protected void commandLoop() {
         while (true) {
             String[] inputComponents = console.prompt().split(" ");
             String userCommand = inputComponents[0];
