@@ -25,7 +25,7 @@ public abstract class Tracker<S extends Swarm> {
         swarms = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
-    protected S getSwarmForFile(MetaP2P file) {
+    public S getSwarmForFile(MetaP2P file) {
         for (S s : getSwarms())
             if (s.getMetaP2P().equals(file))
                 return s;

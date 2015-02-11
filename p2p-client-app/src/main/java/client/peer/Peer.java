@@ -21,6 +21,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Ethan Petuchowski 1/18/15
@@ -53,9 +55,13 @@ public class Peer extends PeerAddr implements Runnable {
     int countDownloadDataErrors;
     int countTimeouts;
 
+    ExecutorService jobQueue = Executors.newSingleThreadExecutor();
+
     public Peer(InetSocketAddress peerListenAddr) {
         super(peerListenAddr);
     }
+
+    @Override public void run() {}
 
     public void connect() throws FailedToFindServerException {
         chunksOfFiles = new SimpleMapProperty<>();
@@ -84,24 +90,6 @@ public class Peer extends PeerAddr implements Runnable {
     double getAverageDownloadSpeed() { return bytesDownloaded / secondsSpentDownloading(); }
     void   addFileDownload(FileDownload fileDownload) { downloadsImPartOf.add(fileDownload); }
 
-    @Override public void run() {
-        requestChunk();
-    }
-
-    public void syncUpdateAvbl() {
-
-    }
-
-    private void requestChunk() {
-        fileCurrentlyDownloading = figureOutFileToDownloadFor();
-        int chunkIdx = fileCurrentlyDownloading.getChunkIdxToDownload();
-        MetaP2P mFile = fileCurrentlyDownloading.getMFile();
-        requestChunk(mFile, chunkIdx);
-    }
-
-    private FileDownload figureOutFileToDownloadFor() {
-        throw new NotImplementedException();
-    }
 
     /* ACCORDING TO PROTOCOL */
     void requestChunk(MetaP2P mFile, int chunkIdx) {
@@ -213,8 +201,6 @@ public class Peer extends PeerAddr implements Runnable {
         fileCurrentlyDownloading = null;
     }
 
-    public void updateAvblForSync(MetaP2P file) {}
-
     public boolean addFile(MetaP2P metaP2P) {
         if (!chunksOfFiles.containsKey(metaP2P)) {
             chunksOfFiles.put(metaP2P, new ChunksForService(metaP2P.getNumChunks()));
@@ -232,4 +218,38 @@ public class Peer extends PeerAddr implements Runnable {
             addFile(file);
     }
 
+    public void queueUpdateChunkAvailability(MetaP2P metaP2P) {
+        jobQueue.submit(new UpdateChunkAvblJob(metaP2P));
+    }
+
+    private class UpdateChunkAvblJob extends PeerWork {
+        MetaP2P metaP2P;
+
+        UpdateChunkAvblJob(MetaP2P meta) {
+            metaP2P = meta;
+            priority = 1;
+        }
+
+        @Override public void run() {}
+    }
+
+    private class DownloadChunkJob extends PeerWork {
+        MetaP2P metaP2P;
+        int chunkIdx;
+
+        public DownloadChunkJob(MetaP2P meta, int chunkIndex) {
+            metaP2P = meta;
+            chunkIdx = chunkIndex;
+        }
+
+        @Override public void run() {}
+    }
+
+    private abstract class PeerWork implements Comparable<PeerWork>, Runnable {
+        /** HIGHER priority means MORE urgent */
+        protected int priority = 0;
+
+        /** @return a negative integer iff this object is less than the specified object. */
+        @Override public int compareTo(PeerWork o) { return o.priority - priority; }
+    }
 }

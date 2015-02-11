@@ -1,13 +1,16 @@
 package client.managers;
 
 import Exceptions.ServersIOException;
+import client.peer.Peer;
 import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import p2p.exceptions.ConnectToTrackerException;
+import p2p.file.meta.MetaP2P;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -15,12 +18,11 @@ import java.util.Collection;
  */
 public class TrackersManager {
     private ObservableSet<RemoteTracker> knownTrackers = FXCollections.observableSet();
-
     public ObservableSet<RemoteTracker> getKnownTrackers() { return knownTrackers; }
 
     public RemoteTracker addTracker(String addrStr) throws IOException, ServersIOException, ConnectToTrackerException {
         RemoteTracker tracker = new RemoteTracker(addrStr);
-        knownTrackers.add(tracker);
+        getKnownTrackers().add(tracker);
         return tracker;
     }
 
@@ -29,8 +31,18 @@ public class TrackersManager {
             return tracker.listFiles();
         }
         catch (IOException | ConnectToTrackerException | ServersIOException e) {
-            knownTrackers.remove(tracker);
+            getKnownTrackers().remove(tracker);
             throw e;
         }
+    }
+
+    public Collection<Peer> collectPeersFor(MetaP2P metaP2P) {
+        Collection<Peer> peers = new ArrayList<>();
+        for (RemoteTracker tracker : getKnownTrackers()) {
+            ClientSwarm swarm = tracker.getSwarmForFile(metaP2P);
+            if (swarm != null)
+                peers.addAll(swarm.getAllPeers());
+        }
+        return peers;
     }
 }

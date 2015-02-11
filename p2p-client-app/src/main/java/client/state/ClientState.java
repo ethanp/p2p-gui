@@ -3,11 +3,13 @@ package client.state;
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
-import client.managers.FilesManager;
+import client.managers.DownloadsManager;
+import client.managers.LocalFilesManager;
 import client.managers.PeersManager;
 import client.managers.TrackersManager;
 import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
+import client.peer.Peer;
 import client.server.PeerServer;
 import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
@@ -25,8 +27,9 @@ import java.util.Collection;
 public class ClientState {
 
     private TrackersManager trackersManager = new TrackersManager();
-    private FilesManager filesManager = new FilesManager();
+    private LocalFilesManager localFilesManager = new LocalFilesManager();
     private PeersManager peersManager = new PeersManager();
+    private DownloadsManager downloadsManager = new DownloadsManager(this);
 
     /* when a ClientState is created, start its PeerServer */
     private PeerServer peerServer;
@@ -41,19 +44,19 @@ public class ClientState {
     }
 
     public void addLocalFile(File file) throws CreateP2PFileException, IOException {
-        filesManager.addLocalFile(P2PFile.importLocalFile(file));
+        localFilesManager.addLocalFile(P2PFile.importLocalFile(file));
     }
 
     public P2PFile getLocalP2PFile(File file) {
-        for (P2PFile pFile : filesManager.getLocalFiles())
+        for (P2PFile pFile : localFilesManager.getLocalFiles())
             if (pFile.getLocalFile().equals(file))
                 return pFile;
         return null;
     }
 
-    public P2PFile getLocalP2PFile(MetaP2P mFile) {
-        for (P2PFile pFile : filesManager.getLocalFiles())
-            if (pFile.getMetaPFile().equals(mFile))
+    public P2PFile getLocalP2PFile(MetaP2P file) {
+        for (P2PFile pFile : localFilesManager.getLocalFiles())
+            if (pFile.getMetaPFile().equals(file))
                 return pFile;
         return null;
     }
@@ -64,7 +67,7 @@ public class ClientState {
     }
 
     public void addLocalFiles(P2PFile... files) {
-        filesManager.addLocalFiles(files);
+        localFilesManager.addLocalFiles(files);
     }
 
     public void addFakeContent() {
@@ -87,5 +90,21 @@ public class ClientState {
 
     public Collection<ClientSwarm> listTracker(RemoteTracker tracker) throws IOException, ConnectToTrackerException, ServersIOException {
         return trackersManager.listTracker(tracker);
+    }
+
+    public boolean hasLocalFile(MetaP2P mFile) {
+        return localFilesManager.containsMeta(mFile);
+    }
+
+    public Collection<Peer> collectPeersFor(MetaP2P mFile) {
+        return trackersManager.collectPeersFor(mFile);
+    }
+
+    public File getDownloadsDir() {
+        return localFilesManager.getDownloadsDir();
+    }
+
+    public boolean isConnectedTo(Peer peer) {
+        return peersManager.isConnectedTo(peer);
     }
 }

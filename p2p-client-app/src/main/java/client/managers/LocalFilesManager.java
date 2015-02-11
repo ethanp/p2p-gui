@@ -1,6 +1,7 @@
 package client.managers;
 
 import client.p2pFile.P2PFile;
+import p2p.file.meta.MetaP2P;
 
 import java.io.File;
 import java.io.Serializable;
@@ -14,12 +15,12 @@ import java.util.Collection;
  *
  * In the future: the default download directory should be saved to and loaded from the disk.
  */
-public class FilesManager implements Serializable {
+public class LocalFilesManager implements Serializable {
 
     Collection<P2PFile> localFiles;
     File downloadDirectory;
 
-    public FilesManager() {
+    public LocalFilesManager() {
         downloadDirectory = new File("/Users/Ethan/Desktop/P2PDownloadDir");
     }
 
@@ -27,7 +28,7 @@ public class FilesManager implements Serializable {
         return localFiles;
     }
 
-    public File getDownloadDirectory() {
+    public File getDownloadsDir() {
         return downloadDirectory;
     }
 
@@ -42,5 +43,9 @@ public class FilesManager implements Serializable {
     public void addLocalFiles(P2PFile... pFiles) {
         for (P2PFile pFile : pFiles)
             localFiles.add(pFile);
+    }
+
+    public boolean containsMeta(MetaP2P metaP2P) {
+        return localFiles.contains(metaP2P);
     }
 }

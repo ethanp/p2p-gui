@@ -12,9 +12,16 @@ import java.util.Map;
  */
 public class PeersManager {
     Map<InetSocketAddress, Peer> knownPeers = new HashMap<>();
+    Map<InetSocketAddress, Peer> connectedPeers = new HashMap<>();
+
     public boolean knowPeer(Peer peer) {
         return knownPeers.containsKey(peer.getServingAddr());
     }
+
+    public boolean isConnectedTo(Peer peer) {
+        return connectedPeers.containsKey(peer.getServingAddr());
+    }
+
     public Collection<Peer> getKnownPeers() {
         return knownPeers.values();
     }

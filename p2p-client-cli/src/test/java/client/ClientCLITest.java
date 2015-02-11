@@ -51,7 +51,7 @@ public class ClientCLITest {
         assertContains("Tracker has no files", output);
     }
 
-    @Test public void testListTrackerFiles() throws Exception {
+    @Test public void testListTrackerFilesOutput() throws Exception {
         TrackerState trackerState = TrackerState.create();
         TrackerSwarm trackerSwarm1 = new TrackerSwarm(MetaP2P.genFake(), trackerState);
         trackerSwarm1.addSeeders(

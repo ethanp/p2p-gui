@@ -2,6 +2,7 @@ package client.managers;
 
 import client.download.FileDownload;
 import client.peer.Peer;
+import client.state.ClientState;
 import p2p.file.meta.MetaP2P;
 
 import java.net.InetSocketAddress;
@@ -14,19 +15,19 @@ public class DownloadsManager {
 
     Collection<FileDownload> fileDownloads;
     Collection<Peer> connectedPeers;
+    ClientState state;
+
+    public DownloadsManager(ClientState state) {
+        this.state = state;
+    }
 
     /**
-     * This is called by the UI layer when the User chooses to download a file.
+     * This is called by the UI layer (GUI *or* CLI) when the User chooses to download a file.
      * It creates a `FileDownload` object which in turn uses the existing
      * `connectedPeers` creates new ones, from whom `Chunk`s are solicited.
      */
     public void downloadFile(MetaP2P mFile) {
-        /* if we already have this file, don't download it */
-        /* get trackers who know about this file */
-        /* update our knowledge of the swarms they have for this file */
-        /* create the appropriate FileDownload object */
-        /* the FileDownload will initiate whatever peer connections it
-           needs that we don't already have open */
+        fileDownloads.add(new FileDownload(state, mFile));
     }
 
     /**
