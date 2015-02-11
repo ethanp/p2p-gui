@@ -10,6 +10,92 @@ latex input:    mmd-natbib-plain
 latex input:    mmd-article-begin-doc
 latex footer:   mmd-memoir-footer
 
+## New Multi-Download Plans
+
+    ====================================
+    FileDL
+    ------------------------------------
+
+    /**
+     * list of peers from whom Client is currently downloading each chunk
+     * e.g. if there are outstanding requests to p1 & p2 for chunkIdx 1,
+     *      and no outstanding requests for chunk 2, p3 for chunk 3, etc.
+     *      it would look like
+     *                          List[
+     *                              Set{ Peer1, Peer2 }, 
+     *                              Set{ // empty // },
+     *                              Set{ Peer3 },
+     *                              ...
+     *                          ]
+     * the idea is it will help in assigning peers which chunk to download */
+    List<Set<Peer>> peersForChunks
+    BitSet          completedChunks
+    Set<Peer>       connectedPeers
+
+    =====================================
+    Peer
+    -------------------------------------
+    SingleThreadQueue<ChunkDL> chunkQueue
+    ObservableSet<FileDL>      DLsImPartOf
+
+    {
+        DLsImPartOf.addSizeChangeListener({
+            if (newFileDL) {
+                if (chunkQueue.isEmpty()) {
+                    idx = newFileDL.getIndexToRequest()
+                    chunkQueue.submit(new ChunkDL(newFileDL, idx))
+                }
+            }
+        })
+
+        /* I'm not sure how much of this I'll end up having to make myself.
+         * One way to do it is to make my own class that wraps the given
+         * SingleThreadQueue and adds this functionality.  */
+        chunkQueue.isEmptyListener({
+            if (!DLsImPartOf.isEmpty()) {
+                aFile = DLsImPartOf.randomDL()
+                idx = aFile.getIndexToRequest()
+                chunkQueue.submit(new ChunkDL(aFile, idx))
+            }
+        })
+    }
+
+    requestAvbl(MetaP2P) {
+        new Thread(new Avbl(meta)).start()
+    }
+    inner class Avbl {
+        MetaP2P meta
+        Socket socket
+    
+        run() {
+            connect()
+            requestAvbl(meta)
+        }
+    }
+    inner class ChunkDL {
+        int     index
+        FileDL  fileDL
+        bytes[] chunkData
+    
+        ChunkDL(index, fileDL) {
+            fileDL.peersForChunks.get(index).add(myself)
+        }
+        run() {
+            bytes[] newData
+            while (!interrupted && !fileDL.completedChunks.hasTrue(index)) {
+                int numRead = read(bytes)
+                if (complete) {
+                    synchronized (fileDL.completedChunks) {
+                        fileDL.completedChunks.makeTrue(index)
+                        fileDL.writeToDisk(chunkData, idx)
+                    }
+                }
+            }
+        }
+    }
+
+
+
 ## Rethink
 
 ### Better separation of concerns
