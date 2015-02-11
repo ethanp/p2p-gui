@@ -33,32 +33,17 @@ latex footer:   mmd-memoir-footer
     Set<Peer>       connectedPeers
 
     =====================================
+    DownloadsManager
+    -------------------------------------
+    Collection<FileDL> ongoingDownloads
+    assignChunk(Peer) : (Meta, chunkIdx)
+
+    =====================================
     Peer
     -------------------------------------
     SingleThreadQueue<ChunkDL> chunkQueue
-    ObservableSet<FileDL>      DLsImPartOf
-
-    {
-        DLsImPartOf.addSizeChangeListener({
-            if (newFileDL) {
-                if (chunkQueue.isEmpty()) {
-                    idx = newFileDL.getIndexToRequest()
-                    chunkQueue.submit(new ChunkDL(newFileDL, idx))
-                }
-            }
-        })
-
-        /* I'm not sure how much of this I'll end up having to make myself.
-         * One way to do it is to make my own class that wraps the given
-         * SingleThreadQueue and adds this functionality.  */
-        chunkQueue.isEmptyListener({
-            if (!DLsImPartOf.isEmpty()) {
-                aFile = DLsImPartOf.randomDL()
-                idx = aFile.getIndexToRequest()
-                chunkQueue.submit(new ChunkDL(aFile, idx))
-            }
-        })
-    }
+    FileDL                     currentlyDownloading
+    Socket                     chunksSocket
 
     requestAvbl(MetaP2P) {
         new Thread(new Avbl(meta)).start()
@@ -83,12 +68,14 @@ latex footer:   mmd-memoir-footer
         run() {
             bytes[] newData
             while (!interrupted && !fileDL.completedChunks.hasTrue(index)) {
-                int numRead = read(bytes)
-                if (complete) {
+                int numRead = read(newData)
+                combine(chunkData, newData)
+                if (dlComplete()) {
                     synchronized (fileDL.completedChunks) {
                         fileDL.completedChunks.makeTrue(index)
-                        fileDL.writeToDisk(chunkData, idx)
                     }
+                    fileDL.writeToDisk(chunkData, idx)
+                    break
                 }
             }
         }
@@ -135,19 +122,6 @@ latex footer:   mmd-memoir-footer
 * The `MetaP2PFile` should contain a hash for *each* `Chunk` like it is in
   BitTorrent, because if you get a bad `Chunk`, you don't want to have to
   redownload *all* the `Chunk`s
-
-### FileDownload
-
-* Use memory-mapped files instead of file-seeks
-
-## TODOs
-
-1. Change `Main` into an instance, and all static members into instances
-2. See what's good about the whole `ConnectionManager`, `PeerManager`,
-   `EtcManager` approach
-3. `ChunksForService` serialization
-4. `PeerDownload.getAvbl()`
-5. `FileDownload.run()`
 
 ## Note
 

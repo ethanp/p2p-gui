@@ -3,12 +3,15 @@ package client;
 import Exceptions.ServersIOException;
 import base.BaseCLI;
 import client.state.ClientState;
+import client.tracker.RemoteTracker;
 import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
+import p2p.exceptions.FileUnavailableException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -56,6 +59,8 @@ public class ClientCLI extends BaseCLI {
 
     ClientState state = new ClientState();
 
+    RemoteTracker mostRecentTracker = null;
+
     @Override protected void commandLoop() {
         while (true) {
             String[] inputComponents = console.prompt().split(" ");
@@ -87,7 +92,30 @@ public class ClientCLI extends BaseCLI {
                  + "It should look like: download 2\n"
                  + "and it will refer to the last tracker you added or listed.";
         }
-        throw new NotImplementedException();
+        @SuppressWarnings("UnusedAssignment")
+        int fileNo = -1;
+        try {
+            fileNo = Integer.parseInt(arguments[1]);
+        } catch (NumberFormatException e) {
+            return "That wasn't number";
+        }
+        if (fileNo < 1 || fileNo > mostRecentTracker.numSwarms()) {
+            return "invalid file index";
+        }
+        ClientSwarm swarm = mostRecentTracker.getSwarms().get(fileNo-1);
+        try {
+            state.downloadMeta(swarm.getMetaP2P());
+        }
+        catch (FileAlreadyExistsException e) {
+            return "You already have that file.\n" +
+                   "Download cancelled.";
+        }
+        catch (FileUnavailableException e) {
+            return "Couldn't find any peers currently serving that file.\n" +
+                   "Download cancelled.\n"+
+                   "You could try updating the trackers and trying again.";
+        }
+        return "started downloading "+swarm.getFilename();
     }
 
     /**
@@ -104,7 +132,8 @@ public class ClientCLI extends BaseCLI {
                  + "It should look like: tracker 123.123.123.123:1234";
         }
         try {
-            Collection<ClientSwarm> trackerListing = state.addTrackerAndListSwarms(arguments[1]);
+            mostRecentTracker = state.addTracker(arguments[1]);
+            Collection<ClientSwarm> trackerListing = state.listTracker(mostRecentTracker);
             StringBuilder s = new StringBuilder("File list:\n");
             int i = 1;
             for (ClientSwarm swarm : trackerListing) {

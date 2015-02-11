@@ -3,10 +3,15 @@ package client.managers;
 import client.download.FileDownload;
 import client.peer.Peer;
 import client.state.ClientState;
+import p2p.exceptions.FileUnavailableException;
 import p2p.file.meta.MetaP2P;
 
 import java.net.InetSocketAddress;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Ethan Petuchowski 2/8/15
@@ -14,8 +19,10 @@ import java.util.Collection;
 public class DownloadsManager {
 
     Collection<FileDownload> fileDownloads;
-    Collection<Peer> connectedPeers;
+    Collection<Peer> connectedPeers = new HashSet<>();
     ClientState state;
+
+    ExecutorService downloadPool = Executors.newFixedThreadPool(5);
 
     public DownloadsManager(ClientState state) {
         this.state = state;
@@ -26,8 +33,10 @@ public class DownloadsManager {
      * It creates a `FileDownload` object which in turn uses the existing
      * `connectedPeers` creates new ones, from whom `Chunk`s are solicited.
      */
-    public void downloadFile(MetaP2P mFile) {
-        fileDownloads.add(new FileDownload(state, mFile));
+    public void downloadMeta(MetaP2P mFile) throws FileAlreadyExistsException, FileUnavailableException {
+        FileDownload fileDownload = new FileDownload(state, mFile);
+        fileDownloads.add(fileDownload);
+        downloadPool.submit(fileDownload);
     }
 
     /**
@@ -42,5 +51,9 @@ public class DownloadsManager {
         return false;
         /* otherwise */
         // return true;
+    }
+
+    public boolean isConnectedTo(Peer peer) {
+        return connectedPeers.contains(peer);
     }
 }

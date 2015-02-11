@@ -36,7 +36,7 @@ public class TrackersManager {
         }
     }
 
-    public Collection<Peer> collectPeersFor(MetaP2P metaP2P) {
+    public Collection<Peer> collectPeersServing(MetaP2P metaP2P) {
         Collection<Peer> peers = new ArrayList<>();
         for (RemoteTracker tracker : getKnownTrackers()) {
             ClientSwarm swarm = tracker.getSwarmForFile(metaP2P);

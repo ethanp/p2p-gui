@@ -9,6 +9,7 @@ import p2p.file.meta.MetaP2P;
 import util.Common;
 
 import java.io.File;
+import java.nio.channels.AlreadyConnectedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,7 +44,7 @@ public class FileDownload implements Runnable {
                     state.getLocalP2PFile(metaP2P).getFilename());
 
         /* get all relevant peers from the trackers who know about this file */
-        peersWFile = state.collectPeersFor(metaP2P);
+        peersWFile = state.collectPeersServing(metaP2P);
         if (peersWFile.isEmpty())
             throw new FileUnavailableException(
                     "no peers with this file were found. Try updating trackers?");
@@ -58,16 +59,22 @@ public class FileDownload implements Runnable {
             else {
                 try {
                     peer.connect();
+                    /* I never tell state.justConnectedTo(peer);
+                     * I'll do that IF NECESSARY */
                 }
                 catch (FailedToFindServerException e) {
                     System.err.println("Couldn't connect to peer at "+peer.addrStr());
                 }
+                catch (AlreadyConnectedException e) {
+                    System.err.println("We already were connected to peer at"+peer.addrStr());
+                }
             }
         }
 
-        /* update our knowledge of the swarms they have for this file */
+        /* update Client's knowledge of which
+         * Chunks each Peer has for this File */
         for (Peer peer : connectedPeersWFile)
-            peer.queueUpdateChunkAvailability(pFile.getMetaPFile());
+            peer.updateChunkAvbl(pFile.getMetaPFile());
     }
 
     public void markChunkAsAvbl(int idx) { pFile.markChunkAsAvbl(idx); }

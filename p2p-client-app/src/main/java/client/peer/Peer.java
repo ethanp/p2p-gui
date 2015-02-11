@@ -5,24 +5,23 @@ import Exceptions.ServersIOException;
 import client.download.FileDownload;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
+import p2p.exceptions.ConnectToPeerException;
 import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
 import p2p.peer.PeerAddr;
 import p2p.protocol.fileTransfer.PeerTalk;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
-import util.ServersCommon;
+import util.Connection;
+import util.StringsOutBytesIn;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Ethan Petuchowski 1/18/15
@@ -40,12 +39,9 @@ public class Peer extends PeerAddr implements Runnable {
     private static final long DOWNLOAD_TIMEOUT = Common.secToNano(3);
     private static final int ERRORS_THRESHOLD = 3;
 
-    Socket socket;
-    PrintWriter writerToPeer;
-    BufferedInputStream streamFromPeer;
+    StringsOutBytesIn chunkConn = new StringsOutBytesIn(getServingAddr());
 
     MapProperty<MetaP2P, ChunksForService> chunksOfFiles;
-    List<FileDownload> downloadsImPartOf;
 
     FileDownload fileCurrentlyDownloading;
 
@@ -61,24 +57,39 @@ public class Peer extends PeerAddr implements Runnable {
         super(peerListenAddr);
     }
 
-    @Override public void run() {}
+    @Override public void run() {
+        jobQueue.shutdown();
+        while (true) {
 
-    public void connect() throws FailedToFindServerException {
+            /* queue was "shut down" and then all tasks completed */
+            if (jobQueue.isTerminated()) {}
+
+            /* you make the queue "shut down" like this */
+
+            // previously submitted tasks are executed,
+            // but no new tasks will be accepted
+            jobQueue.shutdown();
+
+            try {
+                jobQueue.awaitTermination(1, TimeUnit.MINUTES);
+            }
+            catch (InterruptedException e) {
+                System.err.println("jobQueue for peer at "+addrStr()
+                                  +" was cancelled for taking too long");
+            }
+        }
+    }
+
+    public void connect() throws FailedToFindServerException, ConnectToPeerException, ServersIOException {
+        if (chunkConn.socket.isConnected()) {
+            throw new ConnectToPeerException("Already connected");
+        }
+        connect(chunkConn);
         chunksOfFiles = new SimpleMapProperty<>();
-        try {
-            socket = ServersCommon.connectToInetSocketAddr(getServingAddr());
-            writerToPeer = ServersCommon.printWriter(socket);
-            streamFromPeer = ServersCommon.buffIStream(socket);
-        }
-        catch (ServersIOException e) {
-            e.printStackTrace();
-            // if this happens in normal operation, there should be a retry count
-            // and if that gets hit, it gives up on creating a PeerDownload instance at all
-        }
-        catch (FailedToFindServerException e) {
-            System.err.println("Couldn't connect to peer at "+getServingAddr());
-            throw e;
-        }
+    }
+
+    public void connect(Connection connection) throws ConnectToPeerException, FailedToFindServerException, ServersIOException {
+        connection.connect();
     }
 
     public boolean hasChunk(int chunkIdx, MetaP2P mFile) {
@@ -88,23 +99,22 @@ public class Peer extends PeerAddr implements Runnable {
 
     double secondsSpentDownloading() { return nanosecsDownloading / 1E3; }
     double getAverageDownloadSpeed() { return bytesDownloaded / secondsSpentDownloading(); }
-    void   addFileDownload(FileDownload fileDownload) { downloadsImPartOf.add(fileDownload); }
 
 
     /* ACCORDING TO PROTOCOL */
     void requestChunk(MetaP2P mFile, int chunkIdx) {
 
         /* SEND REQUEST */
-        writerToPeer.println(PeerTalk.ToPeer.GET_CHUNK);
-        writerToPeer.println(mFile.serializeToString());
-        writerToPeer.println(chunkIdx);
-        writerToPeer.flush();
+        chunkConn.writer.println(PeerTalk.ToPeer.GET_CHUNK);
+        chunkConn.writer.println(mFile.serializeToString());
+        chunkConn.writer.println(chunkIdx);
+        chunkConn.writer.flush();
 
         /* READ RESPONSE */
         @SuppressWarnings("UnusedAssignment") // the IDE is confused
         int responseSize = PeerTalk.FromPeer.DEFAULT_VALUE;
         try {
-            responseSize = Common.readIntLineFromStream(streamFromPeer);
+            responseSize = Common.readIntLineFromStream(chunkConn.in);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -133,8 +143,7 @@ public class Peer extends PeerAddr implements Runnable {
     }
 
     private void removeCurrentFileFromDownloads() {
-        downloadsImPartOf.remove(fileCurrentlyDownloading);
-        fileCurrentlyDownloading = null;
+        throw new NotImplementedException();
     }
 
     void downloadChunk(int chunkIdx, int responseSize) {
@@ -144,7 +153,7 @@ public class Peer extends PeerAddr implements Runnable {
         while (bytesRcvd < responseSize) {
             int rcv;
             try {
-                rcv = streamFromPeer.read(response, bytesRcvd, responseSize-bytesRcvd);
+                rcv = chunkConn.in.read(response, bytesRcvd, responseSize-bytesRcvd);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -218,19 +227,36 @@ public class Peer extends PeerAddr implements Runnable {
             addFile(file);
     }
 
-    public void queueUpdateChunkAvailability(MetaP2P metaP2P) {
+    public void updateChunkAvbl(MetaP2P metaP2P) throws ServersIOException, FailedToFindServerException {
         jobQueue.submit(new UpdateChunkAvblJob(metaP2P));
     }
 
     private class UpdateChunkAvblJob extends PeerWork {
         MetaP2P metaP2P;
+        StringsOutBytesIn updateAvblConn = new StringsOutBytesIn(getServingAddr());
 
-        UpdateChunkAvblJob(MetaP2P meta) {
+        UpdateChunkAvblJob(MetaP2P meta) throws ServersIOException, FailedToFindServerException {
             metaP2P = meta;
-            priority = 1;
+            updateAvblConn.connect();
         }
 
-        @Override public void run() {}
+        @Override public void run() {
+            try {
+                getAvblFor(metaP2P);
+            }
+            catch (IOException | ServersIOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void getAvblFor(MetaP2P metaP2P) throws IOException, ServersIOException {
+            updateAvblConn.writer.println(PeerTalk.ToPeer.GET_AVBL);
+            updateAvblConn.writer.println(metaP2P.serializeToString());
+            ChunksForService chunksForService = ChunksForService.deserialize(updateAvblConn.in);
+            synchronized (chunksOfFiles) {
+                chunksOfFiles.put(metaP2P, chunksForService);
+            }
+        }
     }
 
     private class DownloadChunkJob extends PeerWork {

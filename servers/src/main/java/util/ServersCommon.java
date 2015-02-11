@@ -214,6 +214,7 @@ public class ServersCommon {
         return stringToIPPort(randomIPPortString());
     }
 
+    /* TODO move this into regular Common class */
     public static void streamIntLine(OutputStream outStream, int intToSend) throws IOException {
         String intStr = intToSend+"\n";
         outStream.write(intStr.getBytes());

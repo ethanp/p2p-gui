@@ -1,5 +1,10 @@
 package p2p.peer;
 
+import Exceptions.ServersIOException;
+import util.Common;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.BitSet;
 
 /**
@@ -61,5 +66,16 @@ public class ChunksForService {
         int result = numChunks;
         result = 31*result+bitSet.hashCode();
         return result;
+    }
+
+    public static ChunksForService deserialize(BufferedInputStream in) throws IOException, ServersIOException {
+        int numChunks = Common.readIntLineFromStream(in);
+        int numBytes = (int) Math.ceil(numChunks/8.0);
+        byte[] bytes = new byte[numBytes];
+        int numRcvd = in.read(bytes);
+        if (numRcvd < numBytes) {
+            throw new ServersIOException("ChunksForService was not all received in one go");
+        }
+        return createFromBytes(numChunks, bytes);
     }
 }
