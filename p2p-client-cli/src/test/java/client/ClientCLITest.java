@@ -1,7 +1,11 @@
 package client;
 
+import org.junit.Before;
 import org.junit.Test;
+import p2p.file.meta.MetaP2P;
+import tracker.TrackerPeer;
 import tracker.TrackerState;
+import tracker.TrackerSwarm;
 import util.ServersCommon;
 
 import java.net.InetSocketAddress;
@@ -12,6 +16,8 @@ import static org.junit.Assert.assertTrue;
 public class ClientCLITest {
 
     ClientCLI cli;
+
+    @Before public void setUp() throws Exception { cli = new ClientCLI(); }
 
     void assertContains(String pattern, String text) {
 
@@ -29,7 +35,6 @@ public class ClientCLITest {
     }
 
     @Test public void testNonExistentTracker() throws Exception {
-        cli = new ClientCLI();
         String fakeTrackerAddr = "123.123.123.123:1234";
         String output = cli.trackerCommand(("tracker "+fakeTrackerAddr).split(" "));
         assertContains("Tracker not found", output);
@@ -39,19 +44,33 @@ public class ClientCLITest {
      * requires the existence of a running tracker
      * which is why I added the tracker-app to the client-cli's test-dependencies
      */
-    @Test public void testConnectToTracker() throws Exception {
-        cli = new ClientCLI();
+    @Test public void testListEmptyTracker() throws Exception {
         TrackerState trackerState = TrackerState.create();
         String tAddrStr = ServersCommon.ipPortToString(trackerState.getExternalAddr());
         String output = cli.trackerCommand(("tracker "+tAddrStr).split(" "));
-        assertContains("connected", output);
+        assertContains("Tracker has no files", output);
     }
 
     @Test public void testListTrackerFiles() throws Exception {
         TrackerState trackerState = TrackerState.create();
+        TrackerSwarm trackerSwarm1 = new TrackerSwarm(MetaP2P.genFake(), trackerState);
+        trackerSwarm1.addSeeders(
+                TrackerPeer.genFake(),
+                TrackerPeer.genFake(),
+                TrackerPeer.genFake());
+        TrackerSwarm trackerSwarm2 = new TrackerSwarm(MetaP2P.genFake(), trackerState);
+        trackerSwarm2.addLeechers(
+                TrackerPeer.genFake(),
+                TrackerPeer.genFake());
+        trackerState.getSwarms().addAll(trackerSwarm1, trackerSwarm2);
         InetSocketAddress trackerAddr = trackerState.getExternalAddr();
         String tAddrStr = ServersCommon.ipPortToString(trackerAddr);
         String output = cli.trackerCommand(("tracker "+tAddrStr).split(" "));
+        String[] outputLines = output.split("\n");
+
+        /* verify */
         assertContains("File list", output);
+        assertContains("1\\) file-.*3 seeders  0 leechers.*B", outputLines[1]);
+        assertContains("2\\) file-.*0 seeders  2 leechers.*B", outputLines[2]);
     }
 }

@@ -69,8 +69,9 @@ public class TrackerServer extends SingleThreadedServer implements TrackerSideTr
      */
     @Override public void listSwarms() {
         try (PrintWriter printWriter = ServersCommon.printWriter(socket)) {
+            printWriter.println(getState().numSwarms());
             for (Swarm swarm : getState().getSwarms())
-                printWriter.println(swarm.serialize());
+                printWriter.print(swarm.serialize()); // have to be careful with newline accounting
         }
         catch (ServersIOException e) {
             e.printStackTrace();

@@ -104,7 +104,6 @@ public class ClientCLI extends BaseCLI {
                  + "It should look like: tracker 123.123.123.123:1234";
         }
         try {
-            System.out.println("downloading file list");
             Collection<ClientSwarm> trackerListing = state.addTrackerAndListSwarms(arguments[1]);
             StringBuilder s = new StringBuilder("File list:\n");
             int i = 1;

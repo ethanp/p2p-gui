@@ -3,7 +3,6 @@ package util;
 import Exceptions.FailedToFindServerException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
-import Exceptions.SocketCouldntConnectException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -138,15 +137,6 @@ public class ServersCommon {
             }
         }
         return toRet;
-    }
-
-    public static Socket socketAtAddr(InetSocketAddress addr) throws SocketCouldntConnectException {
-        try {
-            return new Socket(addr.getAddress(), addr.getPort());
-        }
-        catch (IOException e) {
-            throw new SocketCouldntConnectException(e);
-        }
     }
 
     public static InetSocketAddress addrFromString(String addrStr) throws UnknownHostException {

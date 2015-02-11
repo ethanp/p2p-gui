@@ -1,7 +1,7 @@
 package client.peer;
 
+import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
-import Exceptions.SocketCouldntConnectException;
 import client.download.FileDownload;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
@@ -25,8 +25,13 @@ import java.util.Set;
 /**
  * Ethan Petuchowski 1/18/15
  *
- * This is the Client's understanding of live peers
- * including what chunks they have of which files
+ * This is the Client's understanding of peers who
+ * trackers have claimed contain files.
+ *
+ * It includes what chunks we think the Peer has of which files.
+ *
+ * We don't check whether the Client is online until
+ * we actually HAVE to interact with them.
  */
 public class Peer extends PeerAddr implements Runnable {
 
@@ -50,16 +55,23 @@ public class Peer extends PeerAddr implements Runnable {
 
     public Peer(InetSocketAddress peerListenAddr) {
         super(peerListenAddr);
+    }
+
+    public void connect() throws FailedToFindServerException {
         chunksOfFiles = new SimpleMapProperty<>();
         try {
-            socket = ServersCommon.socketAtAddr(peerListenAddr);
+            socket = ServersCommon.connectToInetSocketAddr(getServingAddr());
             writerToPeer = ServersCommon.printWriter(socket);
             streamFromPeer = ServersCommon.buffIStream(socket);
         }
-        catch (SocketCouldntConnectException | ServersIOException e) {
+        catch (ServersIOException e) {
             e.printStackTrace();
             // if this happens in normal operation, there should be a retry count
             // and if that gets hit, it gives up on creating a PeerDownload instance at all
+        }
+        catch (FailedToFindServerException e) {
+            System.err.println("Couldn't connect to peer at "+getServingAddr());
+            throw e;
         }
     }
 
