@@ -15,9 +15,10 @@ import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
-import util.SHA2Digest;
+import util.Digester;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -26,8 +27,14 @@ import java.io.RandomAccessFile;
  */
 public class P2PFile {
 
-    protected final ObjectProperty<File>                localFile;
+    /** I think the point of this was for use in downloading the file. But I've outsourced the
+     * duty of keeping track of this info to higher levels of abstraction so I think this is
+     * antiquated now. */
     protected final ListProperty<ClientSwarm>           swarms;
+
+
+    /****** FIELDS ******/
+    protected final ObjectProperty<File>                localFile;
     protected final IntegerProperty                     bytesPerChunk;
     protected final IntegerProperty                     numChunks;
     protected final ObjectProperty<ChunksForService>    availableChunks;
@@ -52,14 +59,13 @@ public class P2PFile {
         if (fsFile.length() > (long) Common.MAX_FILESIZE)
             throw new CreateP2PFileException("file is too big, max size is "+
                                              Common.formatByteCount(Common.MAX_FILESIZE));
-
         P2PFile toRet = new P2PFile(
                 fsFile,
                 new MetaP2P(
                         fsFile.getName(),
                         (int) fsFile.length(),
-                        SHA2Digest.createDigest(fsFile),
-                        new String[]{"this is problematic"} // TODO fixme
+                        Digester.createDigest(fsFile),
+                        createChunkDigests(fsFile)
                 )
         );
 
@@ -67,6 +73,17 @@ public class P2PFile {
         toRet.getAvailableChunks().setAllAsAvailable();
 
         return toRet;
+    }
+
+    private static String[] createChunkDigests(File fsFile) throws IOException {
+        int numChunks = MetaP2P.numChunksFromFilesize(fsFile.length());
+        String[] digests = new String[numChunks];
+        FileInputStream fis = new FileInputStream(fsFile);
+        for (int i = 0; i < numChunks-1; i++)
+            digests[i] = Digester.createChunkDigest(fis, Common.NUM_CHUNK_BYTES);
+        int lastChunkSize = lastChunkSize(fsFile.length());
+        digests[numChunks-1] = Digester.createChunkDigest(fis, lastChunkSize);
+        return digests;
     }
 
     public P2PFile addTracker(RemoteTracker tracker) {
@@ -82,6 +99,13 @@ public class P2PFile {
         return getAvailableChunks().hasIdx(index);
     }
 
+    private static int lastChunkSize(long totalFilesize) {
+        int lastChunkSize = (int) (totalFilesize % Common.NUM_CHUNK_BYTES);
+        return lastChunkSize == 0
+               ? Common.NUM_CHUNK_BYTES
+               : lastChunkSize;
+    }
+
     public Chunk getChunk(int index) throws IOException {
         if (!hasChunk(index))
             return null;
@@ -95,11 +119,8 @@ public class P2PFile {
         byte[] buff;
         if (index == getNumChunks()-1) {
             /* last chunk can have different size */
-            int lastChunkSize = (int) (getFilesizeBytes() % (long) getBytesPerChunk());
-            if (lastChunkSize == 0)
-                buff = new byte[getBytesPerChunk()];
-            else
-                buff = new byte[lastChunkSize];
+            int lastChunkSize = lastChunkSize(getFilesizeBytes());
+            buff = new byte[lastChunkSize];
         }
         else {
             buff = new byte[getBytesPerChunk()];
@@ -113,10 +134,10 @@ public class P2PFile {
     }
 
     public File             getLocalFile()          { return localFile.get();                   }
-    public MetaP2P getMetaPFile()          { return metaPFile;                         }
+    public MetaP2P          getMetaPFile()          { return metaPFile;                         }
     public String           getFilename()           { return metaPFile.getFilename();           }
     public String           formattedFileSizeStr()  { return metaPFile.formattedFilesizeStr();  }
-    public long             getFilesizeBytes()      { return metaPFile.getFilesize();      }
+    public long             getFilesizeBytes()      { return metaPFile.getFilesize();           }
     public int              getBytesPerChunk()      { return bytesPerChunk.get();               }
     public int              getNumChunks()          { return numChunks.get();                   }
     public String           getCompletenessString() { return String.format("%.2f%%",getAvailableChunks().getProportionAvailable()); }

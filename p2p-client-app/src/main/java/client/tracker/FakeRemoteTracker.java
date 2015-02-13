@@ -12,6 +12,7 @@ import util.ServersCommon;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Collection;
 
 /**
@@ -26,7 +27,7 @@ public class FakeRemoteTracker extends RemoteTracker {
         try {
             defaultFakeRemoteTracker = new FakeRemoteTracker("123.123.123.123:3300");
         }
-        catch (ConnectToTrackerException | IOException | ServersIOException e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
         defaultFakeRemoteTracker.listFiles();
@@ -40,7 +41,7 @@ public class FakeRemoteTracker extends RemoteTracker {
         String ip = ServersCommon.randomIPPortString();
         FakeRemoteTracker t = null;
         try { t = new FakeRemoteTracker(ip); }
-        catch (ConnectToTrackerException | IOException | ServersIOException e) { e.printStackTrace(); }
+        catch (IOException e) { e.printStackTrace(); }
         ObservableList<ClientSwarm> swarms = FXCollections.observableArrayList();
         int N = Common.randInt(6);
         for (int i = 0; i < N; i++)
@@ -50,8 +51,7 @@ public class FakeRemoteTracker extends RemoteTracker {
         return t;
     }
 
-    public FakeRemoteTracker(String fakeIPAddrAndPort)
-            throws IOException, ConnectToTrackerException, ServersIOException {
+    public FakeRemoteTracker(String fakeIPAddrAndPort) throws UnknownHostException {
         super("null");
         ipPortString = fakeIPAddrAndPort;
     }

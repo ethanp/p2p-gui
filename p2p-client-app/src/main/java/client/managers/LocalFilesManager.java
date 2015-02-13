@@ -43,8 +43,10 @@ public class LocalFilesManager implements Serializable {
         localFiles.add(pFile);
     }
 
-    public void addLocalFile(File file) throws CreateP2PFileException, IOException {
-        localFiles.add(P2PFile.importLocalFile(file));
+    public P2PFile addLocalFile(File file) throws CreateP2PFileException, IOException {
+        P2PFile pFile = P2PFile.importLocalFile(file);
+        localFiles.add(pFile);
+        return pFile;
     }
 
     public void addLocalFiles(P2PFile... pFiles) {

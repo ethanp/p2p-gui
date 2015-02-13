@@ -53,7 +53,7 @@ public class MetaP2P {
         chunkDigests = chunkDigestsArray;
     }
 
-    private static int numChunksFromFilesize(double filesize) {
+    public static int numChunksFromFilesize(double filesize) {
         return (int) Math.ceil(filesize/Common.NUM_CHUNK_BYTES);
     }
 
@@ -66,7 +66,9 @@ public class MetaP2P {
         final String name = "file-"+Common.randInt(1000);
         final int size = Common.randInt(Common.MAX_FILESIZE);
         final String digest = "DEADBEEF";
-        final String[] digestArr = {"MOAR DEADBEEF"};
+        String[] digestArr = new String[numChunksFromFilesize(size)];
+        for (int i = 0; i < digestArr.length; i++)
+            digestArr[i] = "chunk-digest-"+(i+1);
         try {
             return new MetaP2P(name, size, digest, digestArr);
         }

@@ -18,6 +18,7 @@ import p2p.file.meta.MetaP2P;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.Collection;
 
@@ -31,10 +32,11 @@ public class ClientState {
     private DownloadsManager downloadsManager = new DownloadsManager(this);
     private PeerServer peerServer;
 
-    /*********************
-     * Start Peer Server *
-     *********************/
+    /***************
+     * Peer Server *
+     ***************/
     {
+        /* start the server on creation */
         try {
             peerServer = new PeerServer();
             new Thread(peerServer).start();
@@ -44,11 +46,19 @@ public class ClientState {
         }
     }
 
+    public String listenAddrStr() {
+        return peerServer.listenAddrStr();
+    }
+
+    public InetSocketAddress externalListenAddr() {
+        return peerServer.getExternalSocketAddr();
+    }
+
     /***********************
      * Local Files Manager *
      ***********************/
-    public void addLocalFile(File file) throws CreateP2PFileException, IOException {
-        localFilesManager.addLocalFile(file);
+    public P2PFile addLocalFile(File file) throws CreateP2PFileException, IOException {
+        return localFilesManager.addLocalFile(file);
     }
 
     public P2PFile getLocalP2PFile(MetaP2P file) {
@@ -71,6 +81,9 @@ public class ClientState {
         return localFilesManager.getDownloadsDir();
     }
 
+    public void setDownloadsDir(File downloadsDir) {
+        localFilesManager.setDownloadDirectory(downloadsDir);
+    }
 
     /********************
      * Trackers Manager *

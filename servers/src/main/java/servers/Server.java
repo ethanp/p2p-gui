@@ -74,7 +74,7 @@ public abstract class Server implements Runnable {
 
     private void setAndPrintIp() throws NoInternetConnectionException {
         ipAddr = ServersCommon.findMyIP();
-        System.out.println("Srv: "+ServersCommon.ipPortToString(getExternalSocketAddr()));
+        System.out.println("Srv: "+listenAddrStr());
     }
 
     protected void listenLoop() throws ServersIOException, InterruptedException {
@@ -126,7 +126,9 @@ public abstract class Server implements Runnable {
     public InetSocketAddress getExternalSocketAddr() {
         return new InetSocketAddress(ipAddr, listener.getLocalPort());
     }
-
+    public String listenAddrStr() {
+        return ServersCommon.ipPortToString(getExternalSocketAddr());
+    }
     public InetAddress getIpAddr() { return ipAddr; }
     public int getPort() { return listener.getLocalPort(); }
     public void setIpAddr(InetAddress ipAddr) { this.ipAddr = ipAddr; }
