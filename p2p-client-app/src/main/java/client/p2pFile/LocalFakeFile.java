@@ -36,7 +36,7 @@ public class LocalFakeFile extends P2PFile {
     public LocalFakeFile(String filename, int filesize, RemoteTracker tracker)
             throws CreateP2PFileException
     {
-        super(containerFolder, new MetaP2P(filename, filesize, "FAKE_DIGEST_DEADBEEF"));
+        super(containerFolder, new MetaP2P(filename, filesize, "FAKE_DIGEST_DEADBEEF", new String[]{"moar deadbeef"}));
         addTracker(tracker);
     }
 

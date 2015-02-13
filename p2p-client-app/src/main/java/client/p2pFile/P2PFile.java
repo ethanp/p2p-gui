@@ -58,7 +58,8 @@ public class P2PFile {
                 new MetaP2P(
                         fsFile.getName(),
                         (int) fsFile.length(),
-                        SHA2Digest.createDigest(fsFile)
+                        SHA2Digest.createDigest(fsFile),
+                        new String[]{"this is problematic"} // TODO fixme
                 )
         );
 

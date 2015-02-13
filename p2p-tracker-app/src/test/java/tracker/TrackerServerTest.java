@@ -77,7 +77,7 @@ public class TrackerServerTest {
 
         assertEquals(meta, trackerSwarm.getMetaP2P());
         assertEquals(meta.getFilename(), trackerSwarm.getMetaP2P().getFilename());
-        assertEquals(meta.getDigest(), trackerSwarm.getMetaP2P().getDigest());
+        assertEquals(meta.getFileDigest(), trackerSwarm.getMetaP2P().getFileDigest());
         assertEquals(meta.getFilesize(), trackerSwarm.getMetaP2P().getFilesize());
 
         assertEquals(1, trackerSwarm.getSeeders().size());

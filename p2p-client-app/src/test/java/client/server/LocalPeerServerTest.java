@@ -41,7 +41,7 @@ public class LocalPeerServerTest extends LocalDownloadTest {
     }
 
     @Test public void testRequestUnknownFile() throws Exception {
-        MetaP2P unknownMeta = new MetaP2P("LaLaLand", 234234, "HEXADECIMAL_JOKE");
+        MetaP2P unknownMeta = new MetaP2P("LaLaLand", 234234, "HEXADECIMAL_JOKE", new String[]{"short"});
         requestChunk(unknownMeta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);
         assertEquals(PeerTalk.FromPeer.FILE_NOT_AVAILABLE, responseSize);

@@ -17,9 +17,8 @@ public class MetaP2P {
 
     protected final StringProperty filename;
     protected final IntegerProperty filesizeBytes;
-    protected final StringProperty digest; /* only req'd bc we use 'tracker' as 'index' */
-
-
+    protected final StringProperty fileDigest; /* only req'd bc we use 'tracker' as 'index' */
+    protected final String[] chunkDigests;
     protected final int numChunks;
 
     public String formattedFilesizeStr() {
@@ -27,12 +26,17 @@ public class MetaP2P {
     }
 
     public String serializeToString() {
-        return getFilename() +"\n"
-             + getFilesize() +"\n"
-             + getDigest()   +"\n";
+        StringBuilder sb = new StringBuilder();
+        for (String chunkDigest : chunkDigests) {
+            sb.append(chunkDigest+"\n");
+        }
+        return getFilename()+"\n"
+               +getFilesize()+"\n"
+               +getFileDigest()+"\n"
+               +sb.toString();
     }
 
-    public MetaP2P(String filename, int filesize, String sha2digest)
+    public MetaP2P(String filename, int filesize, String sha2digest, String[] chunkDigestsArray)
             throws CreateP2PFileException
     {
         if (filesize < 0)
@@ -40,31 +44,37 @@ public class MetaP2P {
         if (filename == null || filename.length() < 1)
             throw new CreateP2PFileException("file must have a name");
         if (sha2digest == null || sha2digest.length() < 1)
-            throw new CreateP2PFileException("file must have a digest for verification");
+            throw new CreateP2PFileException("file must have a fileDigest for verification");
 
         this.filename = new SimpleStringProperty(filename);
         filesizeBytes = new SimpleIntegerProperty(filesize);
-        digest = new SimpleStringProperty(sha2digest);
-        numChunks = (int) Math.ceil(((double)filesize)/Common.NUM_CHUNK_BYTES);
+        fileDigest = new SimpleStringProperty(sha2digest);
+        numChunks = numChunksFromFilesize(filesize);
+        chunkDigests = chunkDigestsArray;
+    }
+
+    private static int numChunksFromFilesize(double filesize) {
+        return (int) Math.ceil(filesize/Common.NUM_CHUNK_BYTES);
     }
 
     public String getFilename() { return filename.get(); }
     public long getFilesize() { return filesizeBytes.get(); }
-    public String getDigest() { return digest.get(); }
+    public String getFileDigest() { return fileDigest.get(); }
     public int getNumChunks() { return numChunks; }
 
     public static MetaP2P genFake() {
         final String name = "file-"+Common.randInt(1000);
         final int size = Common.randInt(Common.MAX_FILESIZE);
         final String digest = "DEADBEEF";
+        final String[] digestArr = {"MOAR DEADBEEF"};
         try {
-            return new MetaP2P(name, size, digest);
+            return new MetaP2P(name, size, digest, digestArr);
         }
         catch (CreateP2PFileException e) {
-            /* this should never occur (bc the file is FAKE) */
+            /* should never occur */
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
@@ -72,7 +82,7 @@ public class MetaP2P {
         if (this == o) return true;
         if (!(o instanceof MetaP2P)) return false;
         MetaP2P file = (MetaP2P) o;
-        if (!getDigest().equals(file.getDigest())) return false;
+        if (!getFileDigest().equals(file.getFileDigest())) return false;
         if (!getFilename().equals(file.getFilename())) return false;
         if (getFilesize() != file.getFilesize()) return false;
         return true;
@@ -82,7 +92,7 @@ public class MetaP2P {
     public int hashCode() {
         int result = filename.hashCode();
         result = 31*result+filesizeBytes.hashCode();
-        result = 31*result+digest.hashCode();
+        result = 31*result+fileDigest.hashCode();
         return result;
     }
 
@@ -93,15 +103,20 @@ public class MetaP2P {
         String filesize = reader.readLine();
         String digest = reader.readLine();
         int filebytes = Integer.parseInt(filesize);
+        int numChunks = numChunksFromFilesize(filebytes);
+        String[] chunkDigests = new String[numChunks];
+        for (int i = 0; i < numChunks; i++) {
+            chunkDigests[i] = reader.readLine();
+        }
         reader.readLine(); // bc as it stands, we send it with 2 trailing newlines
         try {
-            return new MetaP2P(filename, filebytes, digest);
+            return new MetaP2P(filename, filebytes, digest, chunkDigests);
         }
         catch (CreateP2PFileException e) {
             System.err.println("Could not create MetaP2P with");
             System.err.println("filename: "+filename);
             System.err.println("filesize: "+filesize);
-            System.err.println("digest: "+digest);
+            System.err.println("fileDigest: "+digest);
             System.err.println(e.getMessage());
             return null;
         }

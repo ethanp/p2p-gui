@@ -40,10 +40,6 @@ public class ClientCLITest {
         assertContains("Tracker not found", output);
     }
 
-    /**
-     * requires the existence of a running tracker
-     * which is why I added the tracker-app to the client-cli's test-dependencies
-     */
     @Test public void testListEmptyTracker() throws Exception {
         TrackerState trackerState = TrackerState.create();
         String tAddrStr = ServersCommon.ipPortToString(trackerState.getExternalAddr());
@@ -72,5 +68,13 @@ public class ClientCLITest {
         assertContains("File list", output);
         assertContains("1\\) file-.*3 seeders  0 leechers.*B", outputLines[1]);
         assertContains("2\\) file-.*0 seeders  2 leechers.*B", outputLines[2]);
+    }
+
+    @Test public void testListTrackerDlFileOnePeer() {
+        /* add a file-to-serve to local files for service */
+        /* tell a tracker about it */
+        /* list the tracker */
+        /* downloadCommand( the file ) */
+        /* verify that it arrived */
     }
 }

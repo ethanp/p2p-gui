@@ -1,9 +1,11 @@
 package client.download;
 
 import Exceptions.FailedToFindServerException;
+import Exceptions.ServersIOException;
 import client.p2pFile.P2PFile;
 import client.peer.Peer;
 import client.state.ClientState;
+import p2p.exceptions.ConnectToPeerException;
 import p2p.exceptions.FileUnavailableException;
 import p2p.file.meta.MetaP2P;
 import util.Common;
@@ -68,13 +70,27 @@ public class FileDownload implements Runnable {
                 catch (AlreadyConnectedException e) {
                     System.err.println("We already were connected to peer at"+peer.addrStr());
                 }
+                catch (ConnectToPeerException e) {
+                    e.printStackTrace();
+                }
+                catch (ServersIOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         /* update Client's knowledge of which
          * Chunks each Peer has for this File */
         for (Peer peer : connectedPeersWFile)
-            peer.updateChunkAvbl(pFile.getMetaPFile());
+            try {
+                peer.updateChunkAvbl(pFile.getMetaPFile());
+            }
+            catch (ServersIOException e) {
+                e.printStackTrace();
+            }
+            catch (FailedToFindServerException e) {
+                e.printStackTrace();
+            }
     }
 
     public void markChunkAsAvbl(int idx) { pFile.markChunkAsAvbl(idx); }

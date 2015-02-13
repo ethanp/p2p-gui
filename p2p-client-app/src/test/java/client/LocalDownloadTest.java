@@ -4,9 +4,6 @@ import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import client.download.FileDownload;
 import client.p2pFile.P2PFile;
-import client.peer.Peer;
-import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
 import org.junit.Before;
 import p2p.exceptions.CreateP2PFileException;
 import p2p.file.meta.MetaP2P;
@@ -59,12 +56,13 @@ public class LocalDownloadTest {
     }
 
     public FileDownload makeSequenceFileDownload(MetaP2P meta) throws CreateP2PFileException {
-        RemoteTracker stubTracker = null;
-        ClientSwarm clientSwarm = new ClientSwarm(meta, stubTracker);
-        Peer myselfAsPeer = new Peer(myAddress());
-        clientSwarm.addSeeder(myselfAsPeer);
-        FileDownload fileDownload = new FileDownload(downloadDir, clientSwarm);
-        return fileDownload;
+//        RemoteTracker stubTracker = null;
+//        ClientSwarm clientSwarm = new ClientSwarm(meta, stubTracker);
+//        Peer myselfAsPeer = new Peer(myAddress());
+//        clientSwarm.addSeeder(myselfAsPeer);
+//        FileDownload fileDownload = new FileDownload(downloadDir, clientSwarm);
+//        return fileDownload;
+        return null;
     }
 
     public void createCleanServeAndDownloadDirectories() throws FileNotFoundException {
