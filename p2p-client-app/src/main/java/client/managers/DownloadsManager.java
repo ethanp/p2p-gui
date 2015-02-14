@@ -33,10 +33,11 @@ public class DownloadsManager {
      * It creates a `FileDownload` object which in turn uses the existing
      * `connectedPeers` creates new ones, from whom `Chunk`s are solicited.
      */
-    public void downloadMeta(MetaP2P mFile) throws FileAlreadyExistsException, FileUnavailableException {
+    public FileDownload downloadMeta(MetaP2P mFile) throws FileAlreadyExistsException, FileUnavailableException {
         FileDownload fileDownload = new FileDownload(state, mFile);
         fileDownloads.add(fileDownload);
         downloadPool.submit(fileDownload);
+        return fileDownload;
     }
 
     /**

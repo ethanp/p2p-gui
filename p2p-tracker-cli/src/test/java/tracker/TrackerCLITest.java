@@ -2,6 +2,7 @@ package tracker;
 
 import org.junit.Test;
 import p2p.file.meta.MetaP2P;
+import p2p.peer.PeerAddr;
 
 import java.util.regex.Pattern;
 
@@ -33,14 +34,14 @@ public class TrackerCLITest {
         cli = new TrackerCLI();
         TrackerSwarm trackerSwarm1 = new TrackerSwarm(MetaP2P.genFake(), cli.getState());
         trackerSwarm1.addSeeders(
-                TrackerPeer.genFake(),
-                TrackerPeer.genFake(),
-                TrackerPeer.genFake());
+                PeerAddr.genFake(),
+                PeerAddr.genFake(),
+                PeerAddr.genFake());
 
         TrackerSwarm trackerSwarm2 = new TrackerSwarm(MetaP2P.genFake(), cli.getState());
         trackerSwarm2.addLeechers(
-                TrackerPeer.genFake(),
-                TrackerPeer.genFake());
+                PeerAddr.genFake(),
+                PeerAddr.genFake());
 
         cli.getState().getSwarms().addAll(trackerSwarm1, trackerSwarm2);
 

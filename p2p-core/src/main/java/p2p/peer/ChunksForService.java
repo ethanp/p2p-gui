@@ -23,6 +23,10 @@ public class ChunksForService {
         setAllAsAvailable();
     }
 
+    public int firstUnavailableChunk() {
+        return bitSet.nextClearBit(0);
+    }
+
     public byte[] serializeToBytes() {
         int numBytes = (int) Math.ceil(numChunks/8.0);
         byte[] bytes = new byte[numBytes];

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Ethan Petuchowski 2/8/15
@@ -20,7 +21,7 @@ import java.util.Collection;
  */
 public class LocalFilesManager implements Serializable {
 
-    Collection<P2PFile> localFiles;
+    Collection<P2PFile> localFiles = new HashSet<>();
     File downloadDirectory;
 
     public LocalFilesManager() {

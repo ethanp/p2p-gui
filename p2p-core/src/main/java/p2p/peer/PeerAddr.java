@@ -26,11 +26,11 @@ import java.net.InetSocketAddress;
  *                  namely which Chunks it has of which files
  *                          via (roughly) a Map<Meta, BitMap>
  */
-public abstract class PeerAddr {
+public class PeerAddr {
 
     protected final InetSocketAddress servingAddr;
 
-    protected PeerAddr(InetSocketAddress socketAddr) {
+    public PeerAddr(InetSocketAddress socketAddr) {
         servingAddr = socketAddr;
     }
 
@@ -44,6 +44,10 @@ public abstract class PeerAddr {
     }
 
     @Override public int hashCode() { return servingAddr.hashCode(); }
+
+    public static PeerAddr genFake() {
+        return new PeerAddr(ServersCommon.randomSocketAddr());
+    }
 
     public InetSocketAddress getServingAddr() { return servingAddr; }
     public String addrStr() { return ServersCommon.ipPortToString(getServingAddr()); }

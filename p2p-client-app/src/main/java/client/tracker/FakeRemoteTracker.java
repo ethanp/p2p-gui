@@ -33,6 +33,8 @@ public class FakeRemoteTracker extends RemoteTracker {
         defaultFakeRemoteTracker.listFiles();
     }
 
+    public FakeRemoteTracker() throws UnknownHostException { this("123.456.789.123:4567"); }
+
     public static FakeRemoteTracker getDefaultFakeRemoteTracker() {
         return defaultFakeRemoteTracker;
     }
@@ -52,7 +54,7 @@ public class FakeRemoteTracker extends RemoteTracker {
     }
 
     public FakeRemoteTracker(String fakeIPAddrAndPort) throws UnknownHostException {
-        super("null");
+        super(fakeIPAddrAndPort);
         ipPortString = fakeIPAddrAndPort;
     }
 

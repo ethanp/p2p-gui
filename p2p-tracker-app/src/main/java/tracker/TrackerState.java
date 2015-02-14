@@ -4,6 +4,7 @@ import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
 import p2p.file.meta.MetaP2P;
+import p2p.peer.PeerAddr;
 import p2p.tracker.Tracker;
 
 import java.net.InetSocketAddress;
@@ -31,7 +32,7 @@ public class TrackerState extends Tracker<TrackerSwarm> implements Runnable {
             swarm = new TrackerSwarm(meta, this);
             getSwarms().add(swarm);
         }
-        swarm.getSeeders().add(new TrackerPeer(addr));
+        swarm.getSeeders().add(new PeerAddr(addr));
     }
 
     public static TrackerState create()

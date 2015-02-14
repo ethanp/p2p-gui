@@ -13,6 +13,7 @@ import util.Common;
 import java.io.File;
 import java.nio.channels.AlreadyConnectedException;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
@@ -60,6 +61,8 @@ public class FileDownload implements Runnable {
             }
             else {
                 try {
+                    peer.addDownload(this);
+                    // TODO this should not just connect, but add this Download to the Peer
                     peer.connect();
                     /* I never tell state.justConnectedTo(peer);
                      * I'll do that IF NECESSARY */
@@ -96,4 +99,14 @@ public class FileDownload implements Runnable {
     public void markChunkAsAvbl(int idx) { pFile.markChunkAsAvbl(idx); }
     public P2PFile getPFile() { return pFile;}
     public MetaP2P getMFile() { return pFile.getMetaPFile(); }
+
+    public Collection<Integer> decideChunksToDownload(Peer peer) {
+
+        // real creative.
+        int idx = pFile.getAvailableChunks().firstUnavailableChunk();
+
+        // TODO wasn't there some place I was keeping track of
+        //      List<Set<Peer>> whoIsDownloadingWhichChunks ??
+        return Arrays.asList(idx);
+    }
 }

@@ -3,6 +3,7 @@ package client.state;
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
+import client.download.FileDownload;
 import client.managers.DownloadsManager;
 import client.managers.LocalFilesManager;
 import client.managers.TrackersManager;
@@ -104,8 +105,8 @@ public class ClientState {
     /*********************
      * Downloads Manager *
      *********************/
-    public void downloadMeta(MetaP2P metaP2P) throws FileAlreadyExistsException, FileUnavailableException {
-        downloadsManager.downloadMeta(metaP2P);
+    public FileDownload downloadMeta(MetaP2P metaP2P) throws FileAlreadyExistsException, FileUnavailableException {
+        return downloadsManager.downloadMeta(metaP2P);
     }
 
     public boolean isConnectedTo(Peer peer) {
