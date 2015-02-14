@@ -109,7 +109,7 @@ public class ClientState {
         return downloadsManager.downloadMeta(metaP2P);
     }
 
-    public boolean isConnectedTo(Peer peer) {
-        return downloadsManager.isConnectedTo(peer);
+    public boolean connectToPeer(Peer peer) {
+        return downloadsManager.connectToPeer(peer);
     }
 }

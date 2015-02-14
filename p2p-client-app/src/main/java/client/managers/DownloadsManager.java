@@ -1,12 +1,15 @@
 package client.managers;
 
+import Exceptions.FailedToFindServerException;
+import Exceptions.ServersIOException;
 import client.download.FileDownload;
 import client.peer.Peer;
 import client.state.ClientState;
+import p2p.exceptions.ConnectToPeerException;
 import p2p.exceptions.FileUnavailableException;
 import p2p.file.meta.MetaP2P;
+import util.Common;
 
-import java.net.InetSocketAddress;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,22 +22,25 @@ import java.util.concurrent.Executors;
 public class DownloadsManager {
 
     Collection<FileDownload> fileDownloads;
-    Collection<Peer> connectedPeers = new HashSet<>();
-    ClientState state;
-
-    ExecutorService downloadPool = Executors.newFixedThreadPool(5);
+    Collection<Peer> connectedPeers;
+    ClientState clientState;
+    ExecutorService downloadPool;
 
     public DownloadsManager(ClientState state) {
-        this.state = state;
+        clientState = state;
+        connectedPeers = new HashSet<>();
+        downloadPool = Executors.newFixedThreadPool(Common.FILE_DOWNLOADS_POOL_SIZE);
     }
 
     /**
-     * This is called by the UI layer (GUI *or* CLI) when the User chooses to download a file.
-     * It creates a `FileDownload` object which in turn uses the existing
-     * `connectedPeers` creates new ones, from whom `Chunk`s are solicited.
+     * This is called by the UI layer (GUI *or* CLI; via `clientState`) when the User
+     * chooses to download a file.
+     *
+     * It creates a `FileDownload` object which connects to as many Peers as possible
+     * (some may already be connected), from whom `Chunk`s are solicited.
      */
     public FileDownload downloadMeta(MetaP2P mFile) throws FileAlreadyExistsException, FileUnavailableException {
-        FileDownload fileDownload = new FileDownload(state, mFile);
+        FileDownload fileDownload = new FileDownload(clientState, mFile);
         fileDownloads.add(fileDownload);
         downloadPool.submit(fileDownload);
         return fileDownload;
@@ -45,16 +51,21 @@ public class DownloadsManager {
      * When figuring out which peers are associated with that download
      * it uses this to create the appropriate connections to the peers.
      */
-    public boolean getPeer(InetSocketAddress address) {
+    public boolean connectToPeer(Peer peer) {
         /* If the peer is not already connected */
-        /* try to connect to the peer */
-        /* if that doesn't work */
-        return false;
-        /* otherwise */
-        // return true;
-    }
-
-    public boolean isConnectedTo(Peer peer) {
-        return connectedPeers.contains(peer);
+        if (!connectedPeers.contains(peer)) {
+            /* try to connect to the peer */
+            try {
+                peer.connect();
+                connectedPeers.add(peer);
+            }
+            /* if that doesn't work return false */
+            catch (FailedToFindServerException | ConnectToPeerException | ServersIOException e) {
+                System.err.println("Couldn't connect to peer: "+peer.addrStr());
+                return false;
+            }
+        }
+        /* we are connected */
+        return true;
     }
 }

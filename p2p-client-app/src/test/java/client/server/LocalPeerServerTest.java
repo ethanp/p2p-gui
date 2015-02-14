@@ -51,7 +51,7 @@ public class LocalPeerServerTest extends LocalDownloadTest {
         File unknownFile = new File(serveDir, "partially-chunkless");
         fillWithRandomData(unknownFile, Common.NUM_CHUNK_BYTES*3);
         P2PFile pFile = serveFile(unknownFile);
-        pFile.getAvailableChunks().setChunkAvailable(1, false);
+        pFile.getAvailableChunks().setChunkAvailability(1, false);
         MetaP2P meta = pFile.getMetaPFile();
         requestChunk(meta, 1);
         int responseSize = Common.readIntLineFromStream(inputStream);

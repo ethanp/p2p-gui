@@ -46,9 +46,10 @@ public class ChunksForService {
 
     public static ChunksForService createFromBytes(int numChunks, byte[] bytes) {
         ChunksForService toRet = new ChunksForService(numChunks);
-        for (int i = 0; i < numChunks; i++)
-            if ((bytes[i/8] & (1 << (i%8))) == 1)
-                toRet.setChunkAvailable(i, true);
+        for (int i = 0; i < numChunks; i++) {
+            int bitVal = bytes[i/8] & (1 << (i%8));
+            toRet.setChunkAvailability(i, bitVal == 1);
+        }
         return toRet;
     }
 
@@ -56,7 +57,7 @@ public class ChunksForService {
     public int     numChunks()              { return numChunks; }
     public void    setAllAsAvailable()      { bitSet.set(0, numChunks, true); }
     public double  getProportionAvailable() { return ((double) bitSet.cardinality()) / numChunks; }
-    public void    setChunkAvailable(int index, boolean available) { bitSet.set(index, available); }
+    public void    setChunkAvailability(int index, boolean availability) { bitSet.set(index, availability); }
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;

@@ -12,5 +12,13 @@ public class DownloadChunkJob extends PeerWork {
         chunkIdx = chunkIndex;
     }
 
+    @Override public String toString() {
+        return "DownloadChunkJob{"+
+               "metaP2P="+metaP2P+
+               ", chunkIdx="+chunkIdx+
+               ", peer="+peer+
+               '}';
+    }
+
     @Override public void run() {}
 }

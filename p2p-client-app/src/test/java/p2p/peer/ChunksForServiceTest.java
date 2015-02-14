@@ -32,7 +32,7 @@ public class ChunksForServiceTest {
     @Test public void testSerializeTrickier() throws Exception {
         ChunksForService chunksForService = new ChunksForService(18);
         for (int i = 14; i <= 17; i++)
-            chunksForService.setChunkAvailable(i, true);
+            chunksForService.setChunkAvailability(i, true);
         byte c = (byte) 0b11;
         byte b = (byte) 0b1100_0000;
         byte a = (byte) 0b0;

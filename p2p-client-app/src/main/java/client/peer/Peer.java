@@ -18,11 +18,13 @@ import util.StringsOutBytesIn;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static util.Common.secToNano;
 
 /**
  * Ethan Petuchowski 1/18/15
@@ -37,38 +39,107 @@ import java.util.concurrent.Executors;
  */
 public class Peer extends PeerAddr implements Runnable {
 
-    private static final long DOWNLOAD_TIMEOUT = Common.secToNano(3);
+    private static final long DOWNLOAD_TIMEOUT = secToNano(3);
     private static final int ERRORS_THRESHOLD = 3;
 
+    /**
+     * The point of this is to maintain a single open socket to the Peer,
+     * which is devoted to requesting specified Chunks from the Peer.
+     */
     StringsOutBytesIn chunkConn = new StringsOutBytesIn(getServingAddr());
 
+    /**
+     * This is our current understanding of which Chunks of which files
+     * the Peer is making available for us to download
+     */
     MapProperty<MetaP2P, ChunksForService> chunksOfFiles;
 
-    Collection<FileDownload> ongoingFileDownloads = new HashSet<>();
+    /**
+     * These are the Files the Client is downloading
+     * for which this Peer is a potential source of Chunks.
+     *
+     * It is also known to the FileDownload object that
+     * this Peer is a participant in the download.
+     */
+    Set<FileDownload> ongoingFileDownloads = new HashSet<>();
 
+    /**
+     * I don't know whether this belongs here,
+     * maybe it belongs in the `DownloadChunkJob`.
+     */
     FileDownload fileCurrentlyDownloading;
 
+    /**
+     * This class run()s itself as a Thread to which it holds a pointer.
+     *
+     * The stream of ChunkDownloadJobs is managed by this (Peer) class.
+     *
+     * It is initiated via new Thread(this).start().
+     *
+     * We then use the pointer to this thread to interrupt()
+     * the download process when ongoingFileDownloads isEmpty.
+     *
+     * Perhaps I should move this functionality to a separate class. I don't know.
+     */
     Thread chunkDownloadThread;
 
+    /**
+     * Data for computing bandwidth and calculating a progress bar.
+     *
+     * The total period of time this Client has spent actively downloading Chunks from this Peer,
+     * and how many bytes of Chunks were downloaded in that period.
+     *
+     * Ideally, we should consider that bandwidth consumed by
+     * other Peer connections can affect this connections bandwidth.
+     */
     long nanosecsDownloading;
     long bytesDownloaded;
 
+    /**
+     * Counters of how many times downloading from this Peer has gone haywire.
+     * If it happens too much, the Client gives up on downloading from this Peer.
+     */
     int countDownloadDataErrors;
     int countTimeouts;
 
-    ExecutorService jobQueue = Executors.newSingleThreadExecutor();
-    private boolean running = false;
+    /**
+     * Pipeline multiple simultaneous Availability Update Requests so that it only opens
+     * one background connection at a time (to the Chunk Downloads connection).
+     *
+     * Ideally, this should open a connection that persists across Availability Update Requests.
+     */
+    ExecutorService availabilityUpdateThread = Executors.newSingleThreadExecutor();
 
     public Peer(InetSocketAddress peerListenAddr) {
         super(peerListenAddr);
     }
 
     @Override public void run() {
-        running = true;
-        Collection<Integer> chunkIdxs = fileCurrentlyDownloading.decideChunksToDownload(this);
-        for (int idx : chunkIdxs) {
-            jobQueue.submit(new DownloadChunkJob(fileCurrentlyDownloading.getMFile(), idx, this));
+        while (true) {
+            fileCurrentlyDownloading = decideFileToDownloadFrom();
+            List<Integer> chunkIdxs = fileCurrentlyDownloading.decideChunksToDownload(this);
+            if (chunkIdxs.get(0) == -1) {
+                removeCurrentFileFromDownloads();
+            }
+            for (int idx : chunkIdxs) {
+                DownloadChunkJob task = new DownloadChunkJob(fileCurrentlyDownloading.getMFile(), idx, this);
+                Thread thread = new Thread(task);
+                thread.start();
+                try {
+                    thread.wait(DOWNLOAD_TIMEOUT);
+                }
+                catch (InterruptedException e) {
+                    System.err.println("Download "+task.toString()+" timed out");
+                }
+            }
         }
+    }
+
+    /**
+     * always returns the first download in its local set "ongoingFileDownloads"
+     */
+    private FileDownload decideFileToDownloadFrom() {
+        return ongoingFileDownloads.iterator().next();
     }
 
     public void connect() throws FailedToFindServerException, ConnectToPeerException, ServersIOException {
@@ -90,6 +161,21 @@ public class Peer extends PeerAddr implements Runnable {
 
     double secondsSpentDownloading() { return nanosecsDownloading / 1E3; }
     double getAverageDownloadSpeed() { return bytesDownloaded / secondsSpentDownloading(); }
+
+
+    public void addDownload(FileDownload fileDownload) {
+        ongoingFileDownloads.add(fileDownload);
+        if (ongoingFileDownloads.size() == 1) {
+            startDownloading(fileDownload);
+        }
+    }
+
+    private void startDownloading(FileDownload fileDownload) {
+        fileCurrentlyDownloading = fileDownload;
+        chunkDownloadThread = new Thread(this);
+        chunkDownloadThread.start();
+    }
+
 
 
     // TODO move this
@@ -126,7 +212,7 @@ public class Peer extends PeerAddr implements Runnable {
                 System.err.println("received PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE");
                 /* update BitMap */
                 chunksOfFiles.get(fileCurrentlyDownloading.getMFile())
-                             .setChunkAvailable(chunkIdx, false);
+                             .setChunkAvailability(chunkIdx, false);
                 break;
             case PeerTalk.FromPeer.OUT_OF_BOUNDS:
                 System.err.println("received PeerTalk.FromPeer.OUT_OF_BOUNDS");
@@ -138,6 +224,9 @@ public class Peer extends PeerAddr implements Runnable {
 
     private void removeCurrentFileFromDownloads() {
         ongoingFileDownloads.remove(fileCurrentlyDownloading);
+        if (ongoingFileDownloads.isEmpty()) {
+            chunkDownloadThread.interrupt();
+        }
         fileCurrentlyDownloading = ongoingFileDownloads.iterator().next();
     }
 
@@ -190,6 +279,9 @@ public class Peer extends PeerAddr implements Runnable {
         return (System.nanoTime() - time) > DOWNLOAD_TIMEOUT;
     }
 
+    /**
+     * Maybe this should consider how many other Peer connections there are.
+     */
     private void downloadTimeout() {
         if (++countTimeouts > ERRORS_THRESHOLD) {
             System.err.println("Passed timeout threshold");
@@ -224,17 +316,16 @@ public class Peer extends PeerAddr implements Runnable {
     }
 
     public void updateChunkAvbl(MetaP2P metaP2P) throws ServersIOException, FailedToFindServerException {
-        jobQueue.submit(new UpdateChunkAvblJob(metaP2P, this));
+        availabilityUpdateThread.submit(new UpdateChunkAvblJob(metaP2P, this));
     }
 
-    public void addDownload(FileDownload fileDownload) {
-        ongoingFileDownloads.add(fileDownload);
-        if (!running) {
-            chunkDownloadThread = new Thread(this);
-            chunkDownloadThread.start();
-            fileCurrentlyDownloading = fileDownload;
-        }
-    }
 
+    @Override public String toString() {
+        return "Peer{"+
+               " fileCurrentlyDownloading="+fileCurrentlyDownloading+
+               ", nanosecsDownloading="+nanosecsDownloading+
+               ", bytesDownloaded="+bytesDownloaded+
+               " }";
+    }
 }
 

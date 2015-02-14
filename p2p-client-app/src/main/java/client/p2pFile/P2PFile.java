@@ -142,5 +142,5 @@ public class P2PFile {
     public int              getNumChunks()          { return numChunks.get();                   }
     public String           getCompletenessString() { return String.format("%.2f%%",getAvailableChunks().getProportionAvailable()); }
     public ChunksForService getAvailableChunks()    { return availableChunks.get();             }
-    public void             markChunkAsAvbl(int idx) { getAvailableChunks().setChunkAvailable(idx, true); }
+    public void             markChunkAsAvbl(int idx) { getAvailableChunks().setChunkAvailability(idx, true); }
 }
