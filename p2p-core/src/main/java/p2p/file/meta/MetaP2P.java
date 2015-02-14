@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import p2p.exceptions.CreateP2PFileException;
 import util.Common;
+import util.Security;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -122,5 +123,9 @@ public class MetaP2P {
             System.err.println(e.getMessage());
             return null;
         }
+    }
+
+    public boolean verifyChunk(byte[] bytes, int chunkIdx) {
+        return Security.verifyBytes(bytes, chunkDigests[chunkIdx]);
     }
 }

@@ -15,7 +15,7 @@ import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;
-import util.Digester;
+import util.Security;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +64,7 @@ public class P2PFile {
                 new MetaP2P(
                         fsFile.getName(),
                         (int) fsFile.length(),
-                        Digester.createDigest(fsFile),
+                        Security.createDigest(fsFile),
                         createChunkDigests(fsFile)
                 )
         );
@@ -80,9 +80,9 @@ public class P2PFile {
         String[] digests = new String[numChunks];
         FileInputStream fis = new FileInputStream(fsFile);
         for (int i = 0; i < numChunks-1; i++)
-            digests[i] = Digester.createChunkDigest(fis, Common.NUM_CHUNK_BYTES);
+            digests[i] = Security.createChunkDigest(fis, Common.NUM_CHUNK_BYTES);
         int lastChunkSize = lastChunkSize(fsFile.length());
-        digests[numChunks-1] = Digester.createChunkDigest(fis, lastChunkSize);
+        digests[numChunks-1] = Security.createChunkDigest(fis, lastChunkSize);
         return digests;
     }
 
@@ -142,5 +142,5 @@ public class P2PFile {
     public int              getNumChunks()          { return numChunks.get();                   }
     public String           getCompletenessString() { return String.format("%.2f%%",getAvailableChunks().getProportionAvailable()); }
     public ChunksForService getAvailableChunks()    { return availableChunks.get();             }
-    public void             markChunkAsAvbl(int idx) { getAvailableChunks().setChunkAvailability(idx, true); }
+    public void             markChunkAsAvbl(int idx) { getAvailableChunks().updateIdx(idx, true); }
 }

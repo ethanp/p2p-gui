@@ -4,9 +4,13 @@ import client.p2pFile.P2PFile;
 import client.peer.Peer;
 import client.state.ClientState;
 import p2p.exceptions.FileUnavailableException;
+import p2p.exceptions.InvalidDataException;
 import p2p.file.meta.MetaP2P;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +23,6 @@ import java.util.List;
 public class FileDownload implements Runnable {
 
     public Collection<Peer> getConnectedPeersWFile() { return connectedPeersWFile; }
-
 
     private final Collection<Peer> connectedPeersWFile = new HashSet<>();
     private Collection<Peer> peersWFile;
@@ -68,8 +71,40 @@ public class FileDownload implements Runnable {
         // real creative.
         int idx = pFile.getAvailableChunks().firstUnavailableChunk();
 
-        // TODO wasn't there some place I was keeping track of
+        // TODO the plan is that I will also keep track of
         //      List<Set<Peer>> whoIsDownloadingWhichChunks ??
         return Arrays.asList(idx);
+    }
+
+    /**
+     * This could be called in multiple threads at the same time.
+     * It obtains the lock on P2PFile.ChunksForService checks if its already written,
+     * and marks it as written, before and writing it to disk.
+     */
+    public void writeToDisk(byte[] response, int chunkIdx) throws InvalidDataException {
+
+        if (!getMFile().verifyChunk(response, chunkIdx)) {
+            throw new InvalidDataException("chunk data didn't match hash");
+        }
+
+        /* I wonder if this could use some sort of readAndUpdate atomic operation
+         * or whatever it's called
+         */
+        synchronized (pFile.getAvailableChunks()) {
+            if (pFile.hasChunk(chunkIdx))
+                return;
+            markChunkAsAvbl(chunkIdx);
+        }
+
+        try {
+            RandomAccessFile fileOutput = new RandomAccessFile(getPFile().getLocalFile(), "rw");
+            fileOutput.seek(getPFile().getBytesPerChunk()*chunkIdx);
+            fileOutput.write(response);
+            fileOutput.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     }
 }

@@ -12,7 +12,7 @@ import java.util.Base64;
 /**
  * Ethan Petuchowski 2/2/15
  */
-public class Digester {
+public class Security {
     /* based in part on
        http://massapi.com/source/resteasy-jaxrs-2.2.1.GA/eagledns/src/main/java/se/unlogic/standardutils/crypto/EncryptionUtils.java.html
      */
@@ -58,5 +58,9 @@ public class Digester {
 
     public static boolean checkFileAgainstDigest(File filename, String digest) throws IOException {
         return createDigest(filename).equals(digest);
+    }
+
+    public static boolean verifyBytes(byte[] bytes, String digest) {
+        return createDigest(bytes).equals(digest);
     }
 }

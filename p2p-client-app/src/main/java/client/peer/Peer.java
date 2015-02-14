@@ -9,14 +9,9 @@ import p2p.exceptions.ConnectToPeerException;
 import p2p.file.meta.MetaP2P;
 import p2p.peer.ChunksForService;
 import p2p.peer.PeerAddr;
-import p2p.protocol.fileTransfer.PeerTalk;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import util.Common;
 import util.Connection;
 import util.StringsOutBytesIn;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.List;
@@ -122,7 +117,7 @@ public class Peer extends PeerAddr implements Runnable {
                 removeCurrentFileFromDownloads();
             }
             for (int idx : chunkIdxs) {
-                DownloadChunkJob task = new DownloadChunkJob(fileCurrentlyDownloading.getMFile(), idx, this);
+                DownloadChunkJob task = new DownloadChunkJob(fileCurrentlyDownloading, idx, this);
                 Thread thread = new Thread(task);
                 thread.start();
                 try {
@@ -143,11 +138,11 @@ public class Peer extends PeerAddr implements Runnable {
     }
 
     public void connect() throws FailedToFindServerException, ConnectToPeerException, ServersIOException {
-        if (chunkConn.socket.isConnected()) {
-            throw new ConnectToPeerException("Already connected");
+        if (!chunkConn.socket.isConnected()) {
+            connect(chunkConn);
+            if (chunksOfFiles == null)
+                chunksOfFiles = new SimpleMapProperty<>();
         }
-        connect(chunkConn);
-        chunksOfFiles = new SimpleMapProperty<>();
     }
 
     public void connect(Connection connection) throws ConnectToPeerException, FailedToFindServerException, ServersIOException {
@@ -176,103 +171,29 @@ public class Peer extends PeerAddr implements Runnable {
         chunkDownloadThread.start();
     }
 
-
-
-    // TODO move this
-    /* ACCORDING TO PROTOCOL */
-    void requestChunk(MetaP2P mFile, int chunkIdx) {
-
-        /* SEND REQUEST */
-        chunkConn.writer.println(PeerTalk.ToPeer.GET_CHUNK);
-        chunkConn.writer.println(mFile.serializeToString());
-        chunkConn.writer.println(chunkIdx);
-        chunkConn.writer.flush();
-
-        /* READ RESPONSE */
-        @SuppressWarnings("UnusedAssignment") // the IDE is confused
-        int responseSize = PeerTalk.FromPeer.DEFAULT_VALUE;
-        try {
-            responseSize = Common.readIntLineFromStream(chunkConn.in);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            throw new NotImplementedException();
-        }
-        /* check for errors */
-        switch (responseSize) {
-            case PeerTalk.FromPeer.DEFAULT_VALUE:
-                System.err.println("received PeerTalk.FromPeer.DEFAULT_VALUE");
-                /* deal with this when it happens */
-                break;
-            case PeerTalk.FromPeer.FILE_NOT_AVAILABLE:
-                System.err.println("received PeerTalk.FromPeer.FILE_NOT_AVAILABLE");
-                removeCurrentFileFromDownloads();
-                break;
-            case PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE:
-                System.err.println("received PeerTalk.FromPeer.CHUNK_NOT_AVAILABLE");
-                /* update BitMap */
-                chunksOfFiles.get(fileCurrentlyDownloading.getMFile())
-                             .setChunkAvailability(chunkIdx, false);
-                break;
-            case PeerTalk.FromPeer.OUT_OF_BOUNDS:
-                System.err.println("received PeerTalk.FromPeer.OUT_OF_BOUNDS");
-                /* deal with this when it happens */
-                break;
-        }
-        downloadChunk(chunkIdx, responseSize);
-    }
-
     private void removeCurrentFileFromDownloads() {
-        ongoingFileDownloads.remove(fileCurrentlyDownloading);
-        if (ongoingFileDownloads.isEmpty()) {
-            chunkDownloadThread.interrupt();
-        }
+        stopDownloading(fileCurrentlyDownloading);
         fileCurrentlyDownloading = ongoingFileDownloads.iterator().next();
     }
 
-    // TODO move this
-    void downloadChunk(int chunkIdx, int responseSize) {
-        long startTime = System.nanoTime();
-        byte[] response = new byte[responseSize];
-        int bytesRcvd = 0;
-        while (bytesRcvd < responseSize) {
-            int rcv;
-            try {
-                rcv = chunkConn.in.read(response, bytesRcvd, responseSize-bytesRcvd);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Retrying");
-                downloadError();
-                return;
-            }
-            if (rcv >= 0) {
-                bytesRcvd += rcv;
-                bytesDownloaded += rcv;
-            } else {
-                downloadError();
-                return;
-            }
-            if (didTimeout(startTime)) {
-                downloadTimeout();
-                return;
+    public void stopDownloading(FileDownload fileDownload) {
+        if (fileDownload != null) {
+            ongoingFileDownloads.remove(fileDownload);
+            if (ongoingFileDownloads.isEmpty()) {
+               chunkDownloadThread.interrupt();
             }
         }
-        long endTime = System.nanoTime();
-        nanosecsDownloading += endTime - startTime;
-        try {
-            RandomAccessFile fileOutput = new RandomAccessFile(fileCurrentlyDownloading.getPFile().getLocalFile(), "rw");
-            fileOutput.seek(fileCurrentlyDownloading.getPFile().getBytesPerChunk()*chunkIdx);
-            fileOutput.write(response);
-            fileOutput.close();
+    }
+
+    public void stopDownloading(MetaP2P metaP2P) {
+        FileDownload fd = null;
+        for (FileDownload fileDownload : ongoingFileDownloads) {
+            if (fileDownload.getMFile().equals(metaP2P)) {
+                fd = fileDownload;
+                break;
+            }
         }
-        catch (IOException e) {
-            // this would most-likely mean a bug
-            // it is not part of the logic for this to ever occur
-            e.printStackTrace();
-        }
-        fileCurrentlyDownloading.markChunkAsAvbl(chunkIdx);
-        fileCurrentlyDownloading = null;
+        stopDownloading(fd);
     }
 
     private boolean didTimeout(long time) {
@@ -290,7 +211,7 @@ public class Peer extends PeerAddr implements Runnable {
         fileCurrentlyDownloading = null;
     }
 
-    private void downloadError() {
+    void downloadError() {
         if (++countDownloadDataErrors > ERRORS_THRESHOLD) {
             System.err.println("Passed download errors threshold");
             // disconnect from peer and don't reconnect for a little while?
@@ -326,6 +247,10 @@ public class Peer extends PeerAddr implements Runnable {
                ", nanosecsDownloading="+nanosecsDownloading+
                ", bytesDownloaded="+bytesDownloaded+
                " }";
+    }
+
+    public void markAbsent(MetaP2P metaP2P, int idx) {
+        chunksOfFiles.get(metaP2P).updateIdx(idx, false);
     }
 }
 

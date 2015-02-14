@@ -9,31 +9,32 @@ import util.StringsOutBytesIn;
 
 import java.io.IOException;
 
-public class UpdateChunkAvblJob extends PeerWork {
-        MetaP2P metaP2P;
-        StringsOutBytesIn updateAvblConn = new StringsOutBytesIn(peer.getServingAddr());
+public class UpdateChunkAvblJob implements Runnable {
+    MetaP2P metaP2P;
+    Peer peer;
+    StringsOutBytesIn updateAvblConn;
 
-        UpdateChunkAvblJob(MetaP2P meta, Peer peer) throws ServersIOException, FailedToFindServerException {
-            super(peer);
-            metaP2P = meta;
-            updateAvblConn.connect();
+    UpdateChunkAvblJob(MetaP2P meta, Peer peer) throws ServersIOException, FailedToFindServerException {
+        metaP2P = meta;
+        updateAvblConn = new StringsOutBytesIn(peer.getServingAddr());
+        updateAvblConn.connect();
+    }
+
+    @Override public void run() {
+        try {
+            getAvblFor(metaP2P);
         }
-
-        @Override public void run() {
-            try {
-                getAvblFor(metaP2P);
-            }
-            catch (IOException | ServersIOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void getAvblFor(MetaP2P metaP2P) throws IOException, ServersIOException {
-            updateAvblConn.writer.println(PeerTalk.ToPeer.GET_AVBL);
-            updateAvblConn.writer.println(metaP2P.serializeToString());
-            ChunksForService chunksForService = ChunksForService.deserialize(updateAvblConn.in);
-            synchronized (peer.chunksOfFiles) {
-                peer.chunksOfFiles.put(metaP2P, chunksForService);
-            }
+        catch (IOException | ServersIOException e) {
+            e.printStackTrace();
         }
     }
+
+    private void getAvblFor(MetaP2P metaP2P) throws IOException, ServersIOException {
+        updateAvblConn.writer.println(PeerTalk.ToPeer.GET_AVBL);
+        updateAvblConn.writer.println(metaP2P.serializeToString());
+        ChunksForService chunksForService = ChunksForService.deserialize(updateAvblConn.in);
+        synchronized (peer.chunksOfFiles) {
+            peer.chunksOfFiles.put(metaP2P, chunksForService);
+        }
+    }
+}
