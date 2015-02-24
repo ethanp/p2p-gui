@@ -4,7 +4,7 @@ import Exceptions.ServersIOException;
 import base.BaseCLI;
 import client.state.ClientState;
 import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
+import client.tracker.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
 import p2p.exceptions.FileUnavailableException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

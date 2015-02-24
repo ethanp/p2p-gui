@@ -1,8 +1,7 @@
-package p2p.tracker.swarm;
+package p2p.tracker;
 
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.peer.PeerAddr;
-import p2p.tracker.Tracker;
 import util.Common;
 
 import java.util.ArrayList;

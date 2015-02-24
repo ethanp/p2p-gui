@@ -2,11 +2,11 @@ package client;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
-import client.download.FileDownload;
+import client.p2pFile.FileDownload;
 import client.p2pFile.P2PFile;
 import org.junit.Before;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import util.Common;
 import util.ServersCommon;

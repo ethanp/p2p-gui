@@ -1,7 +1,7 @@
 package client.p2pFile;
 
 import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
+import client.tracker.ClientSwarm;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -10,8 +10,8 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.chunk.Chunk;
-import p2p.file.meta.MetaP2P;
+import p2p.file.Chunk;
+import p2p.file.MetaP2P;
 import p2p.peer.ChunksForService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;

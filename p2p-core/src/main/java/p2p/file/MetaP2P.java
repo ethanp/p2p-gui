@@ -1,4 +1,4 @@
-package p2p.file.meta;
+package p2p.file;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

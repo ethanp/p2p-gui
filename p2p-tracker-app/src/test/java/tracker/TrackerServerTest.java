@@ -7,7 +7,7 @@ import Exceptions.ServersIOException;
 import org.junit.Before;
 import org.junit.Test;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.ServersCommon;

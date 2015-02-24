@@ -3,10 +3,8 @@ package client.tracker;
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
 import client.p2pFile.P2PFile;
-import client.protocol.ClientSideTrackerProtocol;
-import client.tracker.swarm.ClientSwarm;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.tracker.Tracker;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -27,7 +25,7 @@ import java.util.Collection;
  * This contains the info that a Peer knows about a Tracker.
  * This is also what a Peer sends messages to in order to interact with that Tracker.
  */
-public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTrackerProtocol {
+public class RemoteTracker extends Tracker<ClientSwarm> {
 
     protected Socket connToTracker;
     protected PrintWriter out;
@@ -82,7 +80,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * Tracker receives P2PFile from Peer looks for it among its LocalSwarms If it exists, add Peer
      * to Swarm Otherwise create a new Swarm for it
      */
-    @Override public void addFileRequest(MetaP2P meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
+    public void addFileRequest(MetaP2P meta, InetSocketAddress peerListenAddr) throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
         out.println(PeerTalk.ToTracker.ADD_FILE_REQUEST);
         out.println(ServersCommon.ipPortToString(peerListenAddr));
@@ -96,7 +94,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * about the specific IP Addresses of Peers in an existing Swarm
      * so that the Peer can update its internal view of the Swarm
      */
-    @Override public ClientSwarm updateSwarmInfo(MetaP2P meta)
+    public ClientSwarm updateSwarmInfo(MetaP2P meta)
             throws IOException, ConnectToTrackerException, ServersIOException
     {
         ClientSwarm clientSwarm = new ClientSwarm(meta, this);
@@ -134,7 +132,7 @@ public class RemoteTracker extends Tracker<ClientSwarm> implements ClientSideTra
      * Tracker sends Peer its full list of Swarms
      * INCLUDING specific IP Addresses of Swarm members
      */
-    @Override public Collection<ClientSwarm> listFiles() throws IOException, ConnectToTrackerException, ServersIOException {
+    public Collection<ClientSwarm> listFiles() throws IOException, ConnectToTrackerException, ServersIOException {
         connect();
 
         out.println(PeerTalk.ToTracker.LIST_FILES);

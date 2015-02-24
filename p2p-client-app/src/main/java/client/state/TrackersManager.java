@@ -1,13 +1,13 @@
-package client.managers;
+package client.state;
 
 import Exceptions.ServersIOException;
 import client.peer.Peer;
 import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
+import client.tracker.ClientSwarm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 
 import java.io.IOException;
 import java.util.ArrayList;

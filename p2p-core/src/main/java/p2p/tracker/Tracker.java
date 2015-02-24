@@ -6,8 +6,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import p2p.file.meta.MetaP2P;
-import p2p.tracker.swarm.Swarm;
+import p2p.file.MetaP2P;
 import util.ServersCommon;
 
 import java.net.InetSocketAddress;

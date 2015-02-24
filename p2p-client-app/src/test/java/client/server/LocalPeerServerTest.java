@@ -3,7 +3,7 @@ package client.server;
 import client.LocalDownloadTest;
 import client.p2pFile.P2PFile;
 import org.junit.Test;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import util.Common;
 

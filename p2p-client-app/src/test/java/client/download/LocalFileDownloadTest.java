@@ -1,6 +1,7 @@
 package client.download;
 
 import client.LocalDownloadTest;
+import client.p2pFile.FileDownload;
 import org.junit.Test;
 import p2p.exceptions.ConnectToPeerException;
 import p2p.exceptions.CreateP2PFileException;

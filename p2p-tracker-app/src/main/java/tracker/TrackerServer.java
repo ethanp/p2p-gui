@@ -8,10 +8,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.tracker.TrackerSideTrackerProtocol;
-import p2p.tracker.swarm.Swarm;
+import p2p.tracker.Swarm;
 import servers.SingleThreadedServer;
 import util.ServersCommon;
 

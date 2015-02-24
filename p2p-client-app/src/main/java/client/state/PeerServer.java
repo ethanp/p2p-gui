@@ -1,4 +1,4 @@
-package client.server;
+package client.state;
 
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
@@ -7,8 +7,8 @@ import client.p2pFile.P2PFile;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.chunk.Chunk;
-import p2p.file.meta.MetaP2P;
+import p2p.file.Chunk;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import p2p.protocol.fileTransfer.ServerSideChunkProtocol;
 import servers.MultiThreadedServer;

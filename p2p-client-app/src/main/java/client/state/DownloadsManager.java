@@ -1,13 +1,12 @@
-package client.managers;
+package client.state;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
-import client.download.FileDownload;
+import client.p2pFile.FileDownload;
 import client.peer.Peer;
-import client.state.ClientState;
 import p2p.exceptions.ConnectToPeerException;
 import p2p.exceptions.FileUnavailableException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import util.Common;
 
 import java.nio.file.FileAlreadyExistsException;

@@ -1,7 +1,7 @@
 package tracker;
 
 import org.junit.Test;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.peer.PeerAddr;
 
 import java.util.regex.Pattern;

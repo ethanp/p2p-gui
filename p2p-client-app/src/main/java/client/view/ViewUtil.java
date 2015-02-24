@@ -1,4 +1,4 @@
-package client.util;
+package client.view;
 
 import client.Main;
 import javafx.event.ActionEvent;

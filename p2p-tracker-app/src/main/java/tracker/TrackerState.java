@@ -3,7 +3,7 @@ package tracker;
 import Exceptions.ListenerCouldntConnectException;
 import Exceptions.NoInternetConnectionException;
 import Exceptions.ServersIOException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.peer.PeerAddr;
 import p2p.tracker.Tracker;
 

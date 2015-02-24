@@ -2,11 +2,12 @@ package client.peer;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
-import client.download.FileDownload;
+import client.p2pFile.FileDownload;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import p2p.exceptions.ConnectToPeerException;
-import p2p.file.meta.MetaP2P;
+import p2p.exceptions.InvalidDataException;
+import p2p.file.MetaP2P;
 import p2p.peer.ChunksForService;
 import p2p.peer.PeerAddr;
 import util.Connection;
@@ -16,8 +17,13 @@ import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static util.Common.secToNano;
 
@@ -76,7 +82,12 @@ public class Peer extends PeerAddr implements Runnable {
      *
      * Perhaps I should move this functionality to a separate class. I don't know.
      */
-    Thread chunkDownloadThread;
+    Thread chunkDownloadQueuerThread;
+
+    /**
+     * This is for executing DownloadChunkJobs one at a time.
+     */
+    ExecutorService chunkDownloadThread = Executors.newSingleThreadExecutor();
 
     /**
      * Data for computing bandwidth and calculating a progress bar.
@@ -116,16 +127,47 @@ public class Peer extends PeerAddr implements Runnable {
             if (chunkIdxs.get(0) == -1) {
                 removeCurrentFileFromDownloads();
             }
-            for (int idx : chunkIdxs) {
-                DownloadChunkJob task = new DownloadChunkJob(fileCurrentlyDownloading, idx, this);
-                Thread thread = new Thread(task);
-                thread.start();
-                try {
-                    thread.wait(DOWNLOAD_TIMEOUT);
+            downloadChunks(chunkIdxs);
+        }
+    }
+
+    /**
+     * We put each index to download on the "Chunk Download Thread" one at a time
+     * waiting for each to complete or timeout before starting the next.
+     *
+     * They all reuse the `chunkConn` field of this class (Peer) so that connections
+     * don't have to be reestablished between completed Chunk Downloads.
+     */
+    private void downloadChunks(List<Integer> chunkIdxs) {
+        for (int idx : chunkIdxs) {
+            Callable<Boolean> task = new DownloadChunkJob(fileCurrentlyDownloading, idx, this);
+            Future<Boolean> dlResult = chunkDownloadThread.submit(task);
+            try {
+                dlResult.wait(DOWNLOAD_TIMEOUT);
+                boolean madeItToDisk = dlResult.get(3, TimeUnit.SECONDS);
+
+                /* maybe we should update the UI here? */
+                if (madeItToDisk) {
+                    System.out.println(
+                            "Chunk "+idx+" of "+
+                            fileCurrentlyDownloading.getPFile().getFilename()+
+                            " finished downloading.");
                 }
-                catch (InterruptedException e) {
-                    System.err.println("Download "+task.toString()+" timed out");
+            }
+            catch (InterruptedException e) {
+                System.err.println("Download "+task.toString()+" was interrupted");
+            }
+            catch (ExecutionException e) {
+                if (e.getCause() instanceof InvalidDataException) {
+                    downloadError();
+                } else {
+                    System.err.println("Unknown error "+e.getClass().getName()+" in "+task.toString());
+                    e.printStackTrace();
                 }
+            }
+            catch (TimeoutException e) {
+                System.err.println("Download "+task.toString()+" timed out");
+                downloadTimeout();
             }
         }
     }
@@ -167,8 +209,8 @@ public class Peer extends PeerAddr implements Runnable {
 
     private void startDownloading(FileDownload fileDownload) {
         fileCurrentlyDownloading = fileDownload;
-        chunkDownloadThread = new Thread(this);
-        chunkDownloadThread.start();
+        chunkDownloadQueuerThread = new Thread(this);
+        chunkDownloadQueuerThread.start();
     }
 
     private void removeCurrentFileFromDownloads() {
@@ -180,7 +222,7 @@ public class Peer extends PeerAddr implements Runnable {
         if (fileDownload != null) {
             ongoingFileDownloads.remove(fileDownload);
             if (ongoingFileDownloads.isEmpty()) {
-               chunkDownloadThread.interrupt();
+               chunkDownloadQueuerThread.interrupt();
             }
         }
     }
@@ -215,6 +257,7 @@ public class Peer extends PeerAddr implements Runnable {
         if (++countDownloadDataErrors > ERRORS_THRESHOLD) {
             System.err.println("Passed download errors threshold");
             // disconnect from peer and don't reconnect for a little while?
+            System.err.println("this does nothing right now");
         }
         fileCurrentlyDownloading = null;
     }

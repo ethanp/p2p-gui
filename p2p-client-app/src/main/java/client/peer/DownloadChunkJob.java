@@ -1,8 +1,8 @@
 package client.peer;
 
-import client.download.FileDownload;
+import client.p2pFile.FileDownload;
 import p2p.exceptions.InvalidDataException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.protocol.fileTransfer.PeerTalk;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.Common;

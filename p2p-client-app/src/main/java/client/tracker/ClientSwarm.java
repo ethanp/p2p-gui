@@ -1,11 +1,10 @@
-package client.tracker.swarm;
+package client.tracker;
 
 import client.peer.FakePeer;
-import client.tracker.RemoteTracker;
 import p2p.exceptions.ConnectToTrackerException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import client.peer.Peer;
-import p2p.tracker.swarm.Swarm;
+import p2p.tracker.Swarm;
 import util.Common;
 import util.ServersCommon;
 

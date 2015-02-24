@@ -1,4 +1,4 @@
-package p2p.file.chunk;
+package p2p.file;
 
 import util.Common;
 

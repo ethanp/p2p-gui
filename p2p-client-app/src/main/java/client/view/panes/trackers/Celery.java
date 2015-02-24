@@ -2,7 +2,7 @@ package client.view.panes.trackers;
 
 import Exceptions.ServersIOException;
 import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
+import client.tracker.ClientSwarm;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import p2p.exceptions.ConnectToTrackerException;

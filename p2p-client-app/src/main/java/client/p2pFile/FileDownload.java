@@ -1,14 +1,12 @@
-package client.download;
+package client.p2pFile;
 
-import client.p2pFile.P2PFile;
 import client.peer.Peer;
 import client.state.ClientState;
 import p2p.exceptions.FileUnavailableException;
 import p2p.exceptions.InvalidDataException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.FileAlreadyExistsException;
@@ -72,39 +70,37 @@ public class FileDownload implements Runnable {
         int idx = pFile.getAvailableChunks().firstUnavailableChunk();
 
         // TODO the plan is that I will also keep track of
-        //      List<Set<Peer>> whoIsDownloadingWhichChunks ??
+        //      List<Set<Peer>> whoIsDownloadingWhichChunks
         return Arrays.asList(idx);
     }
 
     /**
+     * This is called by DownloadChunkJob after downloading its chunk.
+     *
      * This could be called in multiple threads at the same time.
      * It obtains the lock on P2PFile.ChunksForService checks if its already written,
      * and marks it as written, before and writing it to disk.
+     *
+     * @throws InvalidDataException if chunk data doesn't match hash.
      */
     public void writeToDisk(byte[] response, int chunkIdx) throws InvalidDataException {
 
-        if (!getMFile().verifyChunk(response, chunkIdx)) {
-            throw new InvalidDataException("chunk data didn't match hash");
-        }
+        if (!getMFile().verifyChunk(response, chunkIdx))
+            throw new InvalidDataException("chunk data doesn't match hash");
 
-        /* I wonder if this could use some sort of readAndUpdate atomic operation
-         * or whatever it's called
-         */
+        /* I wonder if this could use some sort of readAndUpdate atomic operation */
         synchronized (pFile.getAvailableChunks()) {
             if (pFile.hasChunk(chunkIdx))
                 return;
             markChunkAsAvbl(chunkIdx);
         }
 
-        try {
-            RandomAccessFile fileOutput = new RandomAccessFile(getPFile().getLocalFile(), "rw");
+        try (RandomAccessFile fileOutput = new RandomAccessFile(getPFile().getLocalFile(), "rw")) {
             fileOutput.seek(getPFile().getBytesPerChunk()*chunkIdx);
             fileOutput.write(response);
-            fileOutput.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
     }
 }

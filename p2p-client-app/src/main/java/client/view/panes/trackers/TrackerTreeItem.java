@@ -1,7 +1,7 @@
 package client.view.panes.trackers;
 
 import client.tracker.RemoteTracker;
-import client.tracker.swarm.ClientSwarm;
+import client.tracker.ClientSwarm;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;

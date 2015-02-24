@@ -2,7 +2,7 @@ package client.peer;
 
 import Exceptions.FailedToFindServerException;
 import Exceptions.ServersIOException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import p2p.peer.ChunksForService;
 import p2p.protocol.fileTransfer.PeerTalk;
 import util.StringsOutBytesIn;

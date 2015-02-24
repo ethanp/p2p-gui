@@ -3,7 +3,7 @@ package client.p2pFile;
 import client.tracker.FakeRemoteTracker;
 import client.tracker.RemoteTracker;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 import util.Common;
 
 import java.io.File;

@@ -1,9 +1,9 @@
-package client.managers;
+package client.state;
 
 import client.p2pFile.LocalFakeFile;
 import client.p2pFile.P2PFile;
 import p2p.exceptions.CreateP2PFileException;
-import p2p.file.meta.MetaP2P;
+import p2p.file.MetaP2P;
 
 import java.io.File;
 import java.io.IOException;

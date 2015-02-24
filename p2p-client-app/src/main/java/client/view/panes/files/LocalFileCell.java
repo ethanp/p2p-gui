@@ -1,8 +1,8 @@
 package client.view.panes.files;
 
 import client.p2pFile.P2PFile;
-import client.util.ClientStateUtil;
-import client.util.ViewUtil;
+import client.state.ClientStateUtil;
+import client.view.ViewUtil;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableCell;
 
